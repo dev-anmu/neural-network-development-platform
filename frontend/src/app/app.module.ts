@@ -6,7 +6,6 @@ import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MaterialModule } from './material/material.module';
 import { HomeComponent } from './pages/home/home.component';
-import { TestingComponent } from './pages/testing/testing.component';
 import { TrainingContainerComponent } from './shared/components/training-container/training-container.component';
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import { NnBuilderComponent } from './pages/project/nn-builder/nn-builder.component';
@@ -29,7 +28,6 @@ import {NgOptimizedImage} from "@angular/common";
   declarations: [
     AppComponent,
     HomeComponent,
-    TestingComponent,
     TrainingContainerComponent,
     NnBuilderComponent,
     DynamicLayerFormComponent,

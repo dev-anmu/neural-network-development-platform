@@ -1,13 +1,12 @@
 <mat-toolbar color="primary">
   <mat-toolbar-row>
     <a [routerLink]="['/home']">
-      <div class="site-logo"><img ngSrc="assets/imgs/logo-with-text.png" alt="WebNet Builder logo" height="32"
+      <div class="site-logo"><img ngSrc="../assets/imgs/logo-with-text.png" alt="WebNet Builder logo" height="32"
                                   width="120"></div>
     </a>
     <div>
       <a mat-button [routerLink]="['/']" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Home</a>
-<!--      <a mat-button [routerLink]="['/builder']" routerLinkActive="active">Playground</a>-->
-      <a mat-button [routerLink]="['/testing']" routerLinkActive="active">Performance Testing</a>
+      <a mat-button [routerLink]="['/builder']" routerLinkActive="active">Playground</a>
       <a mat-button [routerLink]="['/projects']" routerLinkActive="active" matBadgeColor="accent"
          [matBadge]="getNumberOfProjects()" matBadgePosition="after">Projects</a>
     </div>

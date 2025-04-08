@@ -7,9 +7,8 @@ import {ModelBuilderService} from "../../../core/services/model-builder.service"
 import {MatDialog} from "@angular/material/dialog";
 import {MessageDialogComponent} from "../../../shared/components/message-dialog/message-dialog.component";
 import {areBuilderEqual} from "../../../shared/utils";
-import * as dfd from "danfojs";
 import * as tf from "@tensorflow/tfjs";
-import {DataFrame} from "danfojs";
+import { DataFrame } from "danfojs";
 
 @Component({
   selector: 'app-evaluation',
@@ -139,7 +138,7 @@ export class EvaluationComponent {
 
   loadRandomDataSample(): void {
     const dataset = this.projectService.dataset();
-    const df = new dfd.DataFrame(dataset.data);
+    const df = new DataFrame(dataset.data);
     const columns =  [...this.inputColumns, ...this.projectService.dataset().targetColumns];
 
     this.sample = df.loc({rows: [Math.floor(Math.random() * df.shape[0])],

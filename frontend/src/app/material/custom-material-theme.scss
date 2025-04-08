@@ -1,5 +1,5 @@
 @use '@angular/material' as mat;
-@use './components';
+@use './components' as components;
 
 @include components.stepper();
 @include components.button();
@@ -8,7 +8,7 @@
 @include components.form-field();
 @include components.slider();
 
-@import './essentials/colors.scss';
+@import 'essentials/colors';
 @import '@angular/material/theming';
 
 $my-theme: mat.define-light-theme((
