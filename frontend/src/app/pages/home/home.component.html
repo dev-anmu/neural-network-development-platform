@@ -1,12 +1,34 @@
 <div class="site-content">
-  <section class="home-introduction">
-    <h1>Welcome to WebNet</h1>
-    <p>
-      Welcome to our Drag-and-Drop Neural Network Builder! Unleash the power of artificial intelligence effortlessly.
-      Whether you're a seasoned data scientist or just beginning your journey into the world of AI, our intuitive
-      platform empowers you to seamlessly build, train, test, and evaluate neural networks—no coding required. Dive into
-      the future of innovation and turn your ideas into reality with the click of a mouse. Your journey into the world
-      of AI starts here!
-    </p>
+  <section class="hero-section">
+    <div class="hero-content">
+      <h1>Build Neural Networks <span>Visually</span></h1>
+      <p class="tagline">A no-code platform for designing, training, and evaluating neural networks directly in your browser.</p>
+      <div class="cta-buttons">
+        <a mat-raised-button color="primary" [routerLink]="['/projects']">Start a Project</a>
+        <a mat-stroked-button [routerLink]="['/builder']">Try Playground Demo</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="features-section">
+    <h3>Why WebNet Builder</h3>
+    <div class="features-grid">
+      <div class="feature-card">
+        <h3>Interactive Network Design</h3>
+        <p>Create neural networks with a drag-and-drop interface supporting various layer types including Dense, Dropout, Convolution, and LSTM.</p>
+      </div>
+      <div class="feature-card">
+        <h3>Advanced Data Handling</h3>
+        <p>Import CSV datasets with preprocessing options including MinMax, Label, OneHot, and Standard encoding for optimal training results.</p>
+      </div>
+      <div class="feature-card">
+        <h3>Browser-Based Training</h3>
+        <p>Train models using TensorFlow.js with WebGPU acceleration - enabling powerful GPU processing directly in your browser, plus additional backend options.</p>
+      </div>
+      <div class="feature-card">
+        <h3>Project Management</h3>
+        <p>Organize your work with built-in project management. Export and import projects as ZIP files for sharing or continued development.</p>
+      </div>
+    </div>
   </section>
 </div>
