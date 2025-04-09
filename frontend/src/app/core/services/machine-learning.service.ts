@@ -152,8 +152,7 @@ export class MachineLearningService {
     const inputColumns: string[] = dataset.inputColumns;
     const targetColumns: string[] = dataset.targetColumns;
 
-
-    const dfInputColumns = df.columns.filter(column => inputColumns.includes(column.split('_')[0]));
+    const dfInputColumns = df.columns.filter((column: string) => inputColumns.includes(column.split('_')[0]));
 
     const inputs = df.loc({columns: dfInputColumns});
     const targets = df.loc({columns: targetColumns});
@@ -205,22 +204,27 @@ export class MachineLearningService {
     }, YIELD_EVERY);
     const callbacks: any[] = [fitCallback];
 
-    if (parameter.accuracyPlot) {
-      callbacks.push(new tf.CustomCallback(tfvis.show.fitCallbacks(plotContainer, ['acc', 'val_acc'], {
-        callbacks: ['onEpochEnd'],
-        xLabel: 'Epoch',
-        yLabel: 'Accuracy',
-        // width: 100,
-        // height: 2000
-      })));
+    // Dynamically load tfvis only when needed for plots
+    if (parameter.accuracyPlot || parameter.lossPlot) {
+      const tfvis = await import('@tensorflow/tfjs-vis');
+      
+      if (parameter.accuracyPlot) {
+        callbacks.push(new tf.CustomCallback(tfvis.show.fitCallbacks(plotContainer, ['acc', 'val_acc'], {
+          callbacks: ['onEpochEnd'],
+          xLabel: 'Epoch',
+          yLabel: 'Accuracy'
+        })));
+      }
+      
+      if (parameter.lossPlot) {
+        callbacks.push(new tf.CustomCallback(tfvis.show.fitCallbacks(plotContainer, ['loss', 'val_loss'], {
+          callbacks: ['onEpochEnd'],
+          xLabel: 'Epoch',
+          yLabel: 'Loss'
+        })));
+      }
     }
-    if (parameter.lossPlot) {
-      callbacks.push(new tf.CustomCallback(tfvis.show.fitCallbacks(plotContainer, ['loss', 'val_loss'], {
-        callbacks: ['onEpochEnd'],
-        xLabel: 'Epoch',
-        yLabel: 'Loss'
-      })));
-    }
+    
     if (parameter.earlyStopping) {
       callbacks.push(tf.callbacks.earlyStopping({monitor: 'val_acc', patience: 5}));
     }
@@ -260,8 +264,23 @@ export class MachineLearningService {
     return tf.getBackend() === backend;
   }
 
-  async showHistory(htmlContainer: HTMLElement, history: History): Promise<void> {
-    // await tfvis.show.history(htmlContainer, history, ['loss', 'acc']);
+  async showHistory(htmlContainer: HTMLElement, history: any): Promise<void> {
+    // Dynamically import tfjs-vis when needed
+    const tfvis = await import('@tensorflow/tfjs-vis');
+    
+    if (history.history['loss'] && history.history['val_loss']) {
+      await this.renderPlot(htmlContainer, [this.mapHistoryRecord(history.history['loss']), this.mapHistoryRecord(history.history['val_loss'])], ['Training', 'Validation'], {
+        xLabel: 'Epoch',
+        yLabel: 'Loss'
+      });
+    }
+
+    if (history.history['acc'] && history.history['val_acc']) {
+      await this.renderPlot(htmlContainer, [this.mapHistoryRecord(history.history['acc']), this.mapHistoryRecord(history.history['val_acc'])], ['Training', 'Validation'], {
+        xLabel: 'Epoch',
+        yLabel: 'Accuracy'
+      });
+    }
   }
 
   async renderPlot(htmlContainer: HTMLElement, values: XY[][], series: string[], options: {
@@ -269,6 +288,25 @@ export class MachineLearningService {
     yLabel: string,
     width?: number
   }): Promise<void> {
-    await tfvis.render.linechart(htmlContainer, {values: values, series: series}, options);
+    // Dynamically import tfjs-vis when needed
+    const tfvis = await import('@tensorflow/tfjs-vis');
+    
+    const data = {
+      values: values,
+      series: series
+    };
+
+    await tfvis.render.linechart(htmlContainer, data, {
+      width: options.width || 500,
+      height: 250,
+      xLabel: options.xLabel || '',
+      yLabel: options.yLabel || '',
+      fontSize: 16
+    });
+  }
+  
+  // Helper function needed by showHistory
+  private mapHistoryRecord(history: number[]): { x: number, y: number }[] {
+    return history.map((value: number, epoch: number) => ({x: epoch, y: value}));
   }
 }

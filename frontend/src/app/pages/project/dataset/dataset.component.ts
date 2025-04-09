@@ -112,7 +112,7 @@ export class DatasetComponent {
       const df = new dfd.DataFrame(dataset.data);
 
       const columns: { name: string, type: string, uniqueValues: number, encoding: EncoderEnum, encoder: EncoderType }[] = [];
-      df.columns.forEach(column => {
+      df.columns.forEach((column: string) => {
         columns.push({name: column, type: df[column].dtype, uniqueValues: df[column].nUnique(), encoding: EncoderEnum.no, encoder: null});
       });
 

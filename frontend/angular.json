@@ -38,7 +38,17 @@
               "@angular/material/prebuilt-themes/indigo-pink.css",
               "src/styles.scss"
             ],
-            "scripts": []
+            "scripts": [],
+            "allowedCommonJsDependencies": [
+              "long",
+              "clone",
+              "fast-deep-equal",
+              "fast-json-stable-stringify",
+              "danfojs",
+              "file-saver",
+              "jszip",
+              "@tensorflow/tfjs-vis"
+            ]
           },
           "configurations": {
             "production": {

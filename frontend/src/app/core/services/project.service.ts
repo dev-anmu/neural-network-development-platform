@@ -264,7 +264,7 @@ export class ProjectService {
     if (fitting) {
       const encodedValues = encoder.fitTransform(series.values);
       const labels = series.unique().values;
-      const newColumns = labels.map(label => columnName + '_' + label);
+      const newColumns = labels.map((label: any) => columnName + '_' + label);
       const df = new dfd.DataFrame(encodedValues, {columns: newColumns});
       return df;
     } else {
