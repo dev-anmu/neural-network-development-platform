@@ -1,0 +1,9 @@
+@use './material/components' as material-components;
+
+// Include all component mixins
+@include material-components.button();
+@include material-components.list();
+@include material-components.slide-toggle();
+@include material-components.form-field();
+@include material-components.slider();
+@include material-components.stepper(); 
