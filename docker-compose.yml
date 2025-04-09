@@ -1,0 +1,6 @@
+services:
+  app:
+    build:
+      context: ./frontend
+    container_name: neural-network-platform
+    restart: unless-stopped 

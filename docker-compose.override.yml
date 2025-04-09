@@ -1,0 +1,11 @@
+services:
+  app:
+    build:
+      target: development
+    ports:
+      - "4200:4200"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development 
