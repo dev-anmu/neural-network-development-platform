@@ -35,7 +35,7 @@
               }
             ],
             "styles": [
-              "src/app/material/custom-material-theme.scss",
+              "@angular/material/prebuilt-themes/indigo-pink.css",
               "src/styles.scss"
             ],
             "scripts": []
@@ -104,7 +104,7 @@
               }
             ],
             "styles": [
-              "src/app/material/custom-material-theme.scss",
+              "@angular/material/prebuilt-themes/indigo-pink.css",
               "src/styles.scss"
             ],
             "scripts": []

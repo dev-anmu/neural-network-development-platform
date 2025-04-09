@@ -7,10 +7,11 @@ import {areBuilderEqual} from "../../../shared/utils";
 
 
 @Component({
-  selector: 'app-nn-builder',
-  templateUrl: './nn-builder.component.html',
-  styleUrls: ['./nn-builder.component.scss'],
-  encapsulation: ViewEncapsulation.None, // Disable encapsulation
+    selector: 'app-nn-builder',
+    templateUrl: './nn-builder.component.html',
+    styleUrls: ['./nn-builder.component.scss'],
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class NnBuilderComponent {
   protected readonly LayerType = LayerType;

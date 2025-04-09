@@ -3,9 +3,10 @@ import {FormGroup} from "@angular/forms";
 import {Subscription} from "rxjs";
 
 @Component({
-  selector: 'app-dynamic-layer-form',
-  templateUrl: './dynamic-layer-form.component.html',
-  styleUrls: ['./dynamic-layer-form.component.scss']
+    selector: 'app-dynamic-layer-form',
+    templateUrl: './dynamic-layer-form.component.html',
+    styleUrls: ['./dynamic-layer-form.component.scss'],
+    standalone: false
 })
 export class DynamicLayerFormComponent {
   @Input() parameterConfig!: Parameter[];

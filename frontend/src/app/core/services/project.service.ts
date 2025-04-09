@@ -144,15 +144,19 @@ export class ProjectService {
   }
 
   addTrainingRecord(trainStats: TrainStats, history: MetricHistory): void {
-    this.trainingRecords.mutate(trainings => trainings.splice(0, 0, {
-      id: trainings.length + 1,
-      date: new Date(),
-      config: this.trainConfig(),
-      datasetName: this.dataset().fileName,
-      builder: this.builder(),
-      trainStats: trainStats,
-      history: history
-    }));
+    this.trainingRecords.update(trainings => {
+      const newTrainings = [...trainings];
+      newTrainings.splice(0, 0, {
+        id: trainings.length + 1,
+        date: new Date(),
+        config: this.trainConfig(),
+        datasetName: this.dataset().fileName,
+        builder: this.builder(),
+        trainStats: trainStats,
+        history: history
+      });
+      return newTrainings;
+    });
   }
 
   getNumberOfProjects(): number {
@@ -229,9 +233,12 @@ export class ProjectService {
   }
 
   storeProjectInLocalStorage(name: string, project: Project): void {
-    this.projectInfo.mutate((project) => {
-      project.storeLocation = StorageOption.LocalStorage;
-      project.lastModified = new Date();
+    this.projectInfo.update((info) => {
+      return {
+        ...info,
+        storeLocation: StorageOption.LocalStorage,
+        lastModified: new Date()
+      };
     });
     this.localStorageService.saveProjectInLocalStorage(name, project);
   }

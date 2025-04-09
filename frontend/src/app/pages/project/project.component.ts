@@ -4,9 +4,10 @@ import {ProjectService} from "../../core/services/project.service";
 import {ModelBuilderService} from "../../core/services/model-builder.service";
 
 @Component({
-  selector: 'app-project',
-  templateUrl: './project.component.html',
-  styleUrls: ['./project.component.scss'],
+    selector: 'app-project',
+    templateUrl: './project.component.html',
+    styleUrls: ['./project.component.scss'],
+    standalone: false
 })
 export class ProjectComponent {
   projectName: string;

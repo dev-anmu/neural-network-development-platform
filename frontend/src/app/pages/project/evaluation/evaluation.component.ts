@@ -11,9 +11,10 @@ import * as tf from "@tensorflow/tfjs";
 import { DataFrame } from "danfojs";
 
 @Component({
-  selector: 'app-evaluation',
-  templateUrl: './evaluation.component.html',
-  styleUrls: ['./evaluation.component.scss']
+    selector: 'app-evaluation',
+    templateUrl: './evaluation.component.html',
+    styleUrls: ['./evaluation.component.scss'],
+    standalone: false
 })
 export class EvaluationComponent {
   @ViewChild('lossContainer', {static: false}) lossContainer!: ElementRef;

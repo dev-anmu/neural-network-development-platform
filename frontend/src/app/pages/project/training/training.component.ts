@@ -12,9 +12,10 @@ import {ProjectService} from "../../../core/services/project.service";
 import {MessageDialogComponent} from "../../../shared/components/message-dialog/message-dialog.component";
 
 @Component({
-  selector: 'app-training',
-  templateUrl: './training.component.html',
-  styleUrls: ['./training.component.scss']
+    selector: 'app-training',
+    templateUrl: './training.component.html',
+    styleUrls: ['./training.component.scss'],
+    standalone: false
 })
 export class TrainingComponent {
   @ViewChild('modelSummaryContainer', {static: false}) modelSummaryContainer!: ElementRef;

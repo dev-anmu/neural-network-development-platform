@@ -2,9 +2,10 @@ import {Component, Input} from '@angular/core';
 import {TrainingStats} from "../../../core/interfaces/interfaces";
 
 @Component({
-  selector: 'app-training-container',
-  templateUrl: './training-container.component.html',
-  styleUrls: ['./training-container.component.scss']
+    selector: 'app-training-container',
+    templateUrl: './training-container.component.html',
+    styleUrls: ['./training-container.component.scss'],
+    standalone: false
 })
 export class TrainingContainerComponent {
   @Input({required: true}) stats!: TrainingStats;

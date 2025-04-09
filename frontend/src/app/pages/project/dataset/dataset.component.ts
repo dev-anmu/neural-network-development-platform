@@ -10,9 +10,10 @@ import {Encoder} from "../../../shared/ml_objects/encoder";
 import {EncoderEnum} from "../../../core/enums";
 
 @Component({
-  selector: 'app-dataset',
-  templateUrl: './dataset.component.html',
-  styleUrls: ['./dataset.component.scss']
+    selector: 'app-dataset',
+    templateUrl: './dataset.component.html',
+    styleUrls: ['./dataset.component.scss'],
+    standalone: false
 })
 export class DatasetComponent {
   @ViewChild(MatPaginator) paginator: MatPaginator | undefined;
@@ -58,9 +59,9 @@ export class DatasetComponent {
   updateSplitValue(percentSplit: number): void {
     this.updateFormValues(percentSplit);
     const splitValue: number = (100 - percentSplit) / 100;
-    this.projectService.trainConfig.mutate((trainConfig: TrainingConfig) => {
-      trainConfig.validationSplit = splitValue;
-    })
+    this.projectService.trainConfig.update((trainConfig: TrainingConfig) => {
+      return { ...trainConfig, validationSplit: splitValue };
+    });
   }
 
   async initTable(): Promise<void> {
@@ -113,13 +114,16 @@ export class DatasetComponent {
       const columns: { name: string, type: string, uniqueValues: number, encoding: EncoderEnum, encoder: EncoderType }[] = [];
       df.columns.forEach(column => {
         columns.push({name: column, type: df[column].dtype, uniqueValues: df[column].nUnique(), encoding: EncoderEnum.no, encoder: null});
-      })
+      });
 
-      this.projectService.dataset.mutate((value: Dataset) => {
-        value.fileName = name;
-        value.data = dataset.data;
-        value.columns = columns;
-        value.inputColumns = df.columns;
+      this.projectService.dataset.update((value: Dataset) => {
+        return {
+          ...value,
+          fileName: name,
+          data: dataset.data,
+          columns: columns,
+          inputColumns: df.columns
+        };
       });
       await this.initTable();
       this.initPaginator();
@@ -128,30 +132,43 @@ export class DatasetComponent {
 
   onEncoderChange(columnName: string, encoding: EncoderEnum) {
     this.selectedEncoders[columnName] = encoding;
-    this.projectService.dataset.mutate(async (dataset: Dataset) => {
-      const columnToUpdate = dataset.columns.find(column => column.name === columnName);
-        if (columnToUpdate) {
-          columnToUpdate.encoding = encoding;
-          columnToUpdate.encoder = await this.projectService.createEncoderInstance(encoding);
+
+    this.projectService.createEncoderInstance(encoding).then(encoder => {
+      this.projectService.dataset.update((dataset: Dataset) => {
+        const updatedColumns = [...dataset.columns];
+        const columnToUpdateIndex = updatedColumns.findIndex(column => column.name === columnName);
+        if (columnToUpdateIndex !== -1) {
+          updatedColumns[columnToUpdateIndex] = {
+            ...updatedColumns[columnToUpdateIndex],
+            encoding: encoding,
+            encoder: encoder
+          };
         }
+        return {
+          ...dataset,
+          columns: updatedColumns
+        };
       });
-    }
+    });
+  }
 
   ngAfterViewInit() {
     this.initPaginator();
     this.datasetForm?.get('input')?.valueChanges.subscribe((inputColumns: string[] | null) => {
-      this.projectService.dataset.mutate((dataset: Dataset) => {
-        if (inputColumns) {
-          dataset.inputColumns = inputColumns;
-        }
-      })
+      this.projectService.dataset.update((dataset: Dataset) => {
+        return {
+          ...dataset,
+          inputColumns: inputColumns || []
+        };
+      });
     });
     this.datasetForm?.get('target')?.valueChanges.subscribe((targetColumns: string[] | null) => {
-      this.projectService.dataset.mutate((dataset: Dataset) => {
-        if (targetColumns) {
-          dataset.targetColumns = targetColumns;
-        }
-      })
+      this.projectService.dataset.update((dataset: Dataset) => {
+        return {
+          ...dataset,
+          targetColumns: targetColumns || []
+        };
+      });
     });
   }
 

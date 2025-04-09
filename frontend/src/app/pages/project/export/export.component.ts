@@ -11,9 +11,10 @@ interface ProjectSections {
 }
 
 @Component({
-  selector: 'app-export',
-  templateUrl: './export.component.html',
-  styleUrls: ['./export.component.scss']
+    selector: 'app-export',
+    templateUrl: './export.component.html',
+    styleUrls: ['./export.component.scss'],
+    standalone: false
 })
 export class ExportComponent {
   sections: Record<string, ProjectSections> = {

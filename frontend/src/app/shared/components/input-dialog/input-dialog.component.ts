@@ -4,9 +4,10 @@ import {ProjectService} from "../../../core/services/project.service";
 import {AbstractControl, FormControl, Validators} from "@angular/forms";
 
 @Component({
-  selector: 'app-input-dialog',
-  templateUrl: './input-dialog.component.html',
-  styleUrls: ['./input-dialog.component.scss']
+    selector: 'app-input-dialog',
+    templateUrl: './input-dialog.component.html',
+    styleUrls: ['./input-dialog.component.scss'],
+    standalone: false
 })
 export class InputDialogComponent {
   projectNameControl: FormControl = new FormControl(
