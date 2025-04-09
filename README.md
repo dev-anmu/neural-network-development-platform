@@ -1,4 +1,4 @@
-# Neural Network Development Platform
+# WebNet Builder: No-Code Neural Network Development Platform
 
 A web-based platform for designing, training, and evaluating neural networks without writing code. Built with Angular and TensorFlow.js, this application provides an intuitive interface for working with neural networks directly in the browser.
 
@@ -36,37 +36,27 @@ A web-based platform for designing, training, and evaluating neural networks wit
 
 The project includes Docker configuration for both development and production environments.
 
-### Using the Run Script
-
-The easiest way to start the application is using the provided run script:
+### Development Environment
 
 ```bash
-# Make the script executable
-chmod +x run.sh
-
-# Development mode with hot reloading (port 4200)
-./run.sh dev
-
-# Production mode (port 8080)
-./run.sh prod
-
-# Stop all containers
-./run.sh down
+# Development environment with hot reloading (port 4200)
+docker-compose up
 ```
 
-### Manual Docker Commands
-
-Alternatively, you can use Docker Compose directly:
+### Production Environment
 
 ```bash
-# Development environment with hot reloading
-docker-compose up frontend-dev
-
-# Production build
-docker-compose up frontend
+# Production build (port 8080)
+docker-compose -f docker-compose.yml -f docker-compose.prod.yml up
 
 # Build and run in detached mode
-docker-compose up -d frontend
+docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+```
+
+### Stop Docker Containers
+
+```bash
+docker-compose down
 ```
 
 ## Project Structure
