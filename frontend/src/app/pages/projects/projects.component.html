@@ -6,17 +6,19 @@
     </mat-card-header>
     <mat-card-content>
       <ng-container *ngIf="projects && projects.size > 0; else noProjects">
-        <mat-list role="navigation">
-          <mat-list-item role="listitem" [routerLink]="['/projects/' + project.key]"
-                         *ngFor="let project of projects | keyvalue: lastModifiedOrder">
-            <mat-icon matListItemIcon>folder</mat-icon>
-            <div matListItemTitle class="project-name">{{ project.value.projectInfo.name | uppercase}}</div>
+        <mat-list role="navigation" class="projects-list">
+          <mat-list-item role="listitem" *ngFor="let project of projects | keyvalue: lastModifiedOrder" 
+                        [routerLink]="['/projects/' + project.key]">
+            <mat-icon matListItemIcon class="folder-icon">folder</mat-icon>
+            <div matListItemTitle class="project-name">{{ project.value.projectInfo.name | uppercase }}</div>
             <div matListItemLine>
-              Updated in {{ project.value.projectInfo.storeLocation }} at {{ project.value.projectInfo.lastModified | date: 'd.MMM y, H:mm:ss' }}
+              <span><mat-icon class="inline-icon">update</mat-icon> {{ project.value.projectInfo.lastModified | date: 'd MMM y, H:mm' }}</span>
+              <span class="location-info"><mat-icon class="inline-icon">storage</mat-icon> {{ project.value.projectInfo.storeLocation }}</span>
             </div>
-            <div matListItemMeta>ID: {{ project.value.projectInfo.id }}</div>
+            <div matListItemMeta class="project-id">ID: {{ project.value.projectInfo.id }}</div>
             <div matListItemMeta>
-              <button mat-icon-button (click)="deleteProject($event, project.value.projectInfo.name)" color="warn">
+              <button mat-icon-button (click)="deleteProject($event, project.value.projectInfo.name)" 
+                      color="warn" matTooltip="Delete project">
                 <mat-icon>delete</mat-icon>
               </button>
             </div>
@@ -24,48 +26,46 @@
         </mat-list>
       </ng-container>
       <ng-template #noProjects>
-        <p class="info-message">There are no working projects.</p>
+        <div class="empty-state">
+          <mat-icon class="empty-icon">folder_off</mat-icon>
+          <h3>No projects yet</h3>
+          <p class="info-message">You don't have any projects. Create your first project below!</p>
+        </div>
       </ng-template>
     </mat-card-content>
-    <mat-card-actions>
-      <button mat-raised-button color="primary" routerLinkActive="active" (click)="createNewProject()">Create New
-        Project
-      </button>
-    </mat-card-actions>
   </mat-card>
 
-  <div class="flex-container">
-    <mat-card class="projects-card">
-      <mat-card-header>
-        <mat-card-title class="card-colored-title">Project Templates</mat-card-title>
-        <mat-card-subtitle>Open Preconfigured Projects</mat-card-subtitle>
-      </mat-card-header>
-      <mat-card-content>
+  <mat-card class="projects-card create-options-card">
+    <mat-card-header>
+      <mat-card-title class="card-colored-title">Create New Project</mat-card-title>
+      <mat-card-subtitle>Choose a method to start your project</mat-card-subtitle>
+    </mat-card-header>
+    
+    <mat-card-content class="create-options-container">
+      <div class="create-option">
+        <h3><mat-icon>add_circle</mat-icon> Fresh Project</h3>
+        <p>Start with a blank project and build from scratch</p>
+        <button mat-raised-button color="primary" (click)="createNewProject()">Create Empty Project</button>
+      </div>
+      
+      <div class="create-option">
+        <h3><mat-icon>template</mat-icon> From Template</h3>
+        <p>Use a pre-configured project template</p>
         <mat-radio-group class="template-radio-group" [(ngModel)]="selectedTemplateProject">
           <mat-radio-button class="template-radio-button" *ngFor="let project of templateProjects" [value]="project">
             {{ project | uppercase }}
           </mat-radio-button>
         </mat-radio-group>
-      </mat-card-content>
-      <mat-card-actions>
         <button mat-raised-button color="primary" (click)="createProjectFromTemplate(selectedTemplateProject!)"
-                [disabled]="!selectedTemplateProject">Create Project from Template
-        </button>
-      </mat-card-actions>
-    </mat-card>
-
-    <mat-card class="projects-card">
-      <mat-card-header>
-        <mat-card-title class="card-colored-title">Import Project</mat-card-title>
-        <mat-card-subtitle>Open Projects via Zip File</mat-card-subtitle>
-      </mat-card-header>
-      <mat-card-content>
+                [disabled]="!selectedTemplateProject">Use Template</button>
+      </div>
+      
+      <div class="create-option">
+        <h3><mat-icon>file_upload</mat-icon> Import Project</h3>
+        <p>Import an existing project from a ZIP file</p>
         <app-file-upload (fileEvent)="addFile($event)" [fileType]="'.zip'"></app-file-upload>
-      </mat-card-content>
-      <mat-card-actions>
-        <button [disabled]="!file" mat-raised-button color="primary" (click)="importProject()">Import existing Project
-        </button>
-      </mat-card-actions>
-    </mat-card>
-  </div>
+        <button [disabled]="!file" mat-raised-button color="primary" (click)="importProject()">Import Project</button>
+      </div>
+    </mat-card-content>
+  </mat-card>
 </div>
