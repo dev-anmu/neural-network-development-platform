@@ -42,6 +42,19 @@ export class DatasetComponent {
     this.dataSource = new MatTableDataSource();
   }
 
+  getDataTypeClass(dataType: string): string {
+    if (!dataType) return '';
+    
+    const type = dataType.toLowerCase();
+    if (type.includes('float')) return 'float';
+    if (type.includes('int')) return 'int';
+    if (type.includes('str')) return 'string';
+    if (type.includes('bool')) return 'boolean';
+    if (type.includes('object')) return 'object';
+    
+    return '';
+  }
+
   async ngOnInit() {
     await this.initTable();
     this.initPaginator();

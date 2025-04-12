@@ -1,37 +1,59 @@
 <h3 class="section-heading">Dataset Import</h3>
 <div class="dataset-upload-content">
+  <div *ngIf="projectService.dataset().fileName" class="dataset-info">
+    <mat-icon class="dataset-icon">description</mat-icon>
+    <div class="dataset-details">
+      <p class="dataset-filename">{{projectService.dataset().fileName}}</p>
+      <p *ngIf="projectService.dataset().data.length > 0" class="dataset-stats">
+        <mat-icon class="mini-icon">table_rows</mat-icon> {{projectService.dataset().data.length}} rows
+      </p>
+    </div>
+  </div>
+  
   <app-file-upload (fileEvent)="addFile($event)" [fileType]="'.csv'"></app-file-upload>
   <button [disabled]="!file" mat-raised-button color="accent" (click)="parseCSV()" class="import-button">
+    <mat-icon>cloud_upload</mat-icon>
     Import Dataset
   </button>
 </div>
+
 <h3 class="section-heading">Dataset View</h3>
 <div class="dataset-view-content">
-  <p *ngIf="projectService.dataset().data.length === 0"> No Dataset provided</p>
-  <p *ngIf="projectService.dataset().fileName"><span
-    class="bold-text">Dataset File:</span> {{projectService.dataset().fileName}}</p>
+  <p *ngIf="projectService.dataset().data.length === 0" class="no-dataset-text">
+    <mat-icon class="empty-icon">table_chart_off</mat-icon>
+    No dataset provided yet. Please import a CSV file above.
+  </p>
+  
   <div [ngClass]="{'hidden': projectService.dataset().data.length === 0}">
-    <mat-radio-group aria-label="Select an option" required [(ngModel)]="selectedTable"
-                     (ngModelChange)="updateDataSource($event)" color="accent">
+    <mat-radio-group aria-label="Select dataset view" required [(ngModel)]="selectedTable"
+                   (ngModelChange)="updateDataSource($event)" color="accent">
       <mat-radio-button value="original">Original Dataset</mat-radio-button>
       <mat-radio-button value="preprocessed">Preprocessed Dataset</mat-radio-button>
     </mat-radio-group>
+    
     <div class="mat-elevation-z8">
       <div class="table-container">
         <table mat-table [dataSource]="dataSource" *ngIf="dataSource && selectedTable === 'original'">
           <ng-container *ngFor="let column of displayedColumns" [matColumnDef]="column.name">
-            <th mat-header-cell *matHeaderCellDef> {{ column.name | titlecase }}
-              <div class="additional-info">
-                <p *ngIf="column.type" class="type-info">{{column.type}}</p>
-                <p *ngIf="column.uniqueValues" class="unique-values-info">{{column.uniqueValues}} nUnique</p>
-              </div>
-              <hr>
-              <div>
-                <select [ngModel]="selectedEncoders[column.name]"
-                        (ngModelChange)="onEncoderChange(column.name, $event.valueOf())">
-                  <option *ngFor="let encoder of Encoder | keyvalue;"
-                          [value]="encoder.key">{{encoder.value.name}}</option>
-                </select>
+            <th mat-header-cell *matHeaderCellDef> 
+              <div class="column-header">
+                <span class="column-name">{{ column.name | titlecase }}</span>
+                <div class="column-pills">
+                  <span class="data-type-pill" [ngClass]="getDataTypeClass(column.type)">{{column.type}}</span>
+                  <span class="unique-values-pill">{{column.uniqueValues}} unique</span>
+                </div>
+                <mat-divider></mat-divider>
+                <div class="encoder-selector">
+                  <label for="encoder-{{column.name}}">Encoder:</label>
+                  <select id="encoder-{{column.name}}"
+                          [ngModel]="selectedEncoders[column.name]"
+                          (ngModelChange)="onEncoderChange(column.name, $event.valueOf())"
+                          aria-label="Select encoder type"
+                          matTooltip="Choose how to encode this column">
+                    <option *ngFor="let encoder of Encoder | keyvalue;"
+                            [value]="encoder.key">{{encoder.value.name}}</option>
+                  </select>
+                </div>
               </div>
             </th>
 
@@ -39,79 +61,105 @@
               {{ checkIfTypeNumber(element[column.name]) ? (element[column.name] | number:'1.1-4') : element[column.name]}}
             </td>
           </ng-container>
-          <tr mat-header-row *matHeaderRowDef="columnNames"></tr>
+          <tr mat-header-row *matHeaderRowDef="columnNames; sticky: true"></tr>
           <tr mat-row *matRowDef="let row; columns: columnNames;"></tr>
         </table>
 
         <table mat-table [dataSource]="dataSource" *ngIf="dataSource && selectedTable === 'preprocessed'">
           <ng-container *ngFor="let column of dfColumns" [matColumnDef]="column">
-            <th mat-header-cell *matHeaderCellDef> {{ column | titlecase }}</th>
+            <th mat-header-cell *matHeaderCellDef> 
+              <div class="column-header preprocessed">
+                <span class="column-name">{{ column | titlecase }}</span>
+              </div>
+            </th>
             <td mat-cell *matCellDef="let element">
               {{ checkIfTypeNumber(element[column]) ? (element[column] | number:'1.1-4') : element[column]}}
             </td>
           </ng-container>
-          <tr mat-header-row *matHeaderRowDef="dfColumns"></tr>
+          <tr mat-header-row *matHeaderRowDef="dfColumns; sticky: true"></tr>
           <tr mat-row *matRowDef="let row; columns: dfColumns;"></tr>
         </table>
       </div>
-      <mat-paginator [pageSizeOptions]="[5, 10, 20]"
-                     showFirstLastButtons>
+      <mat-paginator [pageSizeOptions]="[5, 10, 20, 50]"
+                   showFirstLastButtons>
       </mat-paginator>
     </div>
   </div>
 </div>
+
 <ng-container *ngIf="projectService.dataset().data.length > 0">
   <h3 class="section-heading">Dataset Configuration</h3>
   <div class="dataset-config-content">
-    <h4 class="bold-section-title">Choose Model Input & Target Columns</h4>
-    <form [formGroup]="datasetForm">
-      <mat-form-field appearance="outline" subscriptSizing="dynamic">
-        <mat-label>Input(s)</mat-label>
-        <mat-select formControlName="input" multiple>
-          <mat-select-trigger>
-            {{datasetForm.get('input')?.value?.[0] || ''}}
-            <span *ngIf="(datasetForm.get('input')?.value?.length || 0) > 1" class="additional-selection-text">
-        (+{{(datasetForm.get('input')?.value?.length || 0) - 1}} {{datasetForm.get('input')?.value?.length === 2 ? 'other' : 'others'}}
-              )
-      </span>
-          </mat-select-trigger>
-          <mat-option *ngFor="let input of columnNames;" [value]="input">{{input}}</mat-option>
-        </mat-select>
-        <mat-error *ngIf="datasetForm.get('input')?.hasError('required')">Input is required</mat-error>
-      </mat-form-field>
-      <mat-form-field appearance="outline" subscriptSizing="dynamic">
-        <mat-label>Target(s)</mat-label>
-        <mat-select formControlName="target" multiple>
-          <mat-select-trigger>
-            {{datasetForm.get('target')?.value?.[0] || ''}}
-            <span *ngIf="(datasetForm.get('target')?.value?.length || 0) > 1" class="additional-selection-text">
-        (+{{(datasetForm.get('target')?.value?.length || 0) - 1}} {{datasetForm.get('target')?.value?.length === 2 ? 'other' : 'others'}}
-              )
-      </span>
-          </mat-select-trigger>
-          <mat-option *ngFor="let target of columnNames;" [value]="target">{{target}}</mat-option>
-        </mat-select>
-        <mat-error *ngIf="datasetForm.get('target')?.hasError('required')">Target is required</mat-error>
-      </mat-form-field>
-      <h4 class="bold-section-title">Split your Data into Training and Validation Data</h4>
-      <mat-form-field class="unstyled-form-field">
-        <mat-label>Training Ratio</mat-label>
-        <input matInput type="text" formControlName="trainingRatio" readonly>
-      </mat-form-field>
-      <mat-form-field class="unstyled-form-field">
-        <mat-label>Validation Ratio</mat-label>
-        <input matInput type="text" formControlName="validationRatio" readonly>
-      </mat-form-field>
-    </form>
-    <div class="slider-container">
-      <mat-slider
-        class="always-show-thumb-value"
-        step="1"
-        discrete
-        [displayWith]="formatLabel"
-        color="accent">
-        <input matSliderThumb [(ngModel)]="splitValue" (ngModelChange)="updateSplitValue($event)">
-      </mat-slider>
-    </div>
+    <mat-card>
+      <mat-card-content>
+        <h4 class="bold-section-title">Choose Model Input & Target Columns</h4>
+        <form [formGroup]="datasetForm">
+          <div class="form-row">
+            <mat-form-field appearance="outline" subscriptSizing="dynamic">
+              <mat-label>Input Column(s)</mat-label>
+              <mat-select formControlName="input" multiple>
+                <mat-select-trigger>
+                  {{datasetForm.get('input')?.value?.[0] || ''}}
+                  <span *ngIf="(datasetForm.get('input')?.value?.length || 0) > 1" class="additional-selection-text">
+                    (+{{(datasetForm.get('input')?.value?.length || 0) - 1}} {{datasetForm.get('input')?.value?.length === 2 ? 'other' : 'others'}})
+                  </span>
+                </mat-select-trigger>
+                <mat-option *ngFor="let input of columnNames;" [value]="input">{{input}}</mat-option>
+              </mat-select>
+              <mat-hint>Select columns to use as model inputs</mat-hint>
+              <mat-error *ngIf="datasetForm.get('input')?.hasError('required')">Input is required</mat-error>
+            </mat-form-field>
+          </div>
+          
+          <div class="form-row">
+            <mat-form-field appearance="outline" subscriptSizing="dynamic">
+              <mat-label>Target Column(s)</mat-label>
+              <mat-select formControlName="target" multiple>
+                <mat-select-trigger>
+                  {{datasetForm.get('target')?.value?.[0] || ''}}
+                  <span *ngIf="(datasetForm.get('target')?.value?.length || 0) > 1" class="additional-selection-text">
+                    (+{{(datasetForm.get('target')?.value?.length || 0) - 1}} {{datasetForm.get('target')?.value?.length === 2 ? 'other' : 'others'}})
+                  </span>
+                </mat-select-trigger>
+                <mat-option *ngFor="let target of columnNames;" [value]="target">{{target}}</mat-option>
+              </mat-select>
+              <mat-hint>Select columns to predict (model outputs)</mat-hint>
+              <mat-error *ngIf="datasetForm.get('target')?.hasError('required')">Target is required</mat-error>
+            </mat-form-field>
+          </div>
+        </form>
+      </mat-card-content>
+    </mat-card>
+    
+    <mat-card class="split-card">
+      <mat-card-content>
+        <h4 class="bold-section-title">Training/Validation Split</h4>
+        
+        <div class="slider-container">
+          <div class="split-ratio-display">
+            <div class="ratio-box training">
+              <div class="ratio-label">Training</div>
+              <div class="ratio-value">{{splitValue}}%</div>
+            </div>
+            <mat-icon>sync_alt</mat-icon>
+            <div class="ratio-box validation">
+              <div class="ratio-label">Validation</div>
+              <div class="ratio-value">{{100 - splitValue}}%</div>
+            </div>
+          </div>
+          
+          <mat-slider
+            class="split-slider"
+            min="50"
+            max="95"
+            step="5"
+            discrete
+            [displayWith]="formatLabel"
+            color="accent">
+            <input matSliderThumb [(ngModel)]="splitValue" (ngModelChange)="updateSplitValue($event)">
+          </mat-slider>
+        </div>
+      </mat-card-content>
+    </mat-card>
   </div>
 </ng-container>
