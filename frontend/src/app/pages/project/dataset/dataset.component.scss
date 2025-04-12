@@ -218,6 +218,7 @@ table {
     font-size: 14px;
     text-align: center;
     border-right: 1px solid rgba(0, 0, 0, 0.05);
+    vertical-align: middle;
     
     &:last-child {
       border-right: none;
@@ -325,6 +326,13 @@ mat-form-field {
     .ratio-value {
       font-size: 1.2rem;
       font-weight: 500;
+      margin-bottom: 0.2rem;
+    }
+    
+    .rows-count {
+      font-size: 0.75rem;
+      color: rgba(0, 0, 0, 0.5);
+      font-style: italic;
     }
     
     &.training {

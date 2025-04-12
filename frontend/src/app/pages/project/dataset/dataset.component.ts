@@ -42,6 +42,11 @@ export class DatasetComponent {
     this.dataSource = new MatTableDataSource();
   }
 
+  getRowCount(percentage: number): number {
+    const totalRows = this.projectService.dataset().data.length;
+    return Math.round((percentage / 100) * totalRows);
+  }
+
   getDataTypeClass(dataType: string): string {
     if (!dataType) return '';
     

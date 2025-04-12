@@ -137,11 +137,13 @@
             <div class="ratio-box training">
               <div class="ratio-label">Training</div>
               <div class="ratio-value">{{splitValue}}%</div>
+              <div class="rows-count">{{getRowCount(splitValue)}} rows</div>
             </div>
             <mat-icon>sync_alt</mat-icon>
             <div class="ratio-box validation">
               <div class="ratio-label">Validation</div>
               <div class="ratio-value">{{100 - splitValue}}%</div>
+              <div class="rows-count">{{getRowCount(100 - splitValue)}} rows</div>
             </div>
           </div>
           
