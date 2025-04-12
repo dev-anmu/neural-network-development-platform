@@ -2,21 +2,55 @@
   border-right: 1px solid black;
 }
 
+.page-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding: 1rem 0;
+}
+
+.section-container {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  background-color: #f5f7ff;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+
+  .section-icon {
+    color: var(--color-primary);
+    margin-right: 0.75rem;
+    font-size: 1.5rem;
+  }
+
+  .section-heading {
+    color: var(--color-primary);
+    margin: 0;
+    font-weight: 500;
+    font-size: 1.25rem;
+  }
+}
+
 .dataset-upload-content, .dataset-view-content, .dataset-config-content {
-  margin-left: 1rem;
-  margin-right: 1rem;
-  margin-bottom: 2rem;
-  width: 95%;
+  margin: 1.5rem;
+  width: calc(100% - 3rem);
   max-width: 1200px;
 }
 
 .import-button {
   margin-left: 0;
   margin-top: 1rem;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
   padding: 0.5rem 1.5rem;
 }
 
+// Dataset info at the top
 .dataset-info {
   display: flex;
   align-items: center;
@@ -58,72 +92,40 @@
       }
     }
   }
-  
-  .download-button {
-    margin-left: auto;
-  }
 }
 
-.view-controls {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-  flex-wrap: wrap;
-  gap: 1rem;
-}
-
-.dataset-selector {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-  
-  button {
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    transition: all 0.2s ease;
-    
-    mat-icon {
-      margin-right: 0.5rem;
-      vertical-align: middle;
-    }
-    
-    &.active {
-      background-color: var(--color-primary);
-      color: white;
-    }
-  }
-}
-
+// Table styling
 .table-container {
   overflow-x: auto;
-  max-height: 500px;
+  max-height: 500px; // Increased height
   overflow-y: auto;
+  border-radius: 4px;
 }
 
 .mat-elevation-z8 {
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1) !important;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem; // Reduced to match rest of spacing
 }
 
+// Column header styling
 .column-header {
   display: flex;
   flex-direction: column;
-  
+
   .column-name {
     font-weight: 500;
     font-size: 0.95rem;
     margin-bottom: 0.4rem;
   }
-  
+
   .column-pills {
     display: flex;
     gap: 0.8rem;
     margin-bottom: 0.4rem;
     flex-wrap: wrap;
-    
+
     .data-type-pill, .unique-values-pill {
       font-size: 0.65rem;
       padding: 0.15rem 0.4rem;
@@ -133,48 +135,48 @@
       display: inline-flex;
       align-items: center;
     }
-    
+
     .data-type-pill {
       background-color: var(--color-primary);
-      
+
       &.float {
-        background-color: #00897B;
+        background-color: #00897B; // Teal
       }
-      
+
       &.int {
-        background-color: #7B1FA2;
+        background-color: #7B1FA2; // Purple
       }
-      
+
       &.string {
-        background-color: #0288D1;
+        background-color: #0288D1; // Blue
       }
-      
+
       &.boolean {
-        background-color: #689F38;
+        background-color: #689F38; // Green
       }
-      
+
       &.object {
-        background-color: #F57C00;
+        background-color: #F57C00; // Orange
       }
     }
-    
+
     .unique-values-pill {
-      background-color: #9E9E9E;
+      background-color: #9E9E9E; // Gray
     }
   }
-  
+
   .encoder-selector {
     display: flex;
     align-items: center;
     margin-top: 0.4rem;
-    margin-bottom: 0.8rem;
-    
+    margin-bottom: 0.8rem; // Added more space at bottom
+
     label {
       font-size: 0.75rem;
       margin-right: 0.4rem;
       color: rgba(0, 0, 0, 0.6);
     }
-    
+
     select {
       flex: 1;
       padding: 0.25rem 0.4rem;
@@ -182,31 +184,32 @@
       border: 1px solid rgba(0, 0, 0, 0.2);
       background-color: white;
       font-size: 0.75rem;
-      
+
       &:focus {
         outline: none;
         border-color: var(--color-accent);
       }
     }
   }
-  
+
   &.preprocessed {
     padding: 0.5rem 0;
   }
 }
 
+// Force centering of table cells
 .centered-table {
   .cell-center {
     text-align: center !important;
     justify-content: center !important;
-    
+
     .centered-content {
       display: inline-block;
       text-align: center !important;
       width: 100%;
     }
   }
-  
+
   td.mat-cell {
     text-align: center !important;
     padding: 12px 8px;
@@ -214,7 +217,7 @@
     border-right: 1px solid rgba(0, 0, 0, 0.05);
     vertical-align: middle;
     box-sizing: border-box;
-    
+
     &:last-child {
       border-right: none;
     }
@@ -223,7 +226,7 @@
 
 table {
   width: 100%;
-  
+
   th.mat-header-cell {
     background-color: #f5f5f5;
     color: rgba(0, 0, 0, 0.87);
@@ -233,20 +236,20 @@ table {
     top: 0;
     z-index: 10;
     border-right: 1px solid rgba(0, 0, 0, 0.08);
-    
+
     &:last-child {
       border-right: none;
     }
   }
-  
+
   tr.mat-row:nth-child(even) {
     background-color: rgba(0, 0, 0, 0.02);
   }
-  
+
   tr.mat-row:hover {
     background-color: rgba(0, 0, 0, 0.04);
   }
-  
+
   tr.mat-row {
     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
   }
@@ -256,12 +259,41 @@ mat-radio-group {
   display: flex;
   gap: 1.5rem;
   margin-bottom: 1.5rem;
-  
+
   mat-radio-button {
     font-weight: 500;
   }
 }
 
+// Card styling improvements
+mat-card {
+  margin-bottom: 1.5rem;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  mat-card-header {
+    padding: 1rem 1rem 0.5rem;
+
+    mat-card-title {
+      margin-bottom: 0.25rem;
+      font-size: 1.1rem;
+      color: var(--color-primary);
+    }
+
+    mat-card-subtitle {
+      margin-bottom: 0;
+      font-size: 0.85rem;
+    }
+  }
+
+  mat-card-content {
+    padding: 0 1rem 1rem;
+  }
+}
+
+// Empty state styling
 .no-dataset-text {
   display: flex;
   align-items: center;
@@ -271,7 +303,7 @@ mat-radio-group {
   border-radius: 8px;
   color: rgba(0, 0, 0, 0.6);
   font-style: italic;
-  
+
   .empty-icon {
     margin-right: 0.5rem;
     font-size: 1.5rem;
@@ -279,22 +311,13 @@ mat-radio-group {
   }
 }
 
+// Dataset configuration cards
 .dataset-config-content {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
-  
-  mat-card {
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1) !important;
-    
-    mat-card-content {
-      padding: 1rem;
-    }
-  }
 }
 
+// Form styling
 mat-form-field {
   width: 100%;
   margin-bottom: 1rem;
@@ -302,6 +325,10 @@ mat-form-field {
 
 .form-row {
   margin-bottom: 1rem;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
 }
 
 .additional-selection-text {
@@ -310,8 +337,9 @@ mat-form-field {
   margin-left: 4px;
 }
 
+// Split visualization styling
 .slider-container {
-  margin: 1.5rem 0;
+  margin: 1rem 0;
 }
 
 .split-slider {
@@ -323,51 +351,52 @@ mat-form-field {
   display: flex;
   justify-content: center;
   align-items: center;
-  
+
   .ratio-box {
     background-color: #f5f7ff;
     padding: 0.75rem 1.5rem;
     border-radius: 8px;
     text-align: center;
     min-width: 120px;
-    
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+
     .ratio-label {
       font-size: 0.8rem;
       color: rgba(0, 0, 0, 0.6);
       margin-bottom: 0.3rem;
     }
-    
+
     .ratio-value {
       font-size: 1.2rem;
       font-weight: 500;
       margin-bottom: 0.2rem;
     }
-    
+
     .rows-count {
       font-size: 0.75rem;
       color: rgba(0, 0, 0, 0.5);
       font-style: italic;
     }
-    
+
     &.training {
       background-color: rgba(63, 81, 181, 0.1);
       border-left: 4px solid var(--color-primary);
-      
+
       .ratio-value {
         color: var(--color-primary);
       }
     }
-    
+
     &.validation {
       background-color: rgba(255, 87, 34, 0.1);
       border-left: 4px solid var(--color-accent);
-      
+
       .ratio-value {
         color: var(--color-accent);
       }
     }
   }
-  
+
   mat-icon {
     margin: 0 1.5rem;
     color: rgba(0, 0, 0, 0.4);
@@ -378,24 +407,14 @@ mat-form-field {
   display: none;
 }
 
+// Responsive adjustments
 @media (max-width: 768px) {
-  .view-controls {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  
   .split-ratio-display {
     flex-direction: column;
-    
+
     mat-icon {
       transform: rotate(90deg);
       margin: 1rem 0;
     }
   }
-  
-  .dataset-selector {
-    flex-direction: column;
-  }
 }
-
-
