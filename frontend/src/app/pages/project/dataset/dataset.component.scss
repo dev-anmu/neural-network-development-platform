@@ -37,10 +37,14 @@
   }
 }
 
-.dataset-upload-content, .dataset-view-content, .dataset-config-content {
+.dataset-upload-content {
+  margin: 1.5rem;
+  width: 20%;
+}
+
+.dataset-view-content, .dataset-config-content {
   margin: 1.5rem;
   width: calc(100% - 3rem);
-  max-width: 1200px;
 }
 
 .import-button {
