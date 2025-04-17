@@ -19,6 +19,10 @@ export function parseShapeString(shape: string) {
 }
 
 export function areBuilderEqual(obj1: any, obj2: any): boolean {
+  if (obj1 === null || obj1 === undefined || obj2 === null || obj2 === undefined) {
+    return obj1 === obj2;
+  }
+  
   if (typeof obj1 !== 'object' || typeof obj2 !== 'object') {
     return obj1 === obj2;
   }
