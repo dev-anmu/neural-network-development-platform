@@ -1,107 +1,168 @@
-<div class="two-column-container">
-  <div class="left-column">
-    <form [formGroup]="trainingForm">
-      <h3 class="section-heading">Training Parameters</h3>
-      <div class="form-row">
-        <mat-form-field subscriptSizing="dynamic" appearance="outline">
-          <mat-label>Epochs</mat-label>
-          <input matInput formControlName="epochs" placeholder="Epochs" type="number" step="1">
-        </mat-form-field>
-        <mat-form-field subscriptSizing="dynamic" appearance="outline">
-          <mat-label>Batch Size</mat-label>
-          <input matInput formControlName="batchSize" placeholder="Batch Size" type="number" step="1">
-        </mat-form-field>
-        <mat-form-field subscriptSizing="dynamic" appearance="outline">
-          <mat-label>Learning Rate</mat-label>
-          <input matInput formControlName="learningRate" placeholder="Learning Rate" type="number" step="0.01">
-        </mat-form-field>
-        <mat-form-field subscriptSizing="dynamic" appearance="outline">
-          <mat-label>Select an Optimizer</mat-label>
-          <mat-select formControlName="optimizer">
-            <mat-option *ngFor="let optimizer of optimizers | keyvalue;"
-                        [value]="optimizer.key" [matTooltip]="optimizer.value.tooltip" matTooltipPosition="right">
-              {{optimizer.key}}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-        <mat-form-field subscriptSizing="dynamic" appearance="outline">
-          <mat-label>Select a Loss Function</mat-label>
-          <mat-select formControlName="loss">
-            <mat-option *ngFor="let loss of losses |keyvalue;"
-                        [value]="loss.key" [matTooltip]="loss.value.tooltip" matTooltipPosition="right">
-              {{loss.key}}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-        <mat-form-field subscriptSizing="dynamic" appearance="outline">
-          <mat-label>Select a Backend</mat-label>
-          <mat-select formControlName="tfBackend">
-            <mat-option *ngFor="let backend of tfBackends |keyvalue;"
-                        [value]="backend.key">
-              {{backend.value.name}}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
+<div class="dashboard-container">
+  <!-- Main Grid Layout -->
+  <div class="dashboard-grid">
+    <!-- Training Progress Card -->
+    <div class="dashboard-card training-progress">
+      <div class="card-header">
+        <mat-icon>timeline</mat-icon>
+        <h3>Training Progress</h3>
       </div>
-      <mat-slide-toggle class="training-toggles" formControlName="shuffle" color="accent">Enable Data Shuffle
-      </mat-slide-toggle>
-      <mat-slide-toggle class="training-toggles" formControlName="earlyStopping" color="accent">Enable Early Stopping (5 Epochs)
-      </mat-slide-toggle>
-    </form>
-
-    <h3 class="section-heading">Training Statistics</h3>
-    <mat-card *ngIf="trainingStats" class="training-stats-container">
-      <!--  <mat-card-header>-->
-      <!--    <mat-card-title>Training Stats</mat-card-title>-->
-      <!--    <mat-card-subtitle>Start</mat-card-subtitle>-->
-      <!--  </mat-card-header>-->
-      <mat-card-content>
-        <mat-list role="list">
-          <span class="epoch-display">Epoch: {{trainingStats.epoch }}</span>
-          <mat-list-item role="listitem" class="list-item">
-            <span class="label">Accuracy:</span>
-            <span class="value">{{ trainingStats.accuracy | number:'1.1-2'}}</span>
-          </mat-list-item>
-          <mat-list-item role="listitem" class="list-item">
-            <span class="label">Loss:</span>
-            <span class="value">{{ trainingStats.loss | number:'1.1-5'}}</span>
-          </mat-list-item>
-        </mat-list>
-      </mat-card-content>
-      <mat-card-footer>
-        <div class="percentage-time-container">
-          <span class="percentage">{{trainingStats.progress | number:'1.1-1'}}%</span>
-          <span class="time">Time: {{ trainingStats.time * 1000 | date:'mm:ss'}}</span>
+      <div class="card-content">
+        <div *ngIf="trainingStats" class="stats-display">
+          <div class="stat-row epoch-row">
+            <div class="stat-label">Epoch</div>
+            <div class="stat-value">{{trainingStats.epoch}}</div>
+          </div>
+          <div class="stat-row">
+            <div class="stat-label">Accuracy</div>
+            <div class="stat-value">{{trainingStats.accuracy | number:'1.1-4'}}</div>
+          </div>
+          <div class="stat-row">
+            <div class="stat-label">Loss</div>
+            <div class="stat-value">{{trainingStats.loss | number:'1.1-4'}}</div>
+          </div>
+          <div class="progress-bar-container">
+            <div class="progress-info">
+              <span class="progress-percentage">{{trainingStats.progress | number:'1.1-1'}}%</span>
+              <span class="progress-time">{{trainingStats.time * 1000 | date:'mm:ss'}}</span>
+            </div>
+            <mat-progress-bar mode="determinate" [value]="trainingStats.progress"></mat-progress-bar>
+          </div>
         </div>
-        <mat-progress-bar mode="determinate" [value]="trainingStats.progress"></mat-progress-bar>
-      </mat-card-footer>
-    </mat-card>
-
-    <div class="button-container">
-      <form [formGroup]="trainingForm">
-        <mat-slide-toggle formControlName="saveTraining" color="accent">Record Training and Results</mat-slide-toggle>
-        <mat-slide-toggle formControlName="useExistingWeights" color="accent">Continue Training with existing Weights
-        </mat-slide-toggle>
-      </form>
-      <button *ngIf="!trainingInProgress" mat-raised-button color="primary" (click)="train()">Start Training
-      </button>
-      <button *ngIf="trainingInProgress" mat-raised-button color="warn" (click)="stopTraining()">Stop Training
-      </button>
-      <button mat-raised-button color="secondary" (click)="showModelSummary()">
-        Show Model Summary
-      </button>
+        <div *ngIf="!trainingStats" class="no-training">
+          <mat-icon>info</mat-icon>
+          <p>No active training. Configure parameters and press Start.</p>
+        </div>
+        
+        <!-- Training Controls -->
+        <div class="training-controls">
+          <div class="model-buttons">
+            <button mat-raised-button color="primary" *ngIf="!trainingInProgress" (click)="train()">
+              <mat-icon>play_arrow</mat-icon> Start Training
+            </button>
+            <button mat-raised-button color="warn" *ngIf="trainingInProgress" (click)="stopTraining()">
+              <mat-icon>stop</mat-icon> Stop Training
+            </button>
+            <button mat-stroked-button color="accent" (click)="showModelSummary()">
+              <mat-icon>architecture</mat-icon> Model Summary
+            </button>
+          </div>
+          
+          <div class="training-toggles">
+            <form [formGroup]="trainingForm" class="toggle-stack">
+              <mat-slide-toggle formControlName="saveTraining" color="accent">
+                Record Training
+              </mat-slide-toggle>
+              <mat-slide-toggle formControlName="useExistingWeights" color="accent">
+                Continue Training
+              </mat-slide-toggle>
+            </form>
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
-  <div class="right-column">
-    <h3 class="section-heading">Visualization Settings</h3>
-    <form [formGroup]="trainingForm">
-      <p class="warning-message">Enabling these plots will slow down the training.</p>
-      <mat-slide-toggle formControlName="accuracyPlot" color="accent">Enable Accuracy Plot</mat-slide-toggle>
-      <mat-slide-toggle formControlName="lossPlot" color="accent">Enable Loss Plot</mat-slide-toggle>
-    </form>
-    <h3 class="section-heading">Training Visualizations</h3>
-    <div #plotContainer class="tf-content-container"></div>
-    <h3 class="section-heading">Model Summary</h3>
-    <div #modelSummaryContainer class="tf-content-container"></div>
+
+    <!-- Training Parameters Card -->
+    <div class="dashboard-card training-parameters">
+      <div class="card-header">
+        <mat-icon>settings</mat-icon>
+        <h3>Training Parameters</h3>
+      </div>
+      <div class="card-content">
+        <form [formGroup]="trainingForm" class="parameters-form">
+          <div class="parameters-grid">
+            <mat-form-field appearance="outline">
+              <mat-label>Epochs</mat-label>
+              <input matInput formControlName="epochs" type="number" step="1">
+            </mat-form-field>
+            
+            <mat-form-field appearance="outline">
+              <mat-label>Batch Size</mat-label>
+              <input matInput formControlName="batchSize" type="number" step="1">
+            </mat-form-field>
+            
+            <mat-form-field appearance="outline">
+              <mat-label>Learning Rate</mat-label>
+              <input matInput formControlName="learningRate" type="number" step="0.001">
+            </mat-form-field>
+            
+            <mat-form-field appearance="outline">
+              <mat-label>Optimizer</mat-label>
+              <mat-select formControlName="optimizer">
+                <mat-option *ngFor="let optimizer of optimizers | keyvalue;"
+                  [value]="optimizer.key" [matTooltip]="optimizer.value.tooltip">
+                  {{optimizer.key}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+            
+            <mat-form-field appearance="outline">
+              <mat-label>Loss Function</mat-label>
+              <mat-select formControlName="loss">
+                <mat-option *ngFor="let loss of losses | keyvalue;"
+                  [value]="loss.key" [matTooltip]="loss.value.tooltip">
+                  {{loss.key}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+            
+            <mat-form-field appearance="outline">
+              <mat-label>Backend</mat-label>
+              <mat-select formControlName="tfBackend">
+                <mat-option *ngFor="let backend of tfBackends | keyvalue;"
+                  [value]="backend.key">
+                  {{backend.value.name}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          
+          <div class="parameters-toggles">
+            <mat-slide-toggle formControlName="shuffle" color="accent">
+              Shuffle Data
+            </mat-slide-toggle>
+            <mat-slide-toggle formControlName="earlyStopping" color="accent">
+              Early Stopping
+            </mat-slide-toggle>
+          </div>
+          
+          <!-- Visualization Settings -->
+          <div class="visualization-settings">
+            <h4 class="subsection-title"><mat-icon>tune</mat-icon> Visualization Settings</h4>
+            <p class="warning-message">Enabling plots may slow down training</p>
+            <div class="plot-toggles">
+              <mat-slide-toggle formControlName="accuracyPlot" color="accent">
+                Accuracy Plot
+              </mat-slide-toggle>
+              <mat-slide-toggle formControlName="lossPlot" color="accent">
+                Loss Plot
+              </mat-slide-toggle>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Visualizations Card -->
+    <div class="dashboard-card visualizations">
+      <div class="card-header">
+        <mat-icon>insert_chart</mat-icon>
+        <h3>Training Visualizations</h3>
+      </div>
+      <div class="card-content">
+        <div #plotContainer class="plots-container"></div>
+      </div>
+    </div>
+
+    <!-- Model Summary Card -->
+    <div class="dashboard-card model-summary">
+      <div class="card-header">
+        <mat-icon>article</mat-icon>
+        <h3>Model Architecture</h3>
+      </div>
+      <div class="card-content">
+        <div #modelSummaryContainer class="summary-container"></div>
+      </div>
+    </div>
   </div>
 </div>

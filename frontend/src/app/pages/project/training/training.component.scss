@@ -1,90 +1,462 @@
+// Page Structure
+.page-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding: 1rem 0;
+}
+
+.section-container {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  background-color: #f5f7ff;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+
+  .section-icon {
+    color: var(--color-primary);
+    margin-right: 0.75rem;
+    font-size: 1.5rem;
+  }
+
+  .section-heading {
+    color: var(--color-primary);
+    margin: 0;
+    font-weight: 500;
+    font-size: 1.25rem;
+  }
+}
+
+.section-content {
+  padding: 1.5rem;
+}
+
+// Two Column Layout
+.two-column-container {
+  display: flex;
+  justify-content: space-between;
+  padding: 1.5rem;
+}
+
+.left-column {
+  flex: 0.6;
+  margin-right: 1.5rem;
+}
+
+.right-column {
+  flex: 3;
+}
+
+// Form Styling
+.form-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1rem;
+
+  mat-form-field {
+    flex: 1 1 calc(50% - 0.5rem);
+    min-width: 200px;
+  }
+}
+
+.toggles-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+// Stats Styling
+.training-stats-container {
+  width: 100%;
+  margin-bottom: 1.5rem;
+  
+  mat-card-content {
+    padding: 1rem;
+  }
+  
+  .list-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    height: auto !important;
+    min-height: auto !important;
+
+    .label {
+      font-weight: bold;
+      flex: 1;
+      margin-right: 1rem;
+    }
+
+    .value {
+      flex: 1;
+      text-align: right;
+      font-weight: 500;
+    }
+  }
+  
+  .epoch-display {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 1rem;
+    color: var(--color-primary);
+    font-size: 1.1rem;
+  }
+}
+
 .percentage-time-container {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin: 0.2rem .5rem;
+  padding: 0.5rem 1rem;
+  
+  .percentage {
+    font-weight: 500;
+    color: var(--color-primary);
+    font-size: 1.1rem;
+  }
+  
+  .time {
+    color: var(--color-accent);
+    font-weight: 500;
+  }
 }
 
-.epoch-display {
-  font-weight: bold;
-}
-
-.training-toggles {
-  margin-top: 0 !important;
-}
-
-.training-stats-container {
-  width: 400px;
-  margin: .5rem;
-}
-
-.question-mark-icon {
-  position: absolute;
-  right: 5px;
-  cursor: pointer;
-  font-size: 16px;
-}
-
-.list-item {
+// Button Container
+.button-container {
   display: flex;
-  justify-content: space-between;
-  margin-bottom: 0.5rem;
-
-  .label {
-    font-weight: bold;
+  gap: 1rem;
+  margin-top: 1rem;
+  
+  button {
     flex: 1;
-    margin-right: 1rem;
-  }
-
-  .value {
-    flex: 2;
-    text-align: right;
+    padding: 0.5rem 1rem;
   }
 }
 
-.percentage {
-  flex: 1;
-  text-align: left;
-  font-size: 18px;
-  color: #007bff;
+.training-controls {
+  margin-top: 1rem;
 }
 
-.time {
-  flex: 1;
-  text-align: right;
-  font-size: 18px;
-  color: #ff5722;
+// Visualization Containers
+.visualization-container {
+  padding: 1.5rem;
+  border-radius: 8px;
+  background-color: #f5f7ff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  min-height: 150px;
 }
 
-.form-row {
-  display: flex;
-  flex-wrap: wrap;
-  //margin-bottom: 20px;
-}
-
-.two-column-container {
-  display: flex;
-  justify-content: space-between;
-}
-
-.left-column {
-  flex: 1;
-  margin-right: 1rem;
-}
-
-.right-column {
-  flex: 1;
-  margin-left: 1rem;
-}
-
-.tf-content-container {
-  padding: 20px;
-  border-radius: 5px;
-  background-color: #fff;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
-  margin: .5rem;
-}
-
+// Warning Message
 .warning-message {
   color: var(--color-warn);
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  padding: 0.5rem;
+  background-color: rgba(255, 87, 34, 0.1);
+  border-radius: 4px;
+  border-left: 3px solid var(--color-warn);
+}
+
+@media (max-width: 768px) {
+  .two-column-container {
+    flex-direction: column;
+  }
+  
+  .left-column {
+    margin-right: 0;
+    margin-bottom: 1.5rem;
+  }
+}
+
+// Dashboard Container
+.dashboard-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem 0;
+  background-color: #f8f9fa;
+}
+
+// Main Grid Layout
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto;
+  gap: 1rem;
+  grid-template-areas: 
+    "progress parameters"
+    "visualizations visualizations"
+    "summary summary";
+}
+
+// Card Styling
+.dashboard-card {
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  
+  .card-header {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    background-color: #f5f7ff;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    
+    mat-icon {
+      color: var(--color-primary);
+      margin-right: 0.5rem;
+      font-size: 1.25rem;
+    }
+    
+    h3 {
+      color: var(--color-primary);
+      margin: 0;
+      font-weight: 500;
+      font-size: 1.1rem;
+    }
+  }
+  
+  .card-content {
+    padding: 1rem;
+    flex: 1;
+  }
+}
+
+// Grid Areas
+.training-progress {
+  grid-area: progress;
+}
+
+.training-parameters {
+  grid-area: parameters;
+}
+
+.visualizations {
+  grid-area: visualizations;
+}
+
+.model-summary {
+  grid-area: summary;
+}
+
+// Subsection Styling
+.subsection-title {
+  display: flex;
+  align-items: center;
+  color: var(--color-primary);
+  font-size: 1rem;
+  margin: 1rem 0 0.75rem;
+  padding-bottom: 0.5rem;
+  
+  mat-icon {
+    font-size: 1.1rem;
+    margin-right: 0.5rem;
+  }
+}
+
+// Stats Display
+.stats-display {
+  margin-bottom: 1rem;
+  
+  .stat-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    background-color: #f5f7ff;
+    margin-bottom: 0.5rem;
+    align-items: center;
+    
+    &.epoch-row {
+      background-color: var(--color-primary);
+      
+      .stat-label, .stat-value {
+        color: white;
+      }
+      
+      .stat-value {
+        font-size: 1.25rem;
+      }
+    }
+    
+    .stat-label {
+      font-weight: 500;
+      color: #555;
+    }
+    
+    .stat-value {
+      font-weight: 600;
+      font-size: 1.1rem;
+      color: var(--color-primary);
+    }
+  }
+  
+  .progress-bar-container {
+    margin-top: 0.75rem;
+    
+    .progress-info {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.25rem;
+      
+      .progress-percentage {
+        font-weight: 600;
+        color: var(--color-primary);
+        font-size: 1rem;
+      }
+      
+      .progress-time {
+        color: var(--color-accent);
+        font-weight: 500;
+      }
+    }
+  }
+}
+
+.no-training {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #888;
+  padding: 1rem;
+  text-align: center;
+  margin-bottom: 1rem;
+  
+  mat-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    opacity: 0.5;
+  }
+  
+  p {
+    margin: 0;
+    font-style: italic;
+    font-size: 0.9rem;
+  }
+}
+
+// Training Controls
+.training-controls {
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  padding-top: 1rem;
+  
+  .model-buttons {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+    
+    button {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      
+      mat-icon {
+        margin-right: 0.5rem;
+      }
+    }
+  }
+  
+  .training-toggles {
+    .toggle-stack {
+      display: flex;
+      flex-direction: row;
+      gap: 1.5rem;
+      
+      @media (max-width: 576px) {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+    }
+  }
+}
+
+// Parameters Form
+.parameters-form {
+  .parameters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 0;
+    margin-bottom: 0;
+  }
+  
+  .parameters-toggles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0;
+    margin-bottom: 0;
+  }
+}
+
+// Visualization Settings
+.visualization-settings {
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  padding-top: 0.25rem;
+  
+  .warning-message {
+    margin: 0.25rem 0;
+    color: var(--color-warn);
+    font-size: 0.85rem;
+    font-style: italic;
+    display: flex;
+    align-items: center;
+  }
+  
+  .plot-toggles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+}
+
+// Visualization Containers
+.plots-container, .summary-container {
+  background-color: #f5f7ff;
+  border-radius: 8px;
+  height: 100%;
+  min-height: 300px;
+  padding: 0.75rem;
+}
+
+// Responsive Adjustments
+@media (max-width: 1200px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+    grid-template-areas: 
+      "progress"
+      "parameters"
+      "visualizations"
+      "summary";
+  }
+  
+  .training-controls {
+    .training-toggles form {
+      flex-direction: column;
+      gap: 1rem;
+    }
+  }
 }
