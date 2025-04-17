@@ -1,83 +1,109 @@
-<p *ngIf="!trainingRecords || trainingRecords.length === 0" class="no-training-msg">You have no Trainings done yet or
-  did not save them.
-  If
-  you want to compare different
-  Models and their configurations with each other, please select the Checkbox on the Training Page saying 'Record
-  Training and Results' before starting your Training.</p>
-<div *ngIf="trainingRecords && trainingRecords.length > 0" class="two-column-container">
-  <div class="left-column">
-    <mat-selection-list #trainHistoryList [multiple]="false" (selectionChange)="getSelectedContent()">
-      <!--      todo: why do i get NG0100 when adding [selected]-->
-      <mat-list-option *ngFor="let record of trainingRecords; let i = index;" [value]="record"
-                       [selected]="record && i == 0">
-        <span matListItemTitle>#{{record.id}} <span
-          class="record-date">{{record.date | date:'d. MMM yyyy, H:mm:ss'}}</span></span>
-        <span matListItemLine><b>Epochs trained:</b> {{record.trainStats.epoch}}</span>
-        <span matListItemLine><b>Accuracy:</b> {{record.trainStats.accuracy | number:'1.1-5'}}
-          | <b>Loss:</b> {{record.trainStats.loss | number:'1.1-5'}}</span>
-      </mat-list-option>
-    </mat-selection-list>
-    <button [disabled]="isSelectedRecordAlreadyLoaded" mat-raised-button color="primary"
-            (click)="loadTrainingRecord()" class="load-button">
-      Load Model and its Configuration
-    </button>
-  </div>
-
-  <div class="right-column">
-    <div class="model-info">
-      <h3 class="section-heading">Model Info</h3>
-      <div class="model-info-container">
-        <p><b>#{{selectedRecord?.id}}</b> - <span class="record-date">{{selectedRecord?.date | date:'d. MMM yyyy, H:mm:ss'}}</span> | <span>Dataset:</span> {{selectedRecord?.datasetName}}</p>
-
-        <p><b>Trained for</b></p>
-        <p class="value-line"><span>Epochs:</span> {{selectedRecord?.trainStats?.epoch}} | <span>Batch Size:</span> {{selectedRecord?.config?.batchSize}}</p>
-
-        <p><b>Validation Metrics</b></p>
-        <p class="value-line"><span>Accuracy:</span> {{selectedRecord?.trainStats?.accuracy | number:'1.1-5'}} | <span>Loss:</span> {{selectedRecord?.trainStats?.loss | number:'1.1-5'}}</p>
-
-        <p><b>Training Parameters</b></p>
-        <p class="value-line"><span>Loss Function:</span> {{selectedRecord?.config?.loss}} | <span>Optimizer:</span> {{selectedRecord?.config?.optimizer}} | <span>Learning Rate:</span> {{selectedRecord?.config?.learningRate}}</p>
-      </div>
+<div class="page-container">
+  <p *ngIf="!trainingRecords || trainingRecords.length === 0" class="no-training-msg">You have no Trainings done yet or
+    did not save them.
+    If
+    you want to compare different
+    Models and their configurations with each other, please select the Checkbox on the Training Page saying 'Record
+    Training and Results' before starting your Training.</p>
+  
+  <div *ngIf="trainingRecords && trainingRecords.length > 0" class="section-container">
+    <div class="section-header">
+      <mat-icon class="section-icon">history</mat-icon>
+      <h3 class="section-heading">Training History</h3>
     </div>
-    <div class="plot-section">
-      <h3 class="section-heading">Training Metrics</h3>
-      <div class="plot-flex">
-        <div #lossContainer class="plot-container"></div>
-        <div #accuracyContainer class="plot-container"></div>
-      </div>
-    </div>
-    <div *ngIf="trainHistoryList.selectedOptions.hasValue()" class="prediction-container">
-      <h3 class="section-heading">Prediction</h3>
-
-      <div *ngIf="prediction && target" class="prediction-target-container">
-        <div>
-          <strong>Prediction</strong>
-          <span>{{ prediction }}</span>
-        </div>
-        <div>
-          <strong>Target</strong>
-          <span>{{ target }}</span>
-        </div>
+    <div class="two-column-container">
+      <div class="left-column">
+        <mat-selection-list #trainHistoryList [multiple]="false" (selectionChange)="getSelectedContent()">
+          <mat-list-option *ngFor="let record of trainingRecords; let i = index;" [value]="record"
+                          [selected]="record && i == 0">
+            <span matListItemTitle>#{{record.id}} <span
+              class="record-date">{{record.date | date:'d. MMM yyyy, H:mm:ss'}}</span></span>
+            <span matListItemLine><b>Epochs trained:</b> {{record.trainStats.epoch}}</span>
+            <span matListItemLine><b>Accuracy:</b> {{record.trainStats.accuracy | number:'1.1-5'}}
+              | <b>Loss:</b> {{record.trainStats.loss | number:'1.1-5'}}</span>
+          </mat-list-option>
+        </mat-selection-list>
+        <button [disabled]="isSelectedRecordAlreadyLoaded" mat-raised-button color="primary"
+                (click)="loadTrainingRecord()" class="load-button">
+          Load Model and its Configuration
+        </button>
       </div>
 
-      <h4 class="bold-section-title">Model Input for Prediction</h4>
-      <div class="custom-input-container" *ngIf="sample">
-        <ng-container *ngFor="let column of inputColumns; let i = index">
-          <div class="input-group">
-            <label class="input-label">{{ column }}</label>
-            <input matInput [(ngModel)]="tempSample[column]" (ngModelChange)="onInputChange(column)">
+      <div class="right-column">
+        <div class="section-container model-info-section">
+          <div class="section-header">
+            <mat-icon class="section-icon">info</mat-icon>
+            <h3 class="section-heading">Model Info</h3>
           </div>
-          <span *ngIf="i < inputColumns.length - 1" class="comma-separator">,</span>
-        </ng-container>
+          <div class="section-content">
+            <div class="model-info-container">
+              <p><b>#{{selectedRecord?.id}}</b> - <span class="record-date">{{selectedRecord?.date | date:'d. MMM yyyy, H:mm:ss'}}</span> | <span>Dataset:</span> {{selectedRecord?.datasetName}}</p>
+
+              <p><b>Trained for</b></p>
+              <p class="value-line"><span>Epochs:</span> {{selectedRecord?.trainStats?.epoch}} | <span>Batch Size:</span> {{selectedRecord?.config?.batchSize}}</p>
+
+              <p><b>Validation Metrics</b></p>
+              <p class="value-line"><span>Accuracy:</span> {{selectedRecord?.trainStats?.accuracy | number:'1.1-5'}} | <span>Loss:</span> {{selectedRecord?.trainStats?.loss | number:'1.1-5'}}</p>
+
+              <p><b>Training Parameters</b></p>
+              <p class="value-line"><span>Loss Function:</span> {{selectedRecord?.config?.loss}} | <span>Optimizer:</span> {{selectedRecord?.config?.optimizer}} | <span>Learning Rate:</span> {{selectedRecord?.config?.learningRate}}</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="section-container">
+          <div class="section-header">
+            <mat-icon class="section-icon">insights</mat-icon>
+            <h3 class="section-heading">Training Metrics</h3>
+          </div>
+          <div class="section-content">
+            <div class="plot-flex">
+              <div #lossContainer class="plot-container"></div>
+              <div #accuracyContainer class="plot-container"></div>
+            </div>
+          </div>
+        </div>
+        
+        <div *ngIf="trainHistoryList.selectedOptions.hasValue()" class="section-container">
+          <div class="section-header">
+            <mat-icon class="section-icon">psychology</mat-icon>
+            <h3 class="section-heading">Prediction</h3>
+          </div>
+          <div class="section-content">
+            <div *ngIf="prediction && target" class="prediction-target-container">
+              <div>
+                <strong>Prediction</strong>
+                <span>{{ prediction }}</span>
+              </div>
+              <div>
+                <strong>Target</strong>
+                <span>{{ target }}</span>
+              </div>
+            </div>
+
+            <h4 class="bold-section-title">Model Input for Prediction</h4>
+            <div class="custom-input-container" *ngIf="sample">
+              <ng-container *ngFor="let column of inputColumns; let i = index">
+                <div class="input-group">
+                  <label class="input-label">{{ column }}</label>
+                  <input matInput [(ngModel)]="tempSample[column]" (ngModelChange)="onInputChange(column)">
+                </div>
+                <span *ngIf="i < inputColumns.length - 1" class="comma-separator">,</span>
+              </ng-container>
+            </div>
+
+            <div class="button-container">
+              <button mat-stroked-button color="primary" (click)="loadRandomDataSample()">
+                Load Random Sample
+              </button>
+
+              <button mat-raised-button color="primary" (click)="predict()">
+                Predict
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
-
-      <button mat-stroked-button color="primary" (click)="loadRandomDataSample()">
-        Load Random Sample
-      </button>
-
-      <button mat-raised-button color="primary" (click)="predict()">
-        Predict
-      </button>
     </div>
   </div>
 </div>

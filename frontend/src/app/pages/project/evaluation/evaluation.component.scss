@@ -1,25 +1,65 @@
-.plot-flex {
+// Page Structure
+.page-container {
   display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding: 1rem 0;
+}
 
-  .plot-container {
-    flex: 1;
-    height: 250px;
+.section-container {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+
+  &:last-child {
+    margin-bottom: 0;
   }
 }
 
+.section-header {
+  display: flex;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  background-color: #f5f7ff;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+
+  .section-icon {
+    color: var(--color-primary);
+    margin-right: 0.75rem;
+    font-size: 1.5rem;
+  }
+
+  .section-heading {
+    color: var(--color-primary);
+    margin: 0;
+    font-weight: 500;
+    font-size: 1.25rem;
+  }
+}
+
+.section-content {
+  padding: 1.5rem;
+}
+
+// Two Column Layout
 .two-column-container {
   display: flex;
   justify-content: space-between;
+  padding: 1.5rem;
 }
 
 .left-column {
-  flex: 1;
-  margin-right: 1rem;
+  flex: 0.6;
+  margin-right: 1.5rem;
 
   .mat-mdc-selection-list {
     max-height: 500px;
     overflow: auto;
     padding-top: 0;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 
     .record-date {
       font-weight: 600;
@@ -35,31 +75,68 @@
   .load-button {
     width: 100%;
     margin: 1rem 0 0 0;
+    padding: 0.5rem 1rem;
   }
 }
 
-.import-button {
-  margin-left: 0;
-  margin-bottom: 1rem;
-}
-
 .right-column {
-  flex: 5;
-  margin-left: 1rem;
+  flex: 3;
 }
 
-.form-row {
+// Model Info Section
+.model-info-section {
+  .section-content {
+    padding-top: 0.5rem;
+  }
+}
+
+.model-info-container {
+  color: #333;
+  line-height: 1.5;
+
+  .value-line {
+    margin-top: 0;
+    margin-bottom: 10px;
+  }
+  
+  p {
+    color: #555;
+    margin: 10px 0 0 0;
+  }
+  
+  span {
+    font-weight: bold;
+    color: var(--color-primary);
+    margin-right: 5px;
+  }
+
+  .record-date {
+    font-weight: 600;
+    font-size: small;
+    color: var(--color-primary);
+  }
+}
+
+// Plot Section
+.plot-flex {
   display: flex;
-  flex-wrap: wrap;
-  margin-bottom: 20px;
+  gap: 1.5rem;
+
+  .plot-container {
+    flex: 1;
+    height: 250px;
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  }
 }
 
-.prediction-container, .model-info {
-  margin-bottom: 1rem;
-}
-
-.no-training-msg {
-  width: 50%;
+// Prediction Section
+.bold-section-title {
+  font-size: 1rem;
+  font-weight: 500;
+  margin: 1.5rem 0 1rem;
+  color: #333;
 }
 
 .prediction-target-container {
@@ -68,6 +145,7 @@
   align-items: flex-start;
   justify-content: flex-start;
   width: 100%;
+  margin-bottom: 1.5rem;
 }
 
 .prediction-target-container div {
@@ -75,11 +153,11 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin: 1rem;
-  padding: 0.5rem;
-  border-radius: 5px;
+  margin-right: 1.5rem;
+  padding: 1rem;
+  border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  background-color: #f5f5f5;
+  background-color: #f5f7ff;
   text-align: center;
   min-width: 200px;
 }
@@ -91,56 +169,45 @@
 }
 
 .prediction-target-container span {
-  color: #01796f;
+  color: var(--color-primary);
   font-weight: bold;
+  font-size: 1.2rem;
 }
 
+// Input Section
 .custom-input-container {
   display: flex;
-  padding: 10px;
+  padding: 15px;
   min-width: min-content;
   max-width: max-content;
-  margin: 0.5rem;
+  margin: 1rem 0 1.5rem;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  background-color: #f5f5f5;
+  background-color: #f5f7ff;
+  border-radius: 8px;
+  border-left: 4px solid var(--color-primary);
 }
-
-.model-info-container {
-  color: #333;
-  line-height: 1.5;
-
-  .value-line {
-    margin-top: 0;
-    margin-bottom: 10px;
-  }
-  p {
-    color: #555;
-    margin: 10px 0 0 0;
-  }
-  span {
-    font-weight: bold;
-    color: var(--color-primary);
-    margin-right: 5px;
-  }
-}
-
 
 .input-group {
   display: flex;
   flex-direction: column;
   margin-right: 0;
-  width:80px;
+  width: 80px;
 }
 
 .custom-input-container input {
   border: none;
   outline: none;
-  background-color: #e0e0e0;
-  padding: 5px;
+  background-color: white;
+  padding: 8px;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .input-label {
-  margin-bottom: 5px;
+  margin-bottom: 8px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--color-primary);
 }
 
 .comma-separator {
@@ -148,4 +215,42 @@
   margin-left: 4px;
   margin-right: 4px;
   align-self: flex-end;
+}
+
+// Buttons
+.button-container {
+  display: flex;
+  gap: 1rem;
+}
+
+button[mat-stroked-button], button[mat-raised-button] {
+  padding: 0.5rem 1.5rem;
+}
+
+// No Training Message
+.no-training-msg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  color: rgba(0, 0, 0, 0.6);
+  font-style: italic;
+  margin: 2rem auto;
+  max-width: 600px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border-left: 4px solid var(--color-primary);
+}
+
+@media (max-width: 768px) {
+  .two-column-container {
+    flex-direction: column;
+  }
+  
+  .left-column {
+    margin-right: 0;
+    margin-bottom: 1.5rem;
+  }
 }
