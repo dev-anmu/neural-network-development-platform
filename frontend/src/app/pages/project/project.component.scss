@@ -78,6 +78,42 @@
     }
   }
   
+  /* Error styling */
+  .mat-step-header.mat-step-header-invalid {
+    .mat-step-icon {
+      background-color: var(--color-warn, #F44336);
+    }
+    
+    .mat-step-label {
+      color: var(--color-warn, #F44336);
+    }
+  }
+  
+  /* Fix for error messages */
+  .mat-step-text-label {
+    display: block;
+    width: 100%;
+  }
+  
+  .mat-step-optional {
+    display: none;
+  }
+  
+  .mat-step-error {
+    font-size: 0.75rem;
+    line-height: 1;
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    color: var(--color-warn, #F44336);
+  }
+
   /* Icon styling */
   .mat-step-header .mat-step-icon {
     background-color: var(--color-primary);
@@ -155,6 +191,11 @@
       span {
         font-size: 0.75rem;
       }
+    }
+    
+    .mat-step-error {
+      font-size: 0.7rem;
+      bottom: -4px;
     }
   }
   

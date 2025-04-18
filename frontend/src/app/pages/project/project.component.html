@@ -1,7 +1,6 @@
 <mat-stepper [linear]="false" #stepper class="custom-stepper" color="primary">
   <!--  Dataset  -->
-  <mat-step label="Dataset" [completed]="false" [errorMessage]="datasetError() ?? ''" [hasError]="datasetError() !== null"
-            #dataset_step>
+  <mat-step [completed]="false" #dataset_step>
     <ng-template matStepLabel>
       <div class="step-label">
         <mat-icon>dataset</mat-icon>
@@ -13,8 +12,7 @@
     </div>
   </mat-step>
   <!--  Modeling  -->
-  <mat-step label="Modeling" [completed]="false" [errorMessage]="'Please build and connect your model to proceed.'" [hasError]="modelError()"
-            #modeling_step>
+  <mat-step [completed]="false" #modeling_step>
     <ng-template matStepLabel>
       <div class="step-label">
         <mat-icon>schema</mat-icon>
@@ -26,7 +24,7 @@
     </div>
   </mat-step>
   <!--  Training  -->
-  <mat-step label="Training" [completed]="false" #training_step>
+  <mat-step [completed]="false" #training_step>
     <ng-template matStepLabel>
       <div class="step-label">
         <mat-icon>psychology</mat-icon>
@@ -38,7 +36,7 @@
     </div>
   </mat-step>
   <!--  Evaluation  -->
-  <mat-step label="Evaluation" [completed]="false" #evaluation_step>
+  <mat-step [completed]="false" #evaluation_step>
     <ng-template matStepLabel>
       <div class="step-label">
         <mat-icon>analytics</mat-icon>
@@ -50,7 +48,7 @@
     </div>
   </mat-step>
   <!--  Saving/Export  -->
-  <mat-step label="Export" [completed]="false" #export_step>
+  <mat-step [completed]="false" #export_step>
     <ng-template matStepLabel>
       <div class="step-label">
         <mat-icon>ios_share</mat-icon>
