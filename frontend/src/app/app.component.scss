@@ -12,7 +12,7 @@
 }
 
 .site-logo {
-  margin-right: 1.5rem;
+  margin-right: 0.5rem;
   display: flex;
   align-items: center;
   
@@ -25,12 +25,20 @@
   }
 }
 
+.nav-separator {
+  display: block;
+  height: 32px;
+  width: 1px;
+  background-color: rgba(255, 255, 255, 0.3);
+  margin: 0 1rem;
+}
+
 .nav-links {
   display: flex;
   align-items: center;
   
   a[mat-button] {
-    margin: 0 0.3rem;
+    margin: 0 0.5rem;
     font-weight: 500;
     transition: all 0.2s ease;
     position: relative;
@@ -88,6 +96,10 @@ mat-toolbar {
   .site-logo {
     margin-left: 1rem;
     margin-bottom: 0.5rem;
+  }
+  
+  .nav-separator {
+    display: none; // Hide the separator on mobile
   }
   
   .nav-links {
