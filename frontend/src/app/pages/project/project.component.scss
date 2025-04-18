@@ -37,11 +37,11 @@
 ::ng-deep {
   /* Base step header styling */
   .mat-step-header {
-    padding: 16px 24px !important;
+    padding: 8px 20px !important;
     height: auto !important;
     transition: all 0.25s ease;
     border-radius: 4px;
-    margin: 4px;
+    margin: 2px 4px;
     
     &:hover {
       background-color: rgba(63, 81, 181, 0.04);
@@ -53,12 +53,12 @@
   .mat-horizontal-stepper-header[aria-selected="true"],
   .mat-step-header.mat-selected {
     background-color: rgba(63, 81, 181, 0.12) !important;
-    box-shadow: inset 0 0 0 1px rgba(63, 81, 181, 0.2), 0 3px 6px rgba(0, 0, 0, 0.1);
-    transform: translateY(-2px);
+    box-shadow: inset 0 0 0 1px rgba(63, 81, 181, 0.2), 0 2px 4px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
     
     .mat-step-icon {
-      transform: scale(1.2);
-      box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
+      transform: scale(1.1);
+      box-shadow: 0 2px 3px rgba(0, 0, 0, 0.2);
     }
     
     .mat-step-label {
@@ -82,11 +82,14 @@
   .mat-step-header .mat-step-icon {
     background-color: var(--color-primary);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+    height: 22px;
+    width: 22px;
+    font-size: 14px;
   }
   
   /* Label styling */
   .mat-step-header .mat-step-label {
-    min-width: 100px;
+    min-width: 80px;
     white-space: normal;
   }
   
@@ -95,14 +98,15 @@
     margin-bottom: 0.5rem;
     background-color: white;
     border-radius: 8px;
-    padding: 8px;
+    padding: 4px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   }
   
   /* Line styling between steps */
   .mat-stepper-horizontal-line {
-    border-top-width: 2px;
+    border-top-width: 1px;
     border-top-color: rgba(0, 0, 0, 0.12);
+    margin: 0 -4px;
   }
   
   /* Custom step label container */
@@ -113,16 +117,17 @@
     flex-direction: column;
     
     mat-icon {
-      font-size: 1.6rem;
-      height: 1.6rem;
-      width: 1.6rem;
-      margin-bottom: 0.5rem;
+      font-size: 1.2rem;
+      height: 1.2rem;
+      width: 1.2rem;
+      margin-bottom: 3px;
     }
     
     span {
       text-align: center;
-      font-size: 0.95rem;
+      font-size: 0.85rem;
       white-space: normal;
+      line-height: 1.1;
     }
   }
   
@@ -136,19 +141,19 @@
 @media (max-width: 768px) {
   ::ng-deep {
     .mat-step-header {
-      padding: 8px !important;
+      padding: 6px !important;
     }
     
     .step-label {
       mat-icon {
-        font-size: 1.2rem;
-        height: 1.2rem;
-        width: 1.2rem;
-        margin-bottom: 0.25rem;
+        font-size: 1rem;
+        height: 1rem;
+        width: 1rem;
+        margin-bottom: 2px;
       }
       
       span {
-        font-size: 0.8rem;
+        font-size: 0.75rem;
       }
     }
   }
