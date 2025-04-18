@@ -1,0 +1,161 @@
+.playground-banner {
+  background-color: var(--color-warn);
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 4px;
+  text-align: center;
+  
+  h1 {
+    color: white;
+    margin: 0;
+    font-size: 1.5rem;
+  }
+  
+  p {
+    color: white;
+    margin: 0.5rem 0 0;
+  }
+}
+
+.box-container {
+  box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.4);
+  border-radius: 8px;
+  border: 1px solid black;
+  margin: 0.5em;
+
+  h2 {
+    font-size: 20px;
+    font-weight: 500;
+  }
+  span {
+    font-size: 14px;
+  }
+}
+
+.configuration-container {
+  padding: 20px;
+}
+
+.layer-components-container {
+  padding: 20px;
+  .layer-components {
+    padding: 10px;
+  }
+
+  .layer-component-buttons {
+    border-left: 3px solid black;
+  }
+
+  h3 {
+    margin: 0.5em 0 0.5em 0;
+    font-size: 16px;
+    font-weight: bold;
+  }
+
+  button {
+    border-radius: 25px !important;
+  }
+}
+
+.ui-container {
+  display: flex;
+  flex-direction: row;
+
+  #svg-container {
+    height: 700px;
+    flex: 3.5;
+
+    #inner-svg-container {
+      height: 100%;
+      width: 100%;
+    }
+  }
+  .settings-container {
+    flex: 1;
+  }
+}
+
+.connection {
+  stroke: gray;
+  stroke-width: 3;
+  stroke-dasharray: 8, 8;
+}
+
+.layer-group {
+  .layer {
+    cursor: default;
+    stroke: black;
+    stroke-width: 1;
+  }
+
+  .input-anchor-group {
+    fill: var(--color-warn);
+
+    &.hovered {
+      fill: yellow;
+    }
+  }
+
+  .output-anchor-group {
+    fill: blue;
+
+    &.hovered {
+      cursor: crosshair;
+    }
+
+    &.dragged {
+      fill: yellow;
+    }
+  }
+
+  &.selected {
+    .layer {
+      fill: lightgray !important;
+    }
+  }
+
+  &.hovered {
+    .selectable {
+      cursor: pointer;
+    }
+
+    .layer {
+      stroke: var(--color-warn);
+      stroke-width: 3;
+    }
+  }
+}
+
+#modelSummaryContainer {
+  margin: 0;
+}
+
+.mat-mdc-tab-group {
+  margin: 0 1rem;
+
+  .mat-mdc-tab-label-container {
+    margin-bottom: 0.5rem;
+  }
+}
+
+.actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 1rem;
+  margin: 1rem;
+  
+  .playground-warning {
+    display: flex;
+    align-items: center;
+    
+    mat-icon {
+      margin-right: 0.5rem;
+    }
+    
+    span {
+      color: var(--color-warn);
+      font-weight: bold;
+    }
+  }
+} 

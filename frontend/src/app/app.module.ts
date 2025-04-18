@@ -9,6 +9,7 @@ import { HomeComponent } from './pages/home/home.component';
 import { TrainingContainerComponent } from './shared/components/training-container/training-container.component';
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import { NnBuilderComponent } from './pages/project/nn-builder/nn-builder.component';
+import { NnPlaygroundComponent } from './pages/nn-playground/nn-playground.component';
 import { DynamicLayerFormComponent } from './shared/components/dynamic-layer-form/dynamic-layer-form.component';
 import { ProjectsComponent } from './pages/projects/projects.component';
 import { ProjectComponent } from './pages/project/project.component';
@@ -25,23 +26,24 @@ import {NgOptimizedImage} from "@angular/common";
 
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    HomeComponent,
-    TrainingContainerComponent,
-    NnBuilderComponent,
-    DynamicLayerFormComponent,
-    ProjectsComponent,
-    ProjectComponent,
-    TaskDialogComponent,
-    TrainingComponent,
-    ExportComponent,
-    FileUploadComponent,
-    DatasetComponent,
-    InputDialogComponent,
-    MessageDialogComponent,
-    EvaluationComponent
-  ],
+    declarations: [
+        AppComponent,
+        HomeComponent,
+        TrainingContainerComponent,
+        NnBuilderComponent,
+        NnPlaygroundComponent,
+        DynamicLayerFormComponent,
+        ProjectsComponent,
+        ProjectComponent,
+        TaskDialogComponent,
+        TrainingComponent,
+        ExportComponent,
+        FileUploadComponent,
+        DatasetComponent,
+        InputDialogComponent,
+        MessageDialogComponent,
+        EvaluationComponent
+    ],
     imports: [
         BrowserModule,
         AppRoutingModule,
@@ -51,7 +53,10 @@ import {NgOptimizedImage} from "@angular/common";
         FormsModule,
         NgOptimizedImage,
     ],
-  providers: [],
-  bootstrap: [AppComponent]
+    providers: [],
+    exports: [
+        DynamicLayerFormComponent
+    ],
+    bootstrap: [AppComponent]
 })
 export class AppModule { }
