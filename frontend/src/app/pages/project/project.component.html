@@ -1,4 +1,4 @@
-<mat-stepper [linear]="false" #stepper class="custom-stepper" color="primary">
+<mat-stepper [linear]="false" #stepper [selectedIndex]="initialStep" class="custom-stepper" color="primary">
   <!--  Dataset  -->
   <mat-step [completed]="false" #dataset_step>
     <ng-template matStepLabel>

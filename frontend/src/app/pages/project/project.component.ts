@@ -11,6 +11,8 @@ import {ModelBuilderService} from "../../core/services/model-builder.service";
 })
 export class ProjectComponent {
   projectName: string;
+  initialStep: number = 0;
+  
   datasetError = computed(() => {
     const dataset = this.projectService.dataset();
     if (dataset.data.length <= 0) {
@@ -23,7 +25,7 @@ export class ProjectComponent {
     return null;
   })
   modelError = computed(() => {
-    return this.projectService.model() === null ? true : false;
+    return this.projectService.model() === null;
   })
 
   constructor(private modelBuilderService: ModelBuilderService,
@@ -37,6 +39,12 @@ export class ProjectComponent {
       this.router.navigate(['/'])
     } else {
       this.modelBuilderService.isInitialized = false;
+
+      const builder = this.projectService.builder();
+
+      if (builder && builder.connections && builder.connections.length > 0) {
+        this.initialStep = 1;
+      }
     }
   }
 
