@@ -81,10 +81,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "webnet-builder-frontend:build:production"
+              "buildTarget": "webnet-builder-frontend:build:production"
             },
             "development": {
-              "browserTarget": "webnet-builder-frontend:build:development"
+              "buildTarget": "webnet-builder-frontend:build:development"
             }
           },
           "defaultConfiguration": "development"
