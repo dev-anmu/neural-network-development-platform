@@ -37,14 +37,11 @@
         <!-- Training Controls -->
         <div class="training-controls">
           <div class="model-buttons">
-            <button mat-raised-button color="primary" *ngIf="!trainingInProgress" (click)="train()">
+            <button mat-raised-button color="accent" *ngIf="!trainingInProgress" (click)="train()">
               <mat-icon>play_arrow</mat-icon> Start Training
             </button>
             <button mat-raised-button color="warn" *ngIf="trainingInProgress" (click)="stopTraining()">
               <mat-icon>stop</mat-icon> Stop Training
-            </button>
-            <button mat-stroked-button color="accent" (click)="showModelSummary()">
-              <mat-icon>architecture</mat-icon> Model Summary
             </button>
           </div>
           
@@ -161,6 +158,9 @@
         <h3 class="section-heading">Model Architecture</h3>
       </div>
       <div class="card-content">
+        <button mat-raised-button color="accent" (click)="showModelSummary()" class="model-summary-button">
+          <mat-icon>architecture</mat-icon> Show model summary
+        </button>
         <div #modelSummaryContainer class="summary-container"></div>
       </div>
     </div>

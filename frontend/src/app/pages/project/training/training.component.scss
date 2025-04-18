@@ -310,7 +310,6 @@
     margin-bottom: 0.75rem;
     
     button {
-      flex: 1;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -380,6 +379,12 @@
   height: 100%;
   min-height: 300px;
   padding: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+// Model Summary Button
+.model-summary-button {
+  margin-bottom: 0.5rem;
 }
 
 // Responsive Adjustments
