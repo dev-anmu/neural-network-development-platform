@@ -14,9 +14,10 @@ export class InputDialogComponent {
     '',
     [
       Validators.required,
+      Validators.minLength(1),
       (control: AbstractControl) => {
         const projectName = control.value;
-        if (projectName && projectName.trim() === '') {
+        if (!projectName || projectName.trim() === '') {
           return { invalid: true };
         }
         if (projectName && this.projectService.checkProjectNameTaken(projectName)) {
@@ -37,6 +38,6 @@ export class InputDialogComponent {
     if (this.projectNameControl.invalid) {
       return;
     }
-    this.dialogRef.close(this.projectNameControl.value);
+    this.dialogRef.close(this.projectNameControl.value.trim());
   }
 }

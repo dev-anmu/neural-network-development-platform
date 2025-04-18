@@ -1,22 +1,29 @@
-<h1 mat-dialog-title>Project Creation</h1>
-<div mat-dialog-content>
-  <p>{{data.message}}</p>
-  <div>
-    <mat-radio-group aria-label="Machine Learning Method" color="primary">
-      <mat-radio-button value="1" checked>Supervised Learning</mat-radio-button>
-    </mat-radio-group>
-  </div>
-  <mat-form-field appearance="outline">
-    <mat-label>ProjectName</mat-label>
-    <input matInput [formControl]="projectNameControl" type="text">
-    <mat-error *ngIf="projectNameControl.hasError('required')">Project name is required</mat-error>
-    <mat-error *ngIf="projectNameControl.hasError('taken')">Project name is already used</mat-error>
-    <mat-error *ngIf="projectNameControl.hasError('invalid')">Project name is invalid</mat-error>
-  </mat-form-field>
+<h1 mat-dialog-title class="dialog-title">Create Project</h1>
+<div mat-dialog-content class="dialog-content">
+    <div class="dialog-message">{{ data.message }}</div>
+
+    <div class="option-group">
+        <div class="bold-section-title">Neural Network Type</div>
+        <mat-radio-group aria-label="Machine Learning Method" color="primary">
+            <mat-radio-button value="1" checked>Supervised Learning</mat-radio-button>
+        </mat-radio-group>
+    </div>
+
+    <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Project Name</mat-label>
+        <input matInput [formControl]="projectNameControl" type="text" placeholder="Enter a unique project name">
+        <mat-icon matPrefix>folder</mat-icon>
+        <mat-error *ngIf="projectNameControl.hasError('required')">Project name is required</mat-error>
+        <mat-error *ngIf="projectNameControl.hasError('taken')">This project name is already in use</mat-error>
+        <mat-error *ngIf="projectNameControl.hasError('invalid')">Project name cannot be empty</mat-error>
+    </mat-form-field>
 </div>
-<div mat-dialog-actions>
-  <button mat-button color="primary"
-          (click)="createProject()">Create Project
-  </button>
-  <button mat-button mat-dialog-close>Close</button>
+<div mat-dialog-actions class="dialog-actions">
+    <button mat-stroked-button mat-dialog-close>Cancel</button>
+    <button mat-raised-button color="primary"
+            [disabled]="projectNameControl.invalid"
+            (click)="createProject()">
+        <mat-icon>add</mat-icon>
+        Create Project
+    </button>
 </div>
