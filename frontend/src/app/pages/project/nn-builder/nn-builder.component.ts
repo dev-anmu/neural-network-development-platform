@@ -33,7 +33,7 @@ export class NnBuilderComponent {
     this.startAutoSave();
     this.projectService.builder.update((value) => {
       return value
-    }) //triggers effect to update model
+    })
   }
 
   startAutoSave() {
