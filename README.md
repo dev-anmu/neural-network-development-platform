@@ -1,11 +1,11 @@
-# WebNet Builder: No-Code Neural Network Development Platform
+# WebNet: No-Code Neural Network Development Platform
 
 A web-based platform for designing, training, and evaluating neural networks without writing code. Built with Angular and TensorFlow.js, this application provides an intuitive interface for working with neural networks directly in the browser.
 
 ## Features
 
 - **Interactive Neural Network Builder**: Drag-and-drop interface for creating neural network architectures with support for various layer types (Dense, Dropout, Convolution, LSTM, etc.)
-- **Data Management**: Import and preprocess datasets with various encoding options (MinMax, Label, OneHot, Standard)
+- **Data Management**: Import custom CSV datasets and preprocess them with various encoding options (MinMax, Label, OneHot, Standard)
 - **In-Browser Training**: Train neural networks using TensorFlow.js with multiple backend options:
   - WebGPU for hardware acceleration
   - WebGL for GPU support
@@ -18,11 +18,20 @@ A web-based platform for designing, training, and evaluating neural networks wit
 
 ## Technology Stack
 
-- **Frontend**: Angular with Material UI
-- **Neural Network Framework**: TensorFlow.js
+- **Frontend**: Angular 19 with Material UI
+- **Neural Network Framework**: TensorFlow.js 4.22.0
 - **Visualization**: D3.js and TensorFlow.js Vis
 - **Data Processing**: Danfojs, Papa Parse for CSV handling
-- **Storage**: Multiple options including local storage and ZIP file export/import
+- **Storage**: LocalStorage and JSZip for file export/import
+
+## Included Datasets
+
+The project comes with several sample datasets for learning and experimenting:
+- Titanic Survival Data
+- Boston Housing Prices
+- Stock Price Data
+
+You can also upload your own custom datasets in CSV format for training and evaluation.
 
 ## Getting Started
 
@@ -62,9 +71,17 @@ docker-compose down
 ## Project Structure
 
 - `/frontend`: Angular application
-  - `/src/app/pages`: Main application views
+  - `/src/app/pages`: Main application views (Home, Projects, Project, NN Playground)
   - `/src/app/core`: Core services, interfaces, and enums
+    - `/services`: TensorFlow, ML, Model Builder services
   - `/src/app/shared`: Shared components and utilities
+- `/data`: Sample datasets for training and testing
+- `/exercise`: Educational materials
+- `/nginx`: Web server configuration for production
+
+## Educational Resources
+
+The project includes exercise materials (`/exercise` directory) with guided problems like the Titanic survival prediction task. These exercises help users learn neural network concepts while simultaneously mastering the platform by solving real-world machine learning problems.
 
 ## License
 
