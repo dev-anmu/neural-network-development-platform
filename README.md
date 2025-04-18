@@ -81,7 +81,12 @@ docker-compose down
 
 ## Educational Resources
 
-The project includes exercise materials (`/exercise` directory) with guided problems like the Titanic survival prediction task. These exercises help users learn neural network concepts while simultaneously mastering the platform by solving real-world machine learning problems.
+The project includes two guided exercises in the `/exercise` directory:
+
+1. **Exercise 1 - Titanic Survival Classification**: A beginner-friendly classification task to predict passenger survival on the Titanic.
+2. **Exercise 2 - Boston Housing Regression**: A more advanced regression task to predict housing prices in Boston.
+
+These step-by-step exercises help users learn neural network concepts while mastering the platform through real-world machine learning problems. Complete Exercise 1 before moving to Exercise 2 for a progressive learning experience.
 
 ## License
 
