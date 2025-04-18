@@ -6,39 +6,6 @@
   padding: 1rem 0;
 }
 
-.section-container {
-  background-color: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  overflow: hidden;
-  margin-bottom: 1.5rem;
-
-  &:last-child {
-    margin-bottom: 0;
-  }
-}
-
-.section-header {
-  display: flex;
-  align-items: center;
-  padding: 1rem 1.5rem;
-  background-color: #f5f7ff;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-
-  .section-icon {
-    color: var(--color-primary);
-    margin-right: 0.75rem;
-    font-size: 1.5rem;
-  }
-
-  .section-heading {
-    color: var(--color-primary);
-    margin: 0;
-    font-weight: 500;
-    font-size: 1.25rem;
-  }
-}
-
 .section-content {
   padding: 1.5rem;
 }

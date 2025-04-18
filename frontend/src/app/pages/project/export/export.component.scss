@@ -23,27 +23,6 @@ ul {
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
   overflow: hidden;
   
-  .card-header {
-    display: flex;
-    align-items: center;
-    padding: 1rem 1.5rem;
-    background-color: #f5f7ff;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-    
-    mat-icon {
-      color: var(--color-primary);
-      margin-right: 0.75rem;
-      font-size: 1.5rem;
-    }
-    
-    h3 {
-      color: var(--color-primary);
-      margin: 0;
-      font-weight: 500;
-      font-size: 1.25rem;
-    }
-  }
-  
   .card-content {
     padding: 1.5rem;
   }

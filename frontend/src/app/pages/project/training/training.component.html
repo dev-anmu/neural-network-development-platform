@@ -3,9 +3,9 @@
   <div class="dashboard-grid">
     <!-- Training Progress Card -->
     <div class="dashboard-card training-progress">
-      <div class="card-header">
-        <mat-icon>timeline</mat-icon>
-        <h3>Training Progress</h3>
+      <div class="section-header">
+        <mat-icon class="section-icon">timeline</mat-icon>
+        <h3 class="section-heading">Training Progress</h3>
       </div>
       <div class="card-content">
         <div *ngIf="trainingStats" class="stats-display">
@@ -64,9 +64,9 @@
 
     <!-- Training Parameters Card -->
     <div class="dashboard-card training-parameters">
-      <div class="card-header">
-        <mat-icon>settings</mat-icon>
-        <h3>Training Parameters</h3>
+      <div class="section-header">
+        <mat-icon class="section-icon">settings</mat-icon>
+        <h3 class="section-heading">Training Parameters</h3>
       </div>
       <div class="card-content">
         <form [formGroup]="trainingForm" class="parameters-form">
@@ -145,9 +145,9 @@
 
     <!-- Visualizations Card -->
     <div class="dashboard-card visualizations">
-      <div class="card-header">
-        <mat-icon>insert_chart</mat-icon>
-        <h3>Training Visualizations</h3>
+      <div class="section-header">
+        <mat-icon class="section-icon">insert_chart</mat-icon>
+        <h3 class="section-heading">Training Visualizations</h3>
       </div>
       <div class="card-content">
         <div #plotContainer class="plots-container"></div>
@@ -156,9 +156,9 @@
 
     <!-- Model Summary Card -->
     <div class="dashboard-card model-summary">
-      <div class="card-header">
-        <mat-icon>article</mat-icon>
-        <h3>Model Architecture</h3>
+      <div class="section-header">
+        <mat-icon class="section-icon">article</mat-icon>
+        <h3 class="section-heading">Model Architecture</h3>
       </div>
       <div class="card-content">
         <div #modelSummaryContainer class="summary-container"></div>
