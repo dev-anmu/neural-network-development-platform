@@ -2,6 +2,8 @@
 
 A web-based platform for designing, training, and evaluating neural networks without writing code. Built with Angular and TensorFlow.js, this application provides an intuitive interface for working with neural networks directly in the browser.
 
+![Neural Network Builder Demo](nn-builder.gif)
+
 ## Features
 
 - **Interactive Neural Network Builder**: Drag-and-drop interface for creating neural network architectures with support for various layer types (Dense, Dropout, Convolution, LSTM, etc.)
