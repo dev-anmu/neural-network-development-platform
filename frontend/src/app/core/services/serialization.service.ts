@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import * as JSZip from 'jszip';
+import JSZip from 'jszip';
 import {Papa} from 'ngx-papaparse';
 import {saveAs} from 'file-saver';
 import * as tf from "@tensorflow/tfjs";

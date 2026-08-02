@@ -47,29 +47,36 @@ You can also upload your own custom datasets in CSV format for training and eval
 
 The project includes Docker configuration for both development and production environments.
 
+Images use `/` as their base href by default, so a clone works as a standalone
+application. Deployers can set `BASE_HREF` when hosting under a URL prefix.
+
 ### Development Environment
 
 ```bash
 # Development environment with hot reloading (port 4200)
-docker-compose up
+docker compose up
 ```
 
-### Production Environment
+### Production Environment (local)
 
 ```bash
-# Production build (port 8080)
-docker-compose -f docker-compose.yml -f docker-compose.prod.yml up
+# Production build at http://localhost:8080/
+docker compose -f docker-compose.yml -f docker-compose.prod.yml up --build
 
-# Build and run in detached mode
-docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+# Example for a deployment under /apps/neural-network/:
+BASE_HREF=/apps/neural-network/ \
+  docker compose -f docker-compose.yml -f docker-compose.prod.yml up --build
 ```
+
+`BASE_HREF` must begin and end with `/`. Hosting-specific image names, routes,
+credentials, and deployment workflows belong in the deployer's infrastructure
+repository rather than this application repository.
 
 ### Stop Docker Containers
 
 ```bash
-docker-compose down
+docker compose down
 ```
-
 ## Project Structure
 
 - `/frontend`: Angular application

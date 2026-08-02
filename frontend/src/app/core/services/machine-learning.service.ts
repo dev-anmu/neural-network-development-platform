@@ -3,7 +3,7 @@ import * as tf from "@tensorflow/tfjs";
 import '@tensorflow/tfjs-backend-webgpu';
 import '@tensorflow/tfjs-backend-wasm';
 import { setWasmPaths } from '@tensorflow/tfjs-backend-wasm';
-setWasmPaths('/assets/wasm/');
+setWasmPaths(new URL('assets/wasm/', document.baseURI).toString());
 import * as tfvis from "@tensorflow/tfjs-vis";
 import {BehaviorSubject} from "rxjs";
 import {TrainStats, XY} from "../interfaces/interfaces";
@@ -15,7 +15,6 @@ import {losses} from "../../shared/ml_objects/losses";
 import {ModelBuilderService} from "./model-builder.service";
 import {Tensor} from "@tensorflow/tfjs";
 import {DataFrame} from "danfojs";
-
 
 @Injectable({
   providedIn: 'root'
@@ -116,7 +115,7 @@ export class MachineLearningService {
         }
       }
 
-      console.log("==========EVALOUATION==========");
+      console.log("==========EVALUATION==========");
     } catch (e: any) {
       console.log(e.message);
       this.dialog.open(MessageDialogComponent, {
