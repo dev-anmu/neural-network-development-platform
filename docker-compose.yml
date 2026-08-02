@@ -1,6 +1,9 @@
 services:
   app:
     build:
-      context: ./frontend
+      context: .
+      dockerfile: frontend/Dockerfile
+      args:
+        BASE_HREF: ${BASE_HREF:-/}
     container_name: neural-network-platform
-    restart: unless-stopped 
+    restart: unless-stopped

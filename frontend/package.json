@@ -26,6 +26,7 @@
     "@tensorflow/tfjs-backend-wasm": "^4.22.0",
     "@tensorflow/tfjs-backend-webgpu": "^4.22.0",
     "@tensorflow/tfjs-vis": "^1.5.1",
+    "buffer": "^6.0.3",
     "d3": "^7.9.0",
     "d3-drag": "^3.0.0",
     "d3-zoom": "^3.0.0",
