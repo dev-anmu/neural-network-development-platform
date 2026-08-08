@@ -5,11 +5,6 @@ export enum Backend {
   CPU = 'cpu'
 }
 
-export enum TrainingExample {
-  MNIST="mnist",
-  TEXT="text"
-}
-
 export enum LayerType {
   Input = "input",
   Dense = "dense",

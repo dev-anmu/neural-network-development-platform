@@ -2,7 +2,6 @@ import {Injectable} from '@angular/core';
 import JSZip from 'jszip';
 import {Papa} from 'ngx-papaparse';
 import {saveAs} from 'file-saver';
-import * as tf from "@tensorflow/tfjs";
 import {ProjectService} from "./project.service";
 import {Project} from "../interfaces/project";
 import {MessageDialogComponent} from "../../shared/components/message-dialog/message-dialog.component";
@@ -12,7 +11,6 @@ import {MatDialog} from "@angular/material/dialog";
   providedIn: 'root'
 })
 export class SerializationService {
-  zip: JSZip = new JSZip();
 
   constructor(private projectService: ProjectService,
               private papa: Papa,
@@ -25,7 +23,7 @@ export class SerializationService {
         header: true,
         dynamicTyping: true,
         skipEmptyLines: true,
-        transform: (value, columnOrHeader) => {
+        transform: (value) => {
           // todo: need better solution. fast workaround so i dont get null values after dynamic typing.
           return value === '' ? ' ' : value;
         },
@@ -34,41 +32,38 @@ export class SerializationService {
         },
         error: (error: any) => {
           reject(error);
-          console.log(error);
         }
       });
     });
   }
 
   async exportProjectAsZIP(sections: any): Promise<void> {
+    const zip = new JSZip();
     const project = this.projectService.activeProject();
     const projectInfo = project.projectInfo;
     if (sections.dataset.checked) {
       const dataset = JSON.stringify(project.dataset);
-      this.zip.file("dataset/dataset.json", dataset, {binary: false});
+      zip.file("dataset/dataset.json", dataset, {binary: false});
     }
     if (sections.builder.checked) {
       const builder = project.builder;
-      this.zip.file("builder/model.json", JSON.stringify(builder), {binary: false})
+      zip.file("builder/model.json", JSON.stringify(builder), {binary: false})
     }
     if (sections.trainConfig.checked) {
       const trainConfig = JSON.stringify(project.trainConfig);
-      this.zip.file("training/configuration.json", trainConfig, {binary: false});
+      zip.file("training/configuration.json", trainConfig, {binary: false});
     }
     if (sections.evaluation.checked) {
       const evaluations = JSON.stringify(project.trainRecords);
-      this.zip.file("evaluations/records.json", evaluations, {binary: false});
+      zip.file("evaluations/records.json", evaluations, {binary: false});
     }
-    // if (sections.tf_model.checked) {
-    //   await this.saveTFModel();
-    // }
-    this.zip.file("project.json", JSON.stringify(projectInfo), {binary: false});
-    const content = await this.zip.generateAsync({type: "blob"});
+    zip.file("project.json", JSON.stringify(projectInfo), {binary: false});
+    const content = await zip.generateAsync({type: "blob"});
     saveAs(content, `${projectInfo.name}.zip`)
   }
 
-  async importZip(file: any): Promise<Project> {
-    const zip = await this.zip.loadAsync(file);
+  async importZip(file: Blob): Promise<Project> {
+    const zip = await JSZip.loadAsync(file);
     const files = zip.files;
 
     const projectFile = files['project.json'];
@@ -86,25 +81,6 @@ export class SerializationService {
     return {projectInfo: project, dataset: dataset, trainConfig: trainConfig, builder: builder, trainRecords: records};
   }
 
-  async saveTFModel(): Promise<void> {
-    const model: tf.LayersModel | null = this.projectService.model();
-
-    await model?.save(tf.io.withSaveHandler(async (modelArtifacts: tf.io.ModelArtifacts): Promise<any> => {
-      const modelData: tf.io.ModelJSON = {
-        modelTopology: modelArtifacts.modelTopology ?? {},
-        format: modelArtifacts.format,
-        generatedBy: modelArtifacts.generatedBy,
-        convertedBy: modelArtifacts.convertedBy,
-        weightsManifest: [{
-          paths: ["./weights.bin"],
-          weights: modelArtifacts.weightSpecs as tf.io.WeightsManifestEntry[]
-        }],
-      };
-      this.zip.file("tf_model/model.json", JSON.stringify(modelData), {binary: false});
-      this.zip.file('tf_model/weights.bin', JSON.stringify(modelArtifacts.weightData), {binary: true});
-    }));
-  }
-
   async exportModel() {
     const model = this.projectService.model();
     if (model) {
@@ -120,20 +96,4 @@ export class SerializationService {
       });
     }
   }
-
-  // async listModels() {
-  //   // prints all models saved in local storage and indexedDB
-  //   console.log(JSON.stringify(await tf.io.listModels()));
-  // }
-  //
-  // async loadModel(file: File) {
-  //   await tf.ready();
-  //   const loadedModel = await tf.loadLayersModel(tf.io.browserFiles([file]));
-  //   console.log(loadedModel);
-  // }
-  //
-  // async showAllModels() {
-  //   // prints all models saved in local storage and indexedDB
-  //   console.log(JSON.stringify(await tf.io.listModels()));
-  // }
 }

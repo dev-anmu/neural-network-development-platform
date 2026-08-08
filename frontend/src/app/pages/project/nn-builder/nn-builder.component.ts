@@ -1,4 +1,5 @@
-import {Component, HostListener, ViewEncapsulation} from '@angular/core';
+import {Component, DestroyRef, HostListener, ViewEncapsulation, inject} from '@angular/core';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {ModelBuilderService} from "../../../core/services/model-builder.service";
 import {LayerType} from "../../../core/enums";
 import {ProjectService} from "../../../core/services/project.service";
@@ -14,6 +15,7 @@ import {areBuilderEqual} from "../../../shared/utils";
     standalone: false
 })
 export class NnBuilderComponent {
+  private readonly destroyRef = inject(DestroyRef);
   protected readonly LayerType = LayerType;
   autoSaveInterval: any;
   layerForm: any;
@@ -21,7 +23,7 @@ export class NnBuilderComponent {
   selectedTab = new FormControl(0);
 
   constructor(private modelBuilderService: ModelBuilderService, private projectService: ProjectService) {
-    this.modelBuilderService.selectedLayerSubject.subscribe((layer) => {
+    this.modelBuilderService.selectedLayerSubject.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((layer) => {
       this.layerForm = layer ? layer.layerForm : null;
       this.configuration = layer ? layer.getConfiguration() : null;
       layer ? this.selectedTab.setValue(1) : this.selectedTab.setValue(0);

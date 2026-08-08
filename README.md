@@ -20,7 +20,7 @@ A web-based platform for designing, training, and evaluating neural networks wit
 
 ## Technology Stack
 
-- **Frontend**: Angular 19 with Material UI
+- **Frontend**: Angular 20 with Material UI
 - **Neural Network Framework**: TensorFlow.js 4.22.0
 - **Visualization**: D3.js and TensorFlow.js Vis
 - **Data Processing**: Danfojs, Papa Parse for CSV handling
@@ -36,6 +36,18 @@ The project comes with several sample datasets for learning and experimenting:
 You can also upload your own custom datasets in CSV format for training and evaluation.
 
 ## Getting Started
+
+Install [Task](https://taskfile.dev/) (e.g. `brew install go-task` on macOS), then from the repository root:
+
+```bash
+task dev
+```
+
+Open your browser to `http://localhost:4200`.
+
+Run `task --list` to see all available tasks.
+
+### Manual setup (without Task)
 
 1. Clone the repository
 2. Navigate to the frontend directory
@@ -54,18 +66,17 @@ application. Deployers can set `BASE_HREF` when hosting under a URL prefix.
 
 ```bash
 # Development environment with hot reloading (port 4200)
-docker compose up
+task docker:dev
 ```
 
 ### Production Environment (local)
 
 ```bash
 # Production build at http://localhost:8080/
-docker compose -f docker-compose.yml -f docker-compose.prod.yml up --build
+task docker:prod
 
 # Example for a deployment under /apps/neural-network/:
-BASE_HREF=/apps/neural-network/ \
-  docker compose -f docker-compose.yml -f docker-compose.prod.yml up --build
+BASE_HREF=/apps/neural-network/ task docker:prod
 ```
 
 `BASE_HREF` must begin and end with `/`. Hosting-specific image names, routes,
@@ -75,7 +86,7 @@ repository rather than this application repository.
 ### Stop Docker Containers
 
 ```bash
-docker compose down
+task docker:down
 ```
 ## Project Structure
 

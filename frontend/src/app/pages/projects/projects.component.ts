@@ -1,4 +1,5 @@
-import {Component} from '@angular/core';
+import {Component, DestroyRef, inject} from '@angular/core';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {SerializationService} from "../../core/services/serialization.service";
 import {Router} from "@angular/router";
 import {ProjectService} from "../../core/services/project.service";
@@ -15,13 +16,14 @@ import {MessageDialogComponent} from "../../shared/components/message-dialog/mes
     standalone: false
 })
 export class ProjectsComponent {
+  private readonly destroyRef = inject(DestroyRef);
   file: File | undefined;
   projects: Map<string, any> = new Map();
   templateProjects: string[] = ['mnist'];
   selectedTemplateProject: string | undefined;
 
   constructor(private serializationService: SerializationService, protected projectService: ProjectService, private router: Router, private dialog: MatDialog) {
-    this.projectService.projectSubject.subscribe((project: any) => {
+    this.projectService.projectSubject.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
       this.projects = this.projectService.getMyProjects();
     })
 

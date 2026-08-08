@@ -4,7 +4,6 @@ import '@tensorflow/tfjs-backend-webgpu';
 import '@tensorflow/tfjs-backend-wasm';
 import { setWasmPaths } from '@tensorflow/tfjs-backend-wasm';
 setWasmPaths(new URL('assets/wasm/', document.baseURI).toString());
-import * as tfvis from "@tensorflow/tfjs-vis";
 import {BehaviorSubject} from "rxjs";
 import {TrainStats, XY} from "../interfaces/interfaces";
 import {ProjectService} from "./project.service";
@@ -30,10 +29,6 @@ export class MachineLearningService {
   constructor(private projectService: ProjectService,
               private modelBuilderService: ModelBuilderService,
               public dialog: MatDialog) {
-  }
-
-  async ngOnInit(): Promise<void> {
-    await tf.ready();
   }
 
   stopTraining(): void {
@@ -115,9 +110,7 @@ export class MachineLearningService {
         }
       }
 
-      console.log("==========EVALUATION==========");
     } catch (e: any) {
-      console.log(e.message);
       this.dialog.open(MessageDialogComponent, {
         maxWidth: '600px',
         data: {
@@ -232,7 +225,6 @@ export class MachineLearningService {
       this.compile();
 
       // todo: use fitDataset instead for more memory-efficiency?
-      const startTime = performance.now();
       const history = await this.projectService.model()?.fit(X, Y, {
         batchSize: BATCH_SIZE,
         validationSplit: VALIDATION_SPLIT,
@@ -240,12 +232,8 @@ export class MachineLearningService {
         callbacks: callbacks,
         shuffle: SHUFFLE,
       });
-      const endTime = performance.now();
-      const totalTimeInMilliseconds = endTime - startTime;
-      console.log("TRAINING TIME: ", totalTimeInMilliseconds);
       return history;
     } catch (e: any) {
-      console.log(e.message);
       this.dialog.open(MessageDialogComponent, {
         maxWidth: '600px',
         data: {

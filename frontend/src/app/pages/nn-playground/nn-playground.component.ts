@@ -1,4 +1,5 @@
-import {Component, HostListener, OnInit, ViewEncapsulation} from '@angular/core';
+import {Component, DestroyRef, HostListener, OnInit, ViewEncapsulation, inject} from '@angular/core';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {LayerType} from "../../core/enums";
 import {FormControl} from "@angular/forms";
 import {PlaygroundBuilderService} from "../../core/services/playground-builder.service";
@@ -12,13 +13,14 @@ import {Layer} from "../../shared/layer";
     standalone: false,
 })
 export class NnPlaygroundComponent implements OnInit {
+  private readonly destroyRef = inject(DestroyRef);
   protected readonly LayerType = LayerType;
   layerForm: any;
   configuration: any;
   selectedTab = new FormControl(0);
 
   constructor(private playgroundBuilderService: PlaygroundBuilderService) {
-    this.playgroundBuilderService.selectedLayerSubject.subscribe((layer: Layer | null) => {
+    this.playgroundBuilderService.selectedLayerSubject.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((layer: Layer | null) => {
       this.layerForm = layer ? layer.layerForm : null;
       this.configuration = layer ? layer.getConfiguration() : null;
       layer ? this.selectedTab.setValue(1) : this.selectedTab.setValue(0);

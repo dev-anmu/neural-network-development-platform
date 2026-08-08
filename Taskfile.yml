@@ -1,0 +1,42 @@
+version: '3'
+
+tasks:
+  install:
+    desc: Install frontend dependencies
+    dir: frontend
+    cmds:
+      - npm install
+
+  dev:
+    desc: Start local development server at http://localhost:4200
+    dir: frontend
+    deps: [install]
+    cmds:
+      - npm start
+
+  build:
+    desc: Build the frontend for production
+    dir: frontend
+    cmds:
+      - npm run build
+
+  test:
+    desc: Run frontend unit tests
+    dir: frontend
+    cmds:
+      - npm test
+
+  docker:dev:
+    desc: Start development environment with Docker (port 4200)
+    cmds:
+      - docker compose up
+
+  docker:prod:
+    desc: Build and start production environment with Docker (port 8080)
+    cmds:
+      - docker compose -f docker-compose.yml -f docker-compose.prod.yml up --build
+
+  docker:down:
+    desc: Stop Docker containers
+    cmds:
+      - docker compose down

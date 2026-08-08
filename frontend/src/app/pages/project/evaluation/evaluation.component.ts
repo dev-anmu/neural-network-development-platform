@@ -87,7 +87,7 @@ export class EvaluationComponent {
 
   loadTrainingRecord(): void {
     const record = this.selectedRecord;
-    if (record && record?.builder, record?.config) {
+    if (record?.builder && record?.config) {
       this.modelBuilderService.isInitialized = false;
       this.projectService.builder.set(record.builder);
       this.projectService.trainConfig.set(record.config);

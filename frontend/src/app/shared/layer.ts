@@ -284,8 +284,7 @@ export abstract class Layer {
     }
   }
 
-  protected dragEnded(event: any): void {
-    console.log("DRAG ENDED")
+  protected dragEnded(_event: any): void {
   }
 
 }
