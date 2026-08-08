@@ -1,17 +1,32 @@
 <input type="file" hidden (change)="onFileSelected($event)" [accept]="fileType" #fileUpload>
 
-<div class="file-upload">
+<div
+  class="file-upload"
+  role="button"
+  tabindex="0"
+  (click)="fileUpload.click()"
+  (keydown.enter)="fileUpload.click()"
+  (keydown.space)="$event.preventDefault(); fileUpload.click()">
+  <div class="file-upload__icon-wrap">
+    <mat-icon class="file-upload__icon">{{ fileName ? 'description' : 'upload_file' }}</mat-icon>
+  </div>
+
   <div class="file-info">
     @if (fileName) {
       <span class="file-name">{{ fileName }}</span>
-      <span class="action-text">Click to change file</span>
+      <span class="action-text">Ready to import — click to choose a different file</span>
     } @else {
-      <span class="action-text">Select a file to upload</span>
+      <span class="file-name">Choose a CSV file</span>
+      <span class="action-text">Click to browse, or drag and drop when supported</span>
     }
   </div>
 
-  <button mat-mini-fab color="primary" class="upload-btn"
-    (click)="fileUpload.click()">
-    <mat-icon>{{fileName ? 'edit' : 'attach_file'}}</mat-icon>
+  <button
+    mat-stroked-button
+    type="button"
+    color="primary"
+    class="browse-btn"
+    (click)="$event.stopPropagation(); fileUpload.click()">
+    Browse
   </button>
 </div>

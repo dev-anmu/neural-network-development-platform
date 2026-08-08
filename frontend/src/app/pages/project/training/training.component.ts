@@ -6,6 +6,7 @@ import {tfBackends} from "../../../shared/ml_objects/tfBackends";
 import {AbstractControl, FormGroup, NonNullableFormBuilder, Validators} from "@angular/forms";
 import {TrainStats} from "../../../core/interfaces/interfaces";
 import {MachineLearningService} from "../../../core/services/machine-learning.service";
+import {styleTfvisTable} from "../../../shared/utils/tfvis-theme";
 import {MatDialog} from "@angular/material/dialog";
 import {TaskDialogComponent} from "../../../shared/components/task-dialog/task-dialog.component";
 import {ProjectService} from "../../../core/services/project.service";
@@ -22,7 +23,8 @@ export class TrainingComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   private readonly cdr = inject(ChangeDetectorRef);
   @ViewChild('modelSummaryContainer', {static: false}) modelSummaryContainer!: ElementRef;
-  @ViewChild('plotContainer', {static: false}) plotContainer!: ElementRef;
+  @ViewChild('lossPlotContainer', {static: false}) lossPlotContainer?: ElementRef<HTMLElement>;
+  @ViewChild('accuracyPlotContainer', {static: false}) accuracyPlotContainer?: ElementRef<HTMLElement>;
   trainingForm: FormGroup;
   trainingStats: TrainStats | null = null;
   trainingInProgress: boolean = false;
@@ -94,8 +96,10 @@ export class TrainingComponent implements OnInit {
     const model = this.projectService.model();
     if (model) {
       const tfvis = await import('@tensorflow/tfjs-vis');
+      this.modelSummaryContainer.nativeElement.innerHTML = '';
       await tfvis.show.modelSummary(this.modelSummaryContainer.nativeElement, model);
-      this.modelSummaryContainer.nativeElement.querySelector('table').style.margin = "0";
+      styleTfvisTable(this.modelSummaryContainer.nativeElement);
+      this.cdr.markForCheck();
     }
   }
 
@@ -116,7 +120,10 @@ export class TrainingComponent implements OnInit {
         const reshapedY = Y;
 
         if (reshapedX) {
-          const history = await this.ml.train(reshapedX, reshapedY, this.plotContainer.nativeElement);
+          const history = await this.ml.train(reshapedX, reshapedY, {
+            loss: this.trainingForm.get('lossPlot')?.value ? this.lossPlotContainer?.nativeElement : null,
+            accuracy: this.trainingForm.get('accuracyPlot')?.value ? this.accuracyPlotContainer?.nativeElement : null,
+          });
           this.ml.updateWeights();
 
           if (this.trainingForm.get('saveTraining')?.value && this.trainingStats && history) {

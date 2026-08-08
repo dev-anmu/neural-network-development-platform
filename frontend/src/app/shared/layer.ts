@@ -10,7 +10,7 @@ import * as tf from "@tensorflow/tfjs";
 export abstract class Layer {
   private readonly layerId: string;
   protected abstract layerType: string;
-  protected svgElement: Selection<any, any, any, any>;
+  protected svgElement: Selection<any, any, any, any> | null;
   protected outputConnection: Connection | null = null;
   protected inputConnection: Connection | null = null;
   protected mousePositionOnElement: XY = {x: 0, y: 0};
@@ -33,21 +33,23 @@ export abstract class Layer {
     this.tfjsLayer = tfjsLayer;
     this.configuration = configuration
     this.layerForm = layerForm;
-    this.svgElement = this.createLayer();
-    this.svgElement.call(d3.drag<SVGElement, any, any>()
-      .on("start", (event: any) => this.dragStarted(event))
-      .on("drag", (event: any) => this.dragging(event))
-      .on("end", (event: any) => this.dragEnded(event)));
+    if (!this.modelBuilderService.isHeadless()) {
+      this.svgElement = this.createLayer();
+      this.svgElement.call(d3.drag<SVGElement, any, any>()
+        .on("start", (event: any) => this.dragStarted(event))
+        .on("drag", (event: any) => this.dragging(event))
+        .on("end", (event: any) => this.dragEnded(event)));
 
-    // remove drag events from untouchable children
-    this.svgElement.selectChildren<SVGElement, any>('.untouchable')
-      .call(d3.drag<SVGElement, any, any>().on('.drag', null));
+      this.svgElement.selectChildren<SVGElement, any>('.untouchable')
+        .call(d3.drag<SVGElement, any, any>().on('.drag', null));
 
-    // add event listeners to selectable children
-    this.svgElement.selectChildren('.selectable')
-      .on("click", (event: any) => this.selected(event))
-      .on("mouseenter", (event: any) => this.hoverLayer(event))
-      .on("mouseleave", (event: any) => this.unhoverLayer(event));
+      this.svgElement.selectChildren('.selectable')
+        .on("click", (event: any) => this.selected(event))
+        .on("mouseenter", (event: any) => this.hoverLayer(event))
+        .on("mouseleave", (event: any) => this.unhoverLayer(event));
+    } else {
+      this.svgElement = null;
+    }
 
     this.configuration.name = this.getLayerId();
     this.weights = weights ? weights : null;
@@ -114,13 +116,23 @@ export abstract class Layer {
     return this.outputConnection?.getDestinationLayer();
   }
 
+  getModelBuilder(): ModelBuilderService {
+    return this.modelBuilderService;
+  }
+
   getSvgPosition(): XY {
+    if (this.modelBuilderService.isHeadless() || !this.svgElement) {
+      return this.position;
+    }
     const transformAttr = this.svgElement.attr("transform");
     const svgPos = getTransformPosition(transformAttr);
     return {x: svgPos.x, y: svgPos.y};
   }
 
   getOutputAnchorPosition(): XY {
+    if (this.modelBuilderService.isHeadless() || !this.svgElement) {
+      return {x: this.position.x + 50, y: this.position.y + 20};
+    }
     const svgPos = this.getSvgPosition();
     const transformAttr = this.svgElement.selectChild('.output-anchor-group').attr("transform");
     const anchorPos = getTransformPosition(transformAttr);
@@ -128,6 +140,9 @@ export abstract class Layer {
   }
 
   getInputAnchorPosition(): XY {
+    if (this.modelBuilderService.isHeadless() || !this.svgElement) {
+      return {x: this.position.x - 10, y: this.position.y + 20};
+    }
     const svgPos = this.getSvgPosition();
     const transformAttr = this.svgElement.selectChild('.input-anchor-group').attr("transform");
     const anchorPos = getTransformPosition(transformAttr);
@@ -137,23 +152,26 @@ export abstract class Layer {
   selected(event: any): void {
     event.stopPropagation();
     event.preventDefault();
-    this.svgElement.classed("selected", true).raise();
+    this.svgElement?.classed("selected", true).raise();
     this.modelBuilderService.selectedLayerSubject.next(this);
   }
 
   draw(): void {
-    d3.select("#inner-svg-container").append(() => this.svgElement.node());
+    if (!this.svgElement) {
+      return;
+    }
+    this.modelBuilderService.selectInnerSvg().append(() => this.svgElement!.node());
     this.outputConnection?.draw();
   }
 
   unselect(): void {
-    this.svgElement.classed("selected", false);
+    this.svgElement?.classed("selected", false);
   }
 
   delete(): void {
     this.outputConnection?.removeConnection();
     this.inputConnection?.removeConnection();
-    this.svgElement.remove();
+    this.svgElement?.remove();
   }
 
   removeOutputConnection(): void {
@@ -205,6 +223,9 @@ export abstract class Layer {
   }
 
   createConnection(): void {
+    if (!this.svgElement) {
+      return;
+    }
     if (this.outputConnection) {
       this.outputConnection.removeConnection()
     }
@@ -224,6 +245,9 @@ export abstract class Layer {
   }
 
   protected addConnection(): void {
+    if (!this.svgElement) {
+      return;
+    }
     this.svgElement.select('.input-anchor-group').classed("hovered", false);
     const connection = this.modelBuilderService.activeConnection;
     if (connection) {
@@ -245,11 +269,11 @@ export abstract class Layer {
   }
 
   protected hoverLayer(_event: any): void {
-    this.svgElement.classed("hovered", true);
+    this.svgElement?.classed("hovered", true);
   }
 
   protected unhoverLayer(_event: any): void {
-    this.svgElement.classed("hovered", false);
+    this.svgElement?.classed("hovered", false);
   }
 
   protected dragStarted(event: any): void {
@@ -258,7 +282,10 @@ export abstract class Layer {
   }
 
   protected dragging(event: any): void {
-    const svgContainer: Selection<any, any, any, any> = d3.select("#svg-container");
+    if (!this.svgElement) {
+      return;
+    }
+    const svgContainer = this.modelBuilderService.selectSvgContainer();
 
     const svgWidth = (svgContainer.node() as SVGSVGElement).clientWidth;
     const svgHeight = (svgContainer.node() as SVGSVGElement).clientHeight;

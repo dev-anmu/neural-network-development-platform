@@ -27,6 +27,7 @@ import {MatPaginatorModule} from "@angular/material/paginator";
 import {MatSliderModule} from "@angular/material/slider";
 import {MatSnackBarModule} from "@angular/material/snack-bar";
 import {MatDividerModule} from "@angular/material/divider";
+import {MatButtonToggleModule} from "@angular/material/button-toggle";
 
 const MaterialComponents =
   [MatButtonModule,
@@ -56,7 +57,8 @@ const MaterialComponents =
     MatPaginatorModule,
     MatSliderModule,
     MatSnackBarModule,
-    MatDividerModule
+    MatDividerModule,
+    MatButtonToggleModule
   ]
 
 @NgModule({

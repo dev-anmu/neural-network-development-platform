@@ -1,6 +1,5 @@
 import {computed, effect, Injectable, signal, untracked} from '@angular/core';
 import {BehaviorSubject} from "rxjs";
-import {MnistTemplate} from "../../shared/template_objects/mnist";
 import {
   Builder,
   Dataset, EncoderType,
@@ -24,7 +23,6 @@ import {DataFrame, LabelEncoder, MinMaxScaler, OneHotEncoder, Series, StandardSc
 })
 export class ProjectService {
   private readonly myProjects = new Map<string, Project>();
-  private templateProjects = new Map<string, Project>();
   projectSubject: BehaviorSubject<Project | null> = new BehaviorSubject<Project | null>(null);
   projectInfo = signal<ProjectInfo>({
     id: '',
@@ -74,9 +72,6 @@ export class ProjectService {
   });
 
   constructor(private localStorageService: LocalstorageService, private modelBuilderService: ModelBuilderService) {
-    const mnist = new MnistTemplate();
-    const data = mnist.getProject();
-    this.templateProjects.set('mnist', data);
     this.myProjects = this.localStorageService.getProjectsFromLocalStorage();
     effect(async () => {
       this.builder();
@@ -98,7 +93,6 @@ export class ProjectService {
   }
 
   async selectProject(name: string): Promise<void> {
-    this.modelBuilderService.clearLayers();
     const project = this.getProjectByName(name);
     if (project) {
       this.projectInfo.set(project.projectInfo);
@@ -108,9 +102,12 @@ export class ProjectService {
         }
       }
       this.dataset.set(project.dataset);
-      this.builder.set(project.builder);
       this.trainConfig.set(project.trainConfig);
       this.trainingRecords.set(project.trainRecords);
+      this.modelBuilderService.syncFromBuilderState(project.builder);
+      this.builder.set(project.builder);
+      const model = await this.modelBuilderService.generateModel(!project.trainConfig.useExistingWeights);
+      this.model.set(model);
     }
   }
 
@@ -198,11 +195,6 @@ export class ProjectService {
 
   deleteProject(name: string): boolean {
     return this.myProjects.delete(name) && this.localStorageService.deleteProjectFromLocalStorage(name);
-  }
-
-  getTemplateProjectByName(name: string): Project | null {
-    const templateProject = this.templateProjects.get(name);
-    return templateProject ? templateProject : null;
   }
 
   getProjectByName(name: string): Project | null {

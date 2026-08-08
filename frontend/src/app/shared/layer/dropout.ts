@@ -28,7 +28,7 @@ export class Dropout extends Layer {
   protected override createLayer(): Selection<any, any, any, any> {
     const dropoutData = { name: "Dropout", neuronCount: 9 };
 
-    const dropoutGrp: Selection<any, any, any, any> = d3.select("#inner-svg-container").append("g")
+    const dropoutGrp: Selection<any, any, any, any> = this.modelBuilderService.selectInnerSvg().append("g")
       .classed("layer-group", true)
       .attr("stroke", "black")
       .attr("transform", `translate(${this.position.x}, ${this.position.y})`);

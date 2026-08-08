@@ -31,7 +31,7 @@ export class Lstm extends Layer {
   protected override createLayer(){
     const lstmLayerData = { name: "LSTM", numCells: 3 };
 
-    const lstmGrp = d3.select("#inner-svg-container").append("g")
+    const lstmGrp = this.modelBuilderService.selectInnerSvg().append("g")
       .classed("layer-group", true)
       .attr("stroke", "black")
       .attr("transform", `translate(${this.position.x}, ${this.position.y})`);

@@ -33,7 +33,7 @@ export class Output extends Layer {
   protected override createLayer(): Selection<any, any, any, any> {
     const outputData = {name: "Output", neuronCount: 10};
 
-    const outputGrp = d3.select("#inner-svg-container").append("g")
+    const outputGrp = this.modelBuilderService.selectInnerSvg().append("g")
       .classed("layer-group", true)
       .attr("stroke", "black")
       .attr("transform", `translate(${this.position.x}, ${this.position.y})`);

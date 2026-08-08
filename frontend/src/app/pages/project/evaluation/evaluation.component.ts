@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, ElementRef, EventEmitter, Output, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, Component, ElementRef, EventEmitter, OnDestroy, Output, ViewChild} from '@angular/core';
 import {ProjectService} from "../../../core/services/project.service";
 import {TrainingRecords} from "../../../core/interfaces/project";
 import {MatSelectionList} from "@angular/material/list";
@@ -17,11 +17,13 @@ import * as dfd from 'danfojs';
     standalone: false,
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class EvaluationComponent {
+export class EvaluationComponent implements OnDestroy {
   @Output() navigateToTraining = new EventEmitter<void>();
-  @ViewChild('lossContainer', {static: false}) lossContainer!: ElementRef;
-  @ViewChild('accuracyContainer', {static: false}) accuracyContainer!: ElementRef;
+  @ViewChild('lossContainer', {static: false}) lossContainer!: ElementRef<HTMLElement>;
+  @ViewChild('accuracyContainer', {static: false}) accuracyContainer!: ElementRef<HTMLElement>;
   @ViewChild('trainHistoryList') trainHistoryList: MatSelectionList | undefined;
+  private resizeObserver?: ResizeObserver;
+  private plotResizeTimer?: ReturnType<typeof setTimeout>;
   selectedRecord: TrainingRecords | null = null;
   trainingRecords: TrainingRecords[];
   isSelectedRecordAlreadyLoaded: boolean = false;
@@ -46,42 +48,90 @@ export class EvaluationComponent {
 
   async ngAfterViewInit() {
     await this.getSelectedContent();
+    this.observePlotResize();
+  }
+
+  ngOnDestroy(): void {
+    this.resizeObserver?.disconnect();
+    if (this.plotResizeTimer) {
+      clearTimeout(this.plotResizeTimer);
+    }
+  }
+
+  private observePlotResize(): void {
+    if (typeof ResizeObserver === 'undefined') {
+      return;
+    }
+
+    this.resizeObserver?.disconnect();
+    this.resizeObserver = new ResizeObserver(() => {
+      if (!this.selectedRecord) {
+        return;
+      }
+      if (this.plotResizeTimer) {
+        clearTimeout(this.plotResizeTimer);
+      }
+      this.plotResizeTimer = setTimeout(() => void this.schedulePlotRender(), 150);
+    });
+
+    if (this.lossContainer?.nativeElement) {
+      this.resizeObserver.observe(this.lossContainer.nativeElement);
+    }
+    if (this.accuracyContainer?.nativeElement) {
+      this.resizeObserver.observe(this.accuracyContainer.nativeElement);
+    }
   }
 
   async getSelectedContent() {
     const selectedOption = this.trainHistoryList?.selectedOptions.selected[0];
     if (selectedOption) {
       this.selectedRecord = selectedOption.value;
-      // todo: change boolean to id of record, so i can style the "loaded" list option
       this.isSelectedRecordAlreadyLoaded = areBuilderEqual(this.selectedRecord?.builder, this.projectService.builder());
-      await this.displayLossPlot();
-      await this.displayAccuracyPlot();
+      await this.schedulePlotRender();
     }
   }
 
+  private schedulePlotRender(): Promise<void> {
+    return new Promise((resolve) => {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(async () => {
+          await this.displayLossPlot();
+          await this.displayAccuracyPlot();
+          resolve();
+        });
+      });
+    });
+  }
+
   async displayLossPlot() {
+    if (!this.lossContainer?.nativeElement) {
+      return;
+    }
     if (this.selectedRecord?.history.loss && this.selectedRecord?.history.val_loss) {
-      const values = [this.selectedRecord?.history.loss, this.selectedRecord?.history.val_loss];
-      const series = ['Loss', 'Val_Loss'];
+      const values = [this.selectedRecord.history.loss, this.selectedRecord.history.val_loss];
+      const series = ['Training', 'Validation'];
       const options = {
         xLabel: "Epoch",
         yLabel: "Loss",
       }
-      await this.ml.renderPlot(this.lossContainer.nativeElement,values, series, options)
+      await this.ml.renderPlot(this.lossContainer.nativeElement, values, series, options)
     } else {
       this.lossContainer.nativeElement.innerHTML = '';
     }
   }
 
   async displayAccuracyPlot() {
+    if (!this.accuracyContainer?.nativeElement) {
+      return;
+    }
     if (this.selectedRecord?.history.acc && this.selectedRecord?.history.val_acc) {
-      const values = [this.selectedRecord?.history.acc, this.selectedRecord?.history.val_acc];
-      const series = ['Accuracy', 'Val_Accuracy'];
+      const values = [this.selectedRecord.history.acc, this.selectedRecord.history.val_acc];
+      const series = ['Training', 'Validation'];
       const options = {
         xLabel: "Epoch",
         yLabel: "Accuracy",
       }
-      await this.ml.renderPlot(this.accuracyContainer.nativeElement,values, series, options);
+      await this.ml.renderPlot(this.accuracyContainer.nativeElement, values, series, options);
     } else {
       this.accuracyContainer.nativeElement.innerHTML = '';
     }

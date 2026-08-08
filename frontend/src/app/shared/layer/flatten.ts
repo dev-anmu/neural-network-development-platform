@@ -25,7 +25,7 @@ export class Flatten extends Layer {
   protected override createLayer(): Selection<any, any, any, any> {
     const flattenData = {name: "Flatten", neuronCount: Math.min(12, 64)};
 
-    const flattenGrp = d3.select("#inner-svg-container").append("g")
+    const flattenGrp = this.modelBuilderService.selectInnerSvg().append("g")
       .classed("layer-group", true)
       .attr("stroke", "black")
       .attr("transform", `translate(${this.position.x}, ${this.position.y})`);

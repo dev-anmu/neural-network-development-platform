@@ -27,7 +27,7 @@
                 <span class="progress-percentage">{{trainingStats.progress | number:'1.1-1'}}%</span>
                 <span class="progress-time">{{trainingStats.time * 1000 | date:'mm:ss'}}</span>
               </div>
-              <mat-progress-bar mode="determinate" [value]="trainingStats.progress"></mat-progress-bar>
+              <mat-progress-bar class="training-progress-bar" mode="determinate" [value]="trainingStats.progress"></mat-progress-bar>
             </div>
           </div>
         }
@@ -160,8 +160,36 @@
         <mat-icon class="section-icon">insert_chart</mat-icon>
         <h3 class="section-heading">Training Visualizations</h3>
       </div>
-      <div class="card-content">
-        <div #plotContainer class="plots-container"></div>
+      <div class="card-content visualization-area">
+        @if (!trainingForm.get('accuracyPlot')?.value && !trainingForm.get('lossPlot')?.value) {
+          <div class="chart-empty">
+            <mat-icon>show_chart</mat-icon>
+            <p>Enable <strong>Accuracy Plot</strong> or <strong>Loss Plot</strong> in the parameters panel to see live charts while training.</p>
+          </div>
+        } @else {
+          <div class="charts-grid">
+            <div class="chart-card" [class.chart-card--inactive]="!trainingForm.get('lossPlot')?.value">
+              <div class="chart-card__header">
+                <h4 class="chart-card__title">Loss</h4>
+                <div class="chart-card__legend">
+                  <span class="legend-item" style="--legend-color: #5b5bd6">Training</span>
+                  <span class="legend-item" style="--legend-color: #0891b2">Validation</span>
+                </div>
+              </div>
+              <div #lossPlotContainer class="chart-host"></div>
+            </div>
+            <div class="chart-card" [class.chart-card--inactive]="!trainingForm.get('accuracyPlot')?.value">
+              <div class="chart-card__header">
+                <h4 class="chart-card__title">Accuracy</h4>
+                <div class="chart-card__legend">
+                  <span class="legend-item" style="--legend-color: #5b5bd6">Training</span>
+                  <span class="legend-item" style="--legend-color: #0891b2">Validation</span>
+                </div>
+              </div>
+              <div #accuracyPlotContainer class="chart-host"></div>
+            </div>
+          </div>
+        }
       </div>
     </div>
 
@@ -172,7 +200,7 @@
         <h3 class="section-heading">Model Architecture</h3>
       </div>
       <div class="card-content">
-        <button mat-raised-button color="accent" (click)="showModelSummary()" class="model-summary-button">
+        <button mat-stroked-button color="primary" (click)="showModelSummary()" class="model-summary-button">
           <mat-icon>architecture</mat-icon> Show model summary
         </button>
         <div #modelSummaryContainer class="summary-container"></div>

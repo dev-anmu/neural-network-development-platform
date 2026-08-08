@@ -1,0 +1,249 @@
+// TensorFlow.js Vis / Vega chart overrides — scoped to our chart hosts
+.chart-host,
+.summary-container {
+  --chart-line-1: #5b5bd6;
+  --chart-line-2: #0891b2;
+}
+
+.chart-host {
+  min-height: 220px;
+  width: 100%;
+  border-radius: var(--radius-md);
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  padding: 0.75rem;
+  overflow: hidden;
+  min-width: 0;
+
+  &:empty {
+    min-height: 0;
+    padding: 0;
+    border: none;
+    background: transparent;
+  }
+
+  // tfjs-vis subsurface wrappers (live training charts)
+  > div {
+    background: transparent !important;
+    box-shadow: none !important;
+    margin: 0 0 0.75rem !important;
+    padding: 0 !important;
+    border: none !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    min-height: 200px;
+    overflow: visible !important;
+  }
+
+  .subsurface-title {
+    font-family: var(--font-sans) !important;
+    font-size: 0.72rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.08em !important;
+    text-transform: uppercase !important;
+    color: var(--color-text-muted) !important;
+    border-bottom: 1px solid var(--color-border) !important;
+    background: transparent !important;
+    line-height: 1.4 !important;
+    padding: 0 0 0.5rem !important;
+    margin-bottom: 0.5rem !important;
+  }
+
+  // Vega embed output — centered, full width
+  .vega-embed {
+    width: 100% !important;
+    padding: 0 !important;
+    background: transparent !important;
+    display: flex;
+    justify-content: center;
+
+    summary {
+      display: none;
+    }
+
+    .chart-wrapper {
+      width: 100% !important;
+      max-width: 100%;
+    }
+
+    canvas,
+    svg {
+      max-width: 100%;
+      height: auto;
+    }
+  }
+
+  // Action menu (export etc.) — hide on inline charts
+  .vega-actions {
+    display: none !important;
+  }
+}
+
+.chart-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 0;
+
+  &--inactive {
+    display: none;
+  }
+
+  .chart-host {
+    background: var(--color-bg-subtle);
+    border: none;
+    min-height: 260px;
+    padding: 0.35rem 0.5rem 0.5rem;
+    overflow: hidden;
+  }
+
+  .chart-host .vega-embed svg {
+    g[aria-label='legend'],
+    g[aria-label^='Legend'],
+    g[class*='legend'],
+    g[class*='role-legend'] {
+      display: none !important;
+    }
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+
+  &__title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-text-secondary);
+    margin: 0;
+  }
+
+  &__legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+  }
+}
+
+.legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+
+  &::before {
+    content: '';
+    width: 10px;
+    height: 3px;
+    border-radius: var(--radius-pill);
+    background: var(--legend-color, var(--color-primary));
+  }
+}
+
+.charts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.chart-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 0.5rem;
+  padding: 2rem 1rem;
+  border-radius: var(--radius-md);
+  border: 1px dashed var(--color-border);
+  background: var(--color-bg-subtle);
+  color: var(--color-text-secondary);
+  min-height: 180px;
+
+  mat-icon {
+    font-size: 2rem;
+    width: 2rem;
+    height: 2rem;
+    color: var(--color-text-muted);
+    opacity: 0.7;
+  }
+
+  p {
+    max-width: 36ch;
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+}
+
+.summary-container {
+  min-height: 120px;
+  border-radius: var(--radius-md);
+  background: var(--color-bg-subtle);
+  border: 1px solid var(--color-border);
+  padding: 0.75rem;
+  overflow: auto;
+
+  &:empty {
+    display: none;
+  }
+}
+
+// Model summary / tfvis tables
+.tfvis-data-table,
+.chart-host table.tf-table,
+.summary-container table.tf-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+
+  thead th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    text-align: left;
+    padding: 0.65rem 0.75rem;
+    background: var(--color-bg-muted);
+    color: var(--color-text-secondary);
+    font-weight: 600;
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  tbody td {
+    padding: 0.55rem 0.75rem;
+    border-bottom: 1px solid var(--color-border);
+    color: var(--color-text);
+    font-variant-numeric: tabular-nums;
+  }
+
+  tbody tr:nth-child(even) td {
+    background: rgba(91, 91, 214, 0.03);
+  }
+
+  tbody tr:hover td {
+    background: var(--color-primary-light);
+  }
+}
+
+// Progress bar in training card
+.training-progress-bar {
+  --mdc-linear-progress-active-indicator-color: var(--color-primary);
+  --mdc-linear-progress-track-color: var(--color-bg-muted);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+  height: 8px !important;
+}
+
+@media (max-width: 768px) {
+  .charts-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -33,6 +33,58 @@ export class ModelBuilderService {
   selectedLayerSubject: BehaviorSubject<Layer | null> = new BehaviorSubject<Layer | null>(null);
   activeConnectionSubject: BehaviorSubject<Connection | null> = new BehaviorSubject<Connection | null>(null);
   isInitialized = false;
+  private headless = false;
+  private svgContainerEl: Element | null = null;
+  private innerSvgEl: Element | null = null;
+
+  bindCanvas(svgContainer: Element, innerSvg: Element): void {
+    this.svgContainerEl = svgContainer;
+    this.innerSvgEl = innerSvg;
+  }
+
+  clearCanvasBinding(): void {
+    this.svgContainerEl = null;
+    this.innerSvgEl = null;
+  }
+
+  selectSvgContainer(): Selection<any, any, any, any> {
+    const element = this.svgContainerEl ?? document.getElementById('svg-container');
+    return d3.select(element);
+  }
+
+  selectInnerSvg(): Selection<any, any, any, any> {
+    const element = this.innerSvgEl ?? document.getElementById('inner-svg-container');
+    return d3.select(element);
+  }
+
+  private requireCanvas(): void {
+    const svgNode = this.selectSvgContainer().node();
+    const innerNode = this.selectInnerSvg().node();
+    if (!svgNode || !innerNode) {
+      throw new Error('Model builder canvas is not available.');
+    }
+  }
+
+  isHeadless(): boolean {
+    return this.headless;
+  }
+
+  /** Load builder JSON into memory without requiring the SVG canvas (e.g. on project reopen). */
+  syncFromBuilderState(builder: Builder): void {
+    this.headless = true;
+    try {
+      this.clearLayers();
+      this.nextLayerId = builder.nextLayerId ?? 1;
+      this.loadFromBuilder(builder);
+    } finally {
+      this.headless = false;
+      this.isInitialized = false;
+    }
+  }
+
+  hasPopulatedLayerMap(): boolean {
+    return this.layerMap.size > 0;
+  }
 
   constructor(protected fb: NonNullableFormBuilder) {
     this.selectedLayerSubject.subscribe((layer) => {
@@ -50,13 +102,18 @@ export class ModelBuilderService {
 
   async clearModelBuilder(): Promise<void> {
     this.isInitialized = false;
-    await this.initialize({layers: [{type: LayerType.Input}, {type: LayerType.Output}], connections: []});
+    await this.initialize({layers: [{type: LayerType.Input}, {type: LayerType.Output}], connections: [], nextLayerId: 1});
   }
 
   setupSvg(): void {
-    const svg: Selection<any, any, any, any> = d3.select("#svg-container");
-    const svgWidth = svg.node().getBoundingClientRect().width;
-    const svgHeight = svg.node().getBoundingClientRect().height;
+    const svg = this.selectSvgContainer();
+    const svgNode = svg.node();
+    if (!svgNode) {
+      return;
+    }
+
+    const svgWidth = svgNode.getBoundingClientRect().width;
+    const svgHeight = svgNode.getBoundingClientRect().height;
 
     svg
       .on("click", (event: any) => this.unselect(event))
@@ -64,23 +121,30 @@ export class ModelBuilderService {
         d3.zoom().scaleExtent([0.4, 1.1])
           .translateExtent([[-svgWidth, -svgHeight], [2 * svgWidth, 2 * svgHeight]])
           .on('zoom', (event: any) => {
-            d3.select("#inner-svg-container").attr('transform', event.transform);
+            this.selectInnerSvg().attr('transform', event.transform);
           })
       );
   }
 
-  async initialize(builder?: any): Promise<void> {
-    this.setupSvg();
-    // todo: set different backends?
-    await tf.ready();
-    if (!this.isInitialized) {
-      this.clearLayers();
-      this.isInitialized = true;
-      this.nextLayerId = builder.nextLayerId;
-      this.loadFromBuilder(builder);
-    } else {
-      this.redrawLayers();
+  async initialize(
+    builder?: Builder,
+    canvas?: { svgContainer: Element, innerSvg: Element },
+  ): Promise<void> {
+    if (canvas) {
+      this.bindCanvas(canvas.svgContainer, canvas.innerSvg);
     }
+
+    this.requireCanvas();
+    this.setupSvg();
+    await tf.ready();
+
+    const builderState = builder ?? {layers: [], connections: [], nextLayerId: 1};
+    this.selectInnerSvg().selectAll("*").remove();
+    this.selectInnerSvg().attr('transform', null);
+    this.clearLayers();
+    this.isInitialized = true;
+    this.nextLayerId = builderState.nextLayerId ?? 1;
+    this.loadFromBuilder(builderState);
   }
 
   unselect(event: any): void {
@@ -157,13 +221,15 @@ export class ModelBuilderService {
         this.outputLayer = layer;
         break;
     }
-    this.layerMap.set(id, layer);
+    if (layer) {
+      this.layerMap.set(id, layer);
+    }
   }
 
   private getContainerWidthAndHeight(): { width: number, height: number } {
-    const svg: Selection<any, any, any, any> = d3.select("#svg-container");
-    const svgWidth = svg.node().getBoundingClientRect().width;
-    const svgHeight = svg.node().getBoundingClientRect().height;
+    const svgNode = this.selectSvgContainer().node();
+    const svgWidth = svgNode?.getBoundingClientRect().width ?? 0;
+    const svgHeight = svgNode?.getBoundingClientRect().height ?? 0;
     return {width: svgWidth, height: svgHeight};
   }
 
@@ -265,9 +331,7 @@ export class ModelBuilderService {
   clearLayers(): void {
     this.layerMap.forEach((layer) => layer.delete());
     this.layerMap.clear();
-  }
-
-  private redrawLayers(): void {
-    this.layerMap.forEach((layer) => layer.draw());
+    this.inputLayer = null;
+    this.outputLayer = null;
   }
 }

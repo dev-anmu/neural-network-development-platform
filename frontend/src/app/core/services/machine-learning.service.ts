@@ -12,8 +12,21 @@ import {MessageDialogComponent} from "../../shared/components/message-dialog/mes
 import {optimizers} from "../../shared/ml_objects/optimizers";
 import {losses} from "../../shared/ml_objects/losses";
 import {ModelBuilderService} from "./model-builder.service";
+import {EncoderEnum} from "../enums";
 import {Tensor} from "@tensorflow/tfjs";
 import {DataFrame} from "danfojs";
+import {
+  buildLineChartOptions,
+  plotSeriesColors,
+  polishVegaChart,
+  preparePlotContainer,
+  PLOT_SERIES_LABELS,
+} from "../../shared/utils/tfvis-theme";
+
+export interface TrainingPlotTargets {
+  loss?: HTMLElement | null;
+  accuracy?: HTMLElement | null;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -47,9 +60,27 @@ export class MachineLearningService {
   }
 
   async trainingReady(): Promise<{ dataset: boolean, model: boolean }> {
-    const modelReady = this.projectService.model() ? true : false;
+    const builder = this.projectService.builder();
+    const hasTopology = (builder.connections?.length ?? 0) > 0;
+    const modelReady = !!this.projectService.model() || hasTopology;
     const datasetReady = this.projectService.dataset().data.length > 0;
     return {dataset: datasetReady, model: modelReady}
+  }
+
+  private async ensureModelIsBuilt(): Promise<void> {
+    if (this.projectService.model()) {
+      return;
+    }
+    const builder = this.projectService.builder();
+    if (!builder.connections?.length) {
+      return;
+    }
+    if (!this.modelBuilderService.hasPopulatedLayerMap()) {
+      this.modelBuilderService.syncFromBuilderState(builder);
+    }
+    const parameter = this.projectService.trainConfig();
+    const model = await this.modelBuilderService.generateModel(!parameter.useExistingWeights);
+    this.projectService.model.set(model);
   }
 
   normalize(data: tf.Tensor) {
@@ -110,7 +141,7 @@ export class MachineLearningService {
   async extractFeaturesAndTargets(df: DataFrame): Promise<[Tensor, Tensor]> {
     const dataset = this.projectService.dataset();
     const inputColumns: string[] = dataset.inputColumns;
-    const targetColumns: string[] = dataset.targetColumns;
+    const targetColumns = this.resolveTargetColumns(df, dataset.targetColumns);
 
     const dfInputColumns = df.columns.filter((column: string) => inputColumns.includes(column.split('_')[0]));
 
@@ -120,7 +151,24 @@ export class MachineLearningService {
     return [inputs.tensor, targets.tensor];
   }
 
-  async train(X: Tensor, Y: Tensor, plotContainer: HTMLElement): Promise<any> {
+  private resolveTargetColumns(df: DataFrame, targetColumns: string[]): string[] {
+    const dataset = this.projectService.dataset();
+    const resolved: string[] = [];
+
+    for (const column of targetColumns) {
+      const meta = dataset.columns.find((entry) => entry.name === column);
+      if (meta?.encoding === EncoderEnum.onehot) {
+        resolved.push(...df.columns.filter((name) => name.startsWith(`${column}_`)));
+      } else if (df.columns.includes(column)) {
+        resolved.push(column);
+      }
+    }
+
+    return resolved;
+  }
+
+  async train(X: Tensor, Y: Tensor, plotTargets: TrainingPlotTargets = {}): Promise<any> {
+    await this.ensureModelIsBuilt();
     const parameter = this.projectService.trainConfig();
     if (!parameter.useExistingWeights) {
       const model = await this.modelBuilderService.generateModel(parameter.useExistingWeights);
@@ -164,25 +212,12 @@ export class MachineLearningService {
     }, YIELD_EVERY);
     const callbacks: any[] = [fitCallback];
 
-    // Dynamically load tfvis only when needed for plots
-    if (parameter.accuracyPlot || parameter.lossPlot) {
-      const tfvis = await import('@tensorflow/tfjs-vis');
-      
-      if (parameter.accuracyPlot) {
-        callbacks.push(new tf.CustomCallback(tfvis.show.fitCallbacks(plotContainer, ['acc', 'val_acc'], {
-          callbacks: ['onEpochEnd'],
-          xLabel: 'Epoch',
-          yLabel: 'Accuracy'
-        })));
-      }
-      
-      if (parameter.lossPlot) {
-        callbacks.push(new tf.CustomCallback(tfvis.show.fitCallbacks(plotContainer, ['loss', 'val_loss'], {
-          callbacks: ['onEpochEnd'],
-          xLabel: 'Epoch',
-          yLabel: 'Loss'
-        })));
-      }
+    if (parameter.lossPlot) {
+      this.addLivePlotCallback(callbacks, plotTargets.loss, ['loss', 'val_loss'], 'Loss');
+    }
+
+    if (parameter.accuracyPlot) {
+      this.addLivePlotCallback(callbacks, plotTargets.accuracy, ['acc', 'val_acc'], 'Accuracy');
     }
     
     if (parameter.earlyStopping) {
@@ -240,21 +275,53 @@ export class MachineLearningService {
     yLabel: string,
     width?: number
   }): Promise<void> {
-    // Dynamically import tfjs-vis when needed
     const tfvis = await import('@tensorflow/tfjs-vis');
-    
+
+    preparePlotContainer(htmlContainer);
+
     const data = {
       values: values,
       series: series
     };
 
-    await tfvis.render.linechart(htmlContainer, data, {
-      width: options.width || 500,
-      height: 250,
-      xLabel: options.xLabel || '',
-      yLabel: options.yLabel || '',
-      fontSize: 16
-    });
+    await tfvis.render.linechart(htmlContainer, data, buildLineChartOptions(htmlContainer, {
+      width: options.width,
+      xLabel: options.xLabel,
+      yLabel: options.yLabel,
+      seriesColors: plotSeriesColors(values.length),
+    }));
+    polishVegaChart(htmlContainer);
+  }
+
+  private addLivePlotCallback(
+    callbacks: any[],
+    container: HTMLElement | null | undefined,
+    metrics: [string, string],
+    yLabel: string,
+  ): void {
+    if (!container) {
+      return;
+    }
+
+    preparePlotContainer(container);
+    const epochLogs: Array<Record<string, number>> = [];
+    const series = [...PLOT_SERIES_LABELS];
+
+    callbacks.push(new tf.CustomCallback({
+      onEpochEnd: async (_epoch, logs) => {
+        if (!logs) {
+          return;
+        }
+        epochLogs.push(logs as Record<string, number>);
+        const values = metrics.map((metric) =>
+          epochLogs.map((entry, index) => ({
+            x: index,
+            y: entry[metric] ?? 0,
+          }))
+        );
+        await this.renderPlot(container, values, series, {xLabel: 'Epoch', yLabel});
+      },
+    }));
   }
   
   // Helper function needed by showHistory

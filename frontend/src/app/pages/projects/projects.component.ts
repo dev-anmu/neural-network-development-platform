@@ -24,8 +24,6 @@ export class ProjectsComponent implements OnInit {
   private readonly cdr = inject(ChangeDetectorRef);
   file: File | undefined;
   projects = new Map<string, Project>();
-  templateProjects: string[] = ['mnist'];
-  selectedTemplateProject: string | undefined;
   isImporting = false;
 
   constructor(private serializationService: SerializationService,
@@ -67,24 +65,6 @@ export class ProjectsComponent implements OnInit {
       if (projectName) {
         const project = this.projectService.createProject(this.generateProjectId(), projectName);
         this.projectService.addProject(project);
-        await this.router.navigate([`/projects/${projectName}`])
-      }
-    });
-  }
-
-  async createProjectFromTemplate(template: string): Promise<void> {
-    const dialogRef = this.dialog.open(InputDialogComponent, {
-      data: {message: 'Create a Project from Template.'}
-    });
-    dialogRef.afterClosed().subscribe(async (projectName) => {
-      if (projectName) {
-        const projectData = this.projectService.getTemplateProjectByName(template);
-        if (!projectData) {
-          return;
-        }
-        projectData.projectInfo.id = this.generateProjectId();
-        projectData.projectInfo.name = projectName;
-        this.projectService.addProject(projectData);
         await this.router.navigate([`/projects/${projectName}`])
       }
     });

@@ -4,14 +4,17 @@ import {Layer} from "./layer";
 export class Connection {
   private readonly source: Layer;
   private destination: Layer | null = null;
-  private connection: d3.Selection<any, any, any, any>;
+  private connection: d3.Selection<any, any, any, any> | null = null;
 
   constructor(source: Layer, destination: Layer | null) {
     this.source = source;
     this.destination = destination;
+    if (source.getModelBuilder().isHeadless()) {
+      return;
+    }
     const sourceAnchor = this.source.getOutputAnchorPosition();
     const destinationAnchor = this.destination?.getInputAnchorPosition();
-    const svg = d3.select("#inner-svg-container");
+    const svg = this.source.getModelBuilder().selectInnerSvg();
 
     this.connection = svg.append("line")
       .classed("connection", true)
@@ -30,7 +33,10 @@ export class Connection {
   }
 
   draw(): void {
-    d3.select("#inner-svg-container").append(() => this.connection.node()).lower();
+    if (!this.connection) {
+      return;
+    }
+    this.source.getModelBuilder().selectInnerSvg().append(() => this.connection!.node()).lower();
   }
 
   connectWithDestinationLayer(destinationLayer: Layer): this {
@@ -51,6 +57,9 @@ export class Connection {
   }
 
   moveToMouse(event: any): void {
+    if (!this.connection) {
+      return;
+    }
     const layerPosition = this.source.getSvgPosition();
     this.connection
       .attr("x2", layerPosition.x + event.x)
@@ -58,6 +67,9 @@ export class Connection {
   }
 
   updateSourcePosition(): void {
+    if (!this.connection) {
+      return;
+    }
     const anchorPosition = this.source.getOutputAnchorPosition();
     this.connection
       .attr("x1", anchorPosition.x)
@@ -66,18 +78,19 @@ export class Connection {
   }
 
   updateDestinationPosition(): void {
-    if (this.destination) {
-      const anchorPosition = this.destination.getInputAnchorPosition();
+    if (!this.connection || !this.destination) {
+      return;
+    }
+    const anchorPosition = this.destination.getInputAnchorPosition();
       this.connection
         .attr("x2", anchorPosition.x)
         .attr("y2", anchorPosition.y)
         .lower();
-    }
   }
 
   removeConnection(): void {
     this.source.removeOutputConnection();
     this.destination?.removeInputConnection();
-    this.connection.remove();
+    this.connection?.remove();
   }
 }

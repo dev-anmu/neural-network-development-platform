@@ -1,11 +1,13 @@
-.mat-mdc-dialog-container {
-  width: 50%;
+:host {
+  display: block;
 }
 
 .warning-msg {
   color: var(--color-warn);
+  line-height: 1.55;
 }
 
 .success-msg {
   color: var(--color-success);
+  line-height: 1.55;
 }

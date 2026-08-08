@@ -1,4 +1,9 @@
+:host {
+  display: block;
+}
+
 p {
   margin: 0;
-  line-height: 1.5;
+  line-height: 1.55;
+  color: var(--color-text-secondary);
 }

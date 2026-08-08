@@ -32,7 +32,7 @@ export class Maxpooling extends Layer {
   protected override createLayer() {
     const maxPoolData = {name: "MaxPooling", poolSize: 2};
 
-    const maxPoolGrp = d3.select("#inner-svg-container").append("g")
+    const maxPoolGrp = this.modelBuilderService.selectInnerSvg().append("g")
       .classed("layer-group", true)
       .attr("stroke", "black")
       .attr("transform", `translate(${this.position.x}, ${this.position.y})`);

@@ -13,7 +13,10 @@ export class PlaygroundBuilderService extends ModelBuilderService {
     super(fb);
   }
 
-  override async initialize(builder?: any): Promise<void> {
+  override async initialize(
+    builder?: Builder,
+    canvas?: { svgContainer: Element, innerSvg: Element },
+  ): Promise<void> {
     this.isInitialized = false;
     this.clearLayers();
 
@@ -23,10 +26,7 @@ export class PlaygroundBuilderService extends ModelBuilderService {
       nextLayerId: 1
     };
 
-    this.setupSvg();
-    await tf.ready();
-    this.isInitialized = true;
-    this.loadFromBuilder(defaultBuilder);
+    await super.initialize(defaultBuilder, canvas);
   }
 
   override generateBuilderJSON(): Builder {
@@ -38,7 +38,6 @@ export class PlaygroundBuilderService extends ModelBuilderService {
   }
 
   override async clearModelBuilder(): Promise<void> {
-    this.isInitialized = false;
     await this.initialize({
       layers: [{type: LayerType.Input}, {type: LayerType.Output}],
       connections: [],

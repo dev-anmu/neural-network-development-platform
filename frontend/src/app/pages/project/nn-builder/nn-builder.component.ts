@@ -1,4 +1,16 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, HostListener, ViewEncapsulation, inject} from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  DestroyRef,
+  ElementRef,
+  HostListener,
+  OnDestroy,
+  ViewChild,
+  ViewEncapsulation,
+  inject,
+} from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {ModelBuilderService} from "../../../core/services/model-builder.service";
 import {LayerType} from "../../../core/enums";
@@ -18,14 +30,18 @@ import {NotificationService} from "../../../core/services/notification.service";
     standalone: false,
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class NnBuilderComponent {
+export class NnBuilderComponent implements AfterViewInit, OnDestroy {
   private readonly destroyRef = inject(DestroyRef);
   private readonly cdr = inject(ChangeDetectorRef);
+  @ViewChild('svgContainer', {static: true}) svgContainer!: ElementRef<SVGSVGElement>;
+  @ViewChild('innerSvgContainer', {static: true}) innerSvgContainer!: ElementRef<SVGGElement>;
+
   protected readonly LayerType = LayerType;
-  autoSaveInterval: any;
+  autoSaveInterval: ReturnType<typeof setInterval> | undefined;
   layerForm: any;
   configuration: any;
   selectedTab = new FormControl(0);
+  private canvasReady = false;
 
   constructor(private modelBuilderService: ModelBuilderService,
               private projectService: ProjectService,
@@ -43,12 +59,13 @@ export class NnBuilderComponent {
     })
   }
 
-  async ngOnInit(): Promise<void> {
-    await this.modelBuilderService.initialize(this.projectService.builder());
+  async ngAfterViewInit(): Promise<void> {
+    await this.modelBuilderService.initialize(this.projectService.builder(), {
+      svgContainer: this.svgContainer.nativeElement,
+      innerSvg: this.innerSvgContainer.nativeElement,
+    });
+    this.canvasReady = true;
     this.startAutoSave();
-    this.projectService.builder.update((value) => {
-      return value
-    })
   }
 
   startAutoSave() {
@@ -61,14 +78,23 @@ export class NnBuilderComponent {
     if (this.autoSaveInterval) {
       clearInterval(this.autoSaveInterval);
     }
-    this.updateBuilder();
+    if (this.canvasReady) {
+      this.updateBuilder();
+    }
+    this.modelBuilderService.clearCanvasBinding();
   }
 
-
-
   updateBuilder(): void {
+    if (!this.canvasReady) {
+      return;
+    }
+
     const newBuilder = this.modelBuilderService.generateBuilderJSON();
     const oldBuilder = this.projectService.builder();
+    if (newBuilder.layers.length === 0 && oldBuilder.layers.length > 0) {
+      return;
+    }
+
     if (!areBuilderEqual(newBuilder, oldBuilder)) {
       this.projectService.initNewWeights.set(true);
       this.projectService.builder.set(newBuilder);

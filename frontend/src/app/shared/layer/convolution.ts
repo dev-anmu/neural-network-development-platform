@@ -42,7 +42,7 @@ export class Convolution extends Layer {
 
     const filterColors = ["#FF5733", "#33FF57", "#5733FF"];
 
-    const convGrp = d3.select("#inner-svg-container").append("g")
+    const convGrp = this.modelBuilderService.selectInnerSvg().append("g")
       .classed("layer-group", true)
       .attr("stroke", "black")
       .attr("transform", `translate(${this.position.x}, ${this.position.y})`);

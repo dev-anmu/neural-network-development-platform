@@ -33,6 +33,10 @@ export class DatasetComponent {
   selectedTable: string = 'original';
   selectedEncoders: Record<string, EncoderEnum> = {};
   isImporting = false;
+  isWideDataset = false;
+  hiddenColumnCount = 0;
+  displayedColumnNames: string[] = [];
+  isLoadingPreprocessed = false;
 
   constructor(public projectService: ProjectService,
               private serializationService: SerializationService,
@@ -49,9 +53,16 @@ export class DatasetComponent {
     this.dataSource = new MatTableDataSource();
   }
 
-  getRowCount(percentage: number): number {
-    const totalRows = this.projectService.dataset().data.length;
-    return Math.round((percentage / 100) * totalRows);
+  get totalColumnCount(): number {
+    return this.projectService.dataset().columns.length;
+  }
+
+  get totalRowCount(): number {
+    return this.projectService.dataset().data.length;
+  }
+
+  get hasDataset(): boolean {
+    return this.totalRowCount > 0 && this.totalColumnCount > 0;
   }
 
   getDataTypeClass(dataType: string): string {
@@ -90,38 +101,80 @@ export class DatasetComponent {
   }
 
   async initTable(): Promise<void> {
-    const df = await this.projectService.getDataframe();
     const dataset = this.projectService.dataset();
-    if (df && df.shape[0] !== 0) {
-      this.displayedColumns = dataset.columns;
-      this.selectedEncoders = dataset.columns.reduce((acc: any, column) => {
-        acc[column.name] = column.encoding;
-        if (column.encoding !== EncoderEnum.no) {
-          this.onEncoderChange(column.name, column.encoding);
-        }
-        return acc;
-      }, {});
-      this.columnNames = dataset.columns.map(column => column.name);
-      this.datasetForm.patchValue({
-        input: dataset.inputColumns,
-        target: dataset.targetColumns,
-      });
-      this.selectedTable = 'original';
-      await this.updateDataSource(this.selectedTable);
-      this.cdr.markForCheck();
+    if (!dataset.data.length || !dataset.columns.length) {
+      return;
     }
+
+    this.isWideDataset = dataset.columns.length > 20;
+    this.displayedColumns = this.getPreviewColumns(dataset);
+    this.displayedColumnNames = this.displayedColumns.map((column) => column.name);
+    this.hiddenColumnCount = dataset.columns.length - this.displayedColumns.length;
+
+    this.selectedEncoders = dataset.columns.reduce((acc: Record<string, EncoderEnum>, column) => {
+      acc[column.name] = column.encoding;
+      return acc;
+    }, {});
+
+    for (const column of dataset.columns) {
+      if (column.encoding !== EncoderEnum.no && !column.encoder) {
+        column.encoder = await this.projectService.createEncoderInstance(column.encoding);
+      }
+    }
+
+    this.columnNames = dataset.columns.map(column => column.name);
+    this.datasetForm.patchValue({
+      input: dataset.inputColumns,
+      target: dataset.targetColumns,
+    });
+    this.selectedTable = 'original';
+    await this.updateDataSource(this.selectedTable);
+    this.cdr.markForCheck();
+  }
+
+  private getPreviewColumns(dataset: Dataset): Dataset['columns'] {
+    const maxPreviewColumns = 12;
+    if (dataset.columns.length <= maxPreviewColumns) {
+      return dataset.columns;
+    }
+
+    const labelColumn = dataset.columns.find((column) => column.name === 'label');
+    const pixelColumns = dataset.columns.filter((column) => column.name.startsWith('pixel'));
+    const preview = [
+      ...(labelColumn ? [labelColumn] : []),
+      ...pixelColumns.slice(0, maxPreviewColumns - (labelColumn ? 1 : 0)),
+    ];
+
+    return preview.length > 0 ? preview : dataset.columns.slice(0, maxPreviewColumns);
+  }
+
+  async onViewChange(view: string): Promise<void> {
+    this.selectedTable = view;
+    await this.updateDataSource(view);
   }
 
   async updateDataSource(dataType: string): Promise<void> {
     if (dataType === 'original') {
       const dataset = this.projectService.dataset();
-      this.dataSource!.data = dataset.data;
+      this.dataSource.data = dataset.data;
     } else if (dataType === 'preprocessed') {
-      const df = await this.projectService.getDataframe();
-      const data: Record<string, any>[] = dfd.toJSON(df) as Record<string, any>[];
-      this.dataSource!.data = data;
-      this.dfColumns = df.columns;
+      this.isLoadingPreprocessed = true;
+      this.cdr.markForCheck();
+      try {
+        const df = await this.projectService.getDataframe();
+        const data: Record<string, any>[] = dfd.toJSON(df) as Record<string, any>[];
+        this.dataSource.data = data;
+        const columns = df.columns as string[];
+        this.dfColumns = columns.length > 20 ? columns.slice(0, 12) : columns;
+        if (columns.length > this.dfColumns.length) {
+          this.hiddenColumnCount = columns.length - this.dfColumns.length;
+          this.isWideDataset = true;
+        }
+      } finally {
+        this.isLoadingPreprocessed = false;
+      }
     }
+    this.initPaginator();
     this.cdr.markForCheck();
   }
 
@@ -223,6 +276,20 @@ export class DatasetComponent {
   checkIfTypeNumber(value: any) {
     return typeof value === 'number';
   }
+
+  get previewTableColumns(): string[] {
+    return ['__row', ...this.displayedColumnNames];
+  }
+
+  get preprocessedTableColumns(): string[] {
+    return ['__row', ...this.dfColumns];
+  }
+
+  getRowCount(percentage: number): number {
+    const totalRows = this.projectService.dataset().data.length;
+    return Math.round((percentage / 100) * totalRows);
+  }
+
   protected readonly Encoder = Encoder;
 }
 

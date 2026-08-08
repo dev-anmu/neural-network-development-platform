@@ -46,14 +46,41 @@
               <h3 class="section-heading">Model Info</h3>
             </div>
             <div class="section-content">
-              <div class="model-info-container">
-                <p><b>#{{selectedRecord?.id}}</b> - <span class="record-date">{{selectedRecord?.date | date:'d. MMM yyyy, H:mm:ss'}}</span> | <span>Dataset:</span> {{selectedRecord?.datasetName}}</p>
-                <p><b>Trained for</b></p>
-                <p class="value-line"><span>Epochs:</span> {{selectedRecord?.trainStats?.epoch}} | <span>Batch Size:</span> {{selectedRecord?.config?.batchSize}}</p>
-                <p><b>Validation Metrics</b></p>
-                <p class="value-line"><span>Accuracy:</span> {{selectedRecord?.trainStats?.accuracy | number:'1.1-5'}} | <span>Loss:</span> {{selectedRecord?.trainStats?.loss | number:'1.1-5'}}</p>
-                <p><b>Training Parameters</b></p>
-                <p class="value-line"><span>Loss Function:</span> {{selectedRecord?.config?.loss}} | <span>Optimizer:</span> {{selectedRecord?.config?.optimizer}} | <span>Learning Rate:</span> {{selectedRecord?.config?.learningRate}}</p>
+              <div class="model-info-grid">
+                <div class="info-stat">
+                  <span class="info-stat__label">Record</span>
+                  <span class="info-stat__value">#{{ selectedRecord?.id }}</span>
+                </div>
+                <div class="info-stat">
+                  <span class="info-stat__label">Date</span>
+                  <span class="info-stat__value">{{ selectedRecord?.date | date:'d MMM y, H:mm' }}</span>
+                </div>
+                <div class="info-stat">
+                  <span class="info-stat__label">Dataset</span>
+                  <span class="info-stat__value">{{ selectedRecord?.datasetName }}</span>
+                </div>
+                <div class="info-stat">
+                  <span class="info-stat__label">Epochs</span>
+                  <span class="info-stat__value">{{ selectedRecord?.trainStats?.epoch }}</span>
+                </div>
+                <div class="info-stat">
+                  <span class="info-stat__label">Batch size</span>
+                  <span class="info-stat__value">{{ selectedRecord?.config?.batchSize }}</span>
+                </div>
+                <div class="info-stat">
+                  <span class="info-stat__label">Accuracy</span>
+                  <span class="info-stat__value">{{ selectedRecord?.trainStats?.accuracy | number:'1.1-5' }}</span>
+                </div>
+                <div class="info-stat">
+                  <span class="info-stat__label">Loss</span>
+                  <span class="info-stat__value">{{ selectedRecord?.trainStats?.loss | number:'1.1-5' }}</span>
+                </div>
+                <div class="info-stat info-stat--wide">
+                  <span class="info-stat__label">Configuration</span>
+                  <span class="info-stat__value">
+                    {{ selectedRecord?.config?.loss }} · {{ selectedRecord?.config?.optimizer }} · lr {{ selectedRecord?.config?.learningRate }}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
@@ -63,9 +90,27 @@
               <h3 class="section-heading">Training Metrics</h3>
             </div>
             <div class="section-content">
-              <div class="plot-flex">
-                <div #lossContainer class="plot-container"></div>
-                <div #accuracyContainer class="plot-container"></div>
+              <div class="charts-grid">
+                <div class="chart-card">
+                  <div class="chart-card__header">
+                    <h4 class="chart-card__title">Loss</h4>
+                    <div class="chart-card__legend">
+                      <span class="legend-item" style="--legend-color: #5b5bd6">Training</span>
+                      <span class="legend-item" style="--legend-color: #0891b2">Validation</span>
+                    </div>
+                  </div>
+                  <div #lossContainer class="chart-host"></div>
+                </div>
+                <div class="chart-card">
+                  <div class="chart-card__header">
+                    <h4 class="chart-card__title">Accuracy</h4>
+                    <div class="chart-card__legend">
+                      <span class="legend-item" style="--legend-color: #5b5bd6">Training</span>
+                      <span class="legend-item" style="--legend-color: #0891b2">Validation</span>
+                    </div>
+                  </div>
+                  <div #accuracyContainer class="chart-host"></div>
+                </div>
               </div>
             </div>
           </div>
