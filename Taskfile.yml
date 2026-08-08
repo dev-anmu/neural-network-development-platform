@@ -5,32 +5,32 @@ tasks:
     desc: Install frontend dependencies
     dir: frontend
     cmds:
-      - npm install
+      - '{{.TASKFILE_DIR}}/scripts/node-run.sh npm install'
 
   dev:
     desc: Start local development server at http://localhost:4200
     dir: frontend
     deps: [install]
     cmds:
-      - npm start
+      - '{{.TASKFILE_DIR}}/scripts/node-run.sh npm start'
 
   build:
     desc: Build the frontend for production
     dir: frontend
     cmds:
-      - npm run build
+      - '{{.TASKFILE_DIR}}/scripts/node-run.sh npm run build'
 
   lint:
     desc: Run ESLint on the frontend
     dir: frontend
     cmds:
-      - npm run lint
+      - '{{.TASKFILE_DIR}}/scripts/node-run.sh npm run lint'
 
   test:
     desc: Run frontend unit tests
     dir: frontend
     cmds:
-      - npm test
+      - '{{.TASKFILE_DIR}}/scripts/node-run.sh npm test'
 
   docker:dev:
     desc: Start development environment with Docker (port 4200)

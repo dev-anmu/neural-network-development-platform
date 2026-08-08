@@ -8,43 +8,51 @@
         <h3 class="section-heading">Training Progress</h3>
       </div>
       <div class="card-content">
-        <div *ngIf="trainingStats" class="stats-display">
-          <div class="stat-row epoch-row">
-            <div class="stat-label">Epoch</div>
-            <div class="stat-value">{{trainingStats.epoch}}</div>
-          </div>
-          <div class="stat-row">
-            <div class="stat-label">Accuracy</div>
-            <div class="stat-value">{{trainingStats.accuracy | number:'1.1-4'}}</div>
-          </div>
-          <div class="stat-row">
-            <div class="stat-label">Loss</div>
-            <div class="stat-value">{{trainingStats.loss | number:'1.1-4'}}</div>
-          </div>
-          <div class="progress-bar-container">
-            <div class="progress-info">
-              <span class="progress-percentage">{{trainingStats.progress | number:'1.1-1'}}%</span>
-              <span class="progress-time">{{trainingStats.time * 1000 | date:'mm:ss'}}</span>
+        @if (trainingStats) {
+          <div class="stats-display">
+            <div class="stat-row epoch-row">
+              <div class="stat-label">Epoch</div>
+              <div class="stat-value">{{trainingStats.epoch}}</div>
             </div>
-            <mat-progress-bar mode="determinate" [value]="trainingStats.progress"></mat-progress-bar>
+            <div class="stat-row">
+              <div class="stat-label">Accuracy</div>
+              <div class="stat-value">{{trainingStats.accuracy | number:'1.1-4'}}</div>
+            </div>
+            <div class="stat-row">
+              <div class="stat-label">Loss</div>
+              <div class="stat-value">{{trainingStats.loss | number:'1.1-4'}}</div>
+            </div>
+            <div class="progress-bar-container">
+              <div class="progress-info">
+                <span class="progress-percentage">{{trainingStats.progress | number:'1.1-1'}}%</span>
+                <span class="progress-time">{{trainingStats.time * 1000 | date:'mm:ss'}}</span>
+              </div>
+              <mat-progress-bar mode="determinate" [value]="trainingStats.progress"></mat-progress-bar>
+            </div>
           </div>
-        </div>
-        <div *ngIf="!trainingStats" class="no-training">
-          <mat-icon>info</mat-icon>
-          <p>No active training. Configure parameters and press Start.</p>
-        </div>
-        
+        }
+        @if (!trainingStats) {
+          <div class="no-training">
+            <mat-icon>info</mat-icon>
+            <p>No active training. Configure parameters and press Start.</p>
+          </div>
+        }
+
         <!-- Training Controls -->
         <div class="training-controls">
           <div class="model-buttons">
-            <button mat-raised-button color="accent" *ngIf="!trainingInProgress" (click)="train()">
-              <mat-icon>play_arrow</mat-icon> Start Training
-            </button>
-            <button mat-raised-button color="warn" *ngIf="trainingInProgress" (click)="stopTraining()">
-              <mat-icon>stop</mat-icon> Stop Training
-            </button>
+            @if (!trainingInProgress) {
+              <button mat-raised-button color="accent" (click)="train()">
+                <mat-icon>play_arrow</mat-icon> Start Training
+              </button>
+            }
+            @if (trainingInProgress) {
+              <button mat-raised-button color="warn" (click)="stopTraining()">
+                <mat-icon>stop</mat-icon> Stop Training
+              </button>
+            }
           </div>
-          
+
           <div class="training-toggles">
             <form [formGroup]="trainingForm" class="toggle-stack">
               <mat-slide-toggle formControlName="saveTraining" color="accent">
@@ -72,48 +80,54 @@
               <mat-label>Epochs</mat-label>
               <input matInput formControlName="epochs" type="number" step="1">
             </mat-form-field>
-            
+
             <mat-form-field appearance="outline">
               <mat-label>Batch Size</mat-label>
               <input matInput formControlName="batchSize" type="number" step="1">
             </mat-form-field>
-            
+
             <mat-form-field appearance="outline">
               <mat-label>Learning Rate</mat-label>
               <input matInput formControlName="learningRate" type="number" step="0.001">
             </mat-form-field>
-            
+
             <mat-form-field appearance="outline">
               <mat-label>Optimizer</mat-label>
               <mat-select formControlName="optimizer">
-                <mat-option *ngFor="let optimizer of optimizers | keyvalue;"
-                  [value]="optimizer.key" [matTooltip]="optimizer.value.tooltip">
-                  {{optimizer.key}}
-                </mat-option>
+                @for (optimizer of optimizers | keyvalue; track optimizer) {
+                  <mat-option
+                    [value]="optimizer.key" [matTooltip]="optimizer.value.tooltip">
+                    {{optimizer.key}}
+                  </mat-option>
+                }
               </mat-select>
             </mat-form-field>
-            
+
             <mat-form-field appearance="outline">
               <mat-label>Loss Function</mat-label>
               <mat-select formControlName="loss">
-                <mat-option *ngFor="let loss of losses | keyvalue;"
-                  [value]="loss.key" [matTooltip]="loss.value.tooltip">
-                  {{loss.key}}
-                </mat-option>
+                @for (loss of losses | keyvalue; track loss) {
+                  <mat-option
+                    [value]="loss.key" [matTooltip]="loss.value.tooltip">
+                    {{loss.key}}
+                  </mat-option>
+                }
               </mat-select>
             </mat-form-field>
-            
+
             <mat-form-field appearance="outline">
               <mat-label>Backend</mat-label>
               <mat-select formControlName="tfBackend">
-                <mat-option *ngFor="let backend of tfBackends | keyvalue;"
-                  [value]="backend.key">
-                  {{backend.value.name}}
-                </mat-option>
+                @for (backend of tfBackends | keyvalue; track backend) {
+                  <mat-option
+                    [value]="backend.key">
+                    {{backend.value.name}}
+                  </mat-option>
+                }
               </mat-select>
             </mat-form-field>
           </div>
-          
+
           <div class="parameters-toggles">
             <mat-slide-toggle formControlName="shuffle" color="accent">
               Shuffle Data
@@ -122,7 +136,7 @@
               Early Stopping
             </mat-slide-toggle>
           </div>
-          
+
           <!-- Visualization Settings -->
           <div class="visualization-settings">
             <h4 class="subsection-title"><mat-icon>tune</mat-icon> Visualization Settings</h4>

@@ -70,12 +70,12 @@ export class NnBuilderComponent {
   }
 
   @HostListener('window:keydown.Escape', ['$event'])
-  unselectLayer(event: KeyboardEvent): void {
+  unselectLayer(event: Event): void {
     this.modelBuilderService.unselect(event);
   }
 
   @HostListener('window:keydown.Delete', ['$event'])
-  deleteLayer(event: KeyboardEvent): void {
+  deleteLayer(event: Event): void {
     this.modelBuilderService.deleteSelectedLayer(event);
   }
 

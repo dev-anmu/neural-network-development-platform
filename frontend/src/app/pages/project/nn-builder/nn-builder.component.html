@@ -13,33 +13,33 @@
             <h3>Basic</h3>
             <div class="layer-component-buttons">
               <button mat-raised-button color="primary" (click)="createLayer(LayerType.Dense)"
-                      [matTooltip]="'A fully connected layer takes all of the outputs from the previous layer and connects them to all of the neurons in the next layer. This allows the layer to learn complex relationships between the different features in the data.'" [matTooltipPosition]="'left'">
+                [matTooltip]="'A fully connected layer takes all of the outputs from the previous layer and connects them to all of the neurons in the next layer. This allows the layer to learn complex relationships between the different features in the data.'" [matTooltipPosition]="'left'">
                 Dense
               </button>
               <button mat-raised-button color="primary" (click)="createLayer(LayerType.Dropout)"
-                      [matTooltip]="'A dropout layer randomly drops out neurons from the network during training. This helps to prevent the network from overfitting to the training data and improves its generalization performance.'" [matTooltipPosition]="'left'">
+                [matTooltip]="'A dropout layer randomly drops out neurons from the network during training. This helps to prevent the network from overfitting to the training data and improves its generalization performance.'" [matTooltipPosition]="'left'">
                 Dropout
               </button>
             </div>
             <h3>Convolution</h3>
             <div class="layer-component-buttons">
               <button mat-raised-button color="primary" (click)="createLayer(LayerType.Convolution)"
-                      [matTooltip]="'A convolutional layer takes a small window of the input data and extracts features from it. This is useful for tasks such as image recognition and natural language processing, where patterns in the data can be localized to specific regions'" [matTooltipPosition]="'left'">
+                [matTooltip]="'A convolutional layer takes a small window of the input data and extracts features from it. This is useful for tasks such as image recognition and natural language processing, where patterns in the data can be localized to specific regions'" [matTooltipPosition]="'left'">
                 Convolutional
               </button>
               <button mat-raised-button color="primary" (click)="createLayer(LayerType.Flatten)"
-                      [matTooltip]="'A flatten layer converts the multidimensional output of a convolutional layer into a one-dimensional vector. This is necessary before feeding the output into a fully connected layer.'" [matTooltipPosition]="'left'">
+                [matTooltip]="'A flatten layer converts the multidimensional output of a convolutional layer into a one-dimensional vector. This is necessary before feeding the output into a fully connected layer.'" [matTooltipPosition]="'left'">
                 Flatten
               </button>
               <button mat-raised-button color="primary" (click)="createLayer(LayerType.Maxpooling)"
-                      [matTooltip]="'A maxpooling layer downsamples the input data by taking the maximum value from each small window. This reduces the dimensionality of the data and makes it more computationally efficient to process.'" [matTooltipPosition]="'left'">
+                [matTooltip]="'A maxpooling layer downsamples the input data by taking the maximum value from each small window. This reduces the dimensionality of the data and makes it more computationally efficient to process.'" [matTooltipPosition]="'left'">
                 Maxpooling
               </button>
             </div>
             <h3>Recurrent</h3>
             <div class="layer-component-buttons">
               <button mat-raised-button color="primary" (click)="createLayer(LayerType.Lstm)"
-                      [matTooltip]="'A long short-term memory (LSTM) layer is a type of recurrent neural network that is able to learn long-term dependencies in the data. This makes it useful for tasks such as machine translation and speech recognition, where the input data is sequential.'" [matTooltipPosition]="'left'">
+                [matTooltip]="'A long short-term memory (LSTM) layer is a type of recurrent neural network that is able to learn long-term dependencies in the data. This makes it useful for tasks such as machine translation and speech recognition, where the input data is sequential.'" [matTooltipPosition]="'left'">
                 LSTM
               </button>
             </div>
@@ -48,16 +48,20 @@
       </mat-tab>
       <mat-tab label="Configuration">
         <div class="box-container configuration-container">
-          <div *ngIf="layerForm">
-            <h2>{{configuration.name }} Configuration</h2>
-            <span>{{configuration.title}}</span>
-            <app-dynamic-layer-form [parameterConfig]="configuration.formConfig"
-                                    [form]="layerForm"></app-dynamic-layer-form>
-          </div>
-          <div *ngIf="!layerForm">
-            <h2>Layer Configuration</h2>
-            <span>Select a Layer to change its Configuration.</span>
-          </div>
+          @if (layerForm) {
+            <div>
+              <h2>{{configuration.name }} Configuration</h2>
+              <span>{{configuration.title}}</span>
+              <app-dynamic-layer-form [parameterConfig]="configuration.formConfig"
+              [form]="layerForm"></app-dynamic-layer-form>
+            </div>
+          }
+          @if (!layerForm) {
+            <div>
+              <h2>Layer Configuration</h2>
+              <span>Select a Layer to change its Configuration.</span>
+            </div>
+          }
 
         </div>
       </mat-tab>

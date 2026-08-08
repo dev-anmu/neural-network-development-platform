@@ -20,7 +20,9 @@
       </div>
     </ng-template>
     <div class="modeling-section">
-      <app-nn-builder *ngIf="stepper.selected == modeling_step"></app-nn-builder>
+      @if (stepper.selected == modeling_step) {
+        <app-nn-builder></app-nn-builder>
+      }
     </div>
   </mat-step>
   <!--  Training  -->
@@ -32,7 +34,9 @@
       </div>
     </ng-template>
     <div class="training-section">
-      <app-training *ngIf="stepper.selected == training_step"></app-training>
+      @if (stepper.selected == training_step) {
+        <app-training></app-training>
+      }
     </div>
   </mat-step>
   <!--  Evaluation  -->
@@ -44,7 +48,9 @@
       </div>
     </ng-template>
     <div class="evaluation-section">
-      <app-evaluation *ngIf="stepper.selected == evaluation_step"></app-evaluation>
+      @if (stepper.selected == evaluation_step) {
+        <app-evaluation></app-evaluation>
+      }
     </div>
   </mat-step>
   <!--  Saving/Export  -->
@@ -56,7 +62,9 @@
       </div>
     </ng-template>
     <div class="export-section">
-      <app-export *ngIf="stepper.selected == export_step"></app-export>
+      @if (stepper.selected == export_step) {
+        <app-export></app-export>
+      }
     </div>
   </mat-step>
 </mat-stepper>

@@ -44,12 +44,12 @@ export class NnPlaygroundComponent implements OnInit {
   }
 
   @HostListener('window:keydown.Escape', ['$event'])
-  unselectLayer(event: KeyboardEvent): void {
+  unselectLayer(event: Event): void {
     this.playgroundBuilderService.unselect(event);
   }
 
   @HostListener('window:keydown.Delete', ['$event'])
-  deleteLayer(event: KeyboardEvent): void {
+  deleteLayer(event: Event): void {
     this.playgroundBuilderService.deleteSelectedLayer(event);
   }
 

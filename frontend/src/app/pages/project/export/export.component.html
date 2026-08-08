@@ -9,31 +9,33 @@
       <div class="card-description">
         Export your project as a ZIP archive or store it in localStorage to access it later.
       </div>
-      
+
       <div class="export-options">
         <div class="selection-container">
           <div class="selection-header">
             <mat-checkbox class="all-checkbox"
-                          color="accent"
-                          [checked]="allChecked"
-                          [indeterminate]="someChecked()"
-                          (change)="setAll($event.checked)">
+              color="accent"
+              [checked]="allChecked"
+              [indeterminate]="someChecked()"
+              (change)="setAll($event.checked)">
               <span class="selection-title">Export Everything</span>
             </mat-checkbox>
           </div>
-          
+
           <div class="selection-items">
-            <div class="selection-item" *ngFor="let section of sections|keyvalue: fixedOrder">
-              <mat-checkbox color="accent"
-                          [(ngModel)]="section.value.checked"
-                          [disabled]="section.value.disabled"
-                          (ngModelChange)="updateAllChecked()">
-                {{section.value.name}}
-              </mat-checkbox>
-            </div>
+            @for (section of sections|keyvalue: fixedOrder; track section) {
+              <div class="selection-item">
+                <mat-checkbox color="accent"
+                  [(ngModel)]="section.value.checked"
+                  [disabled]="section.value.disabled"
+                  (ngModelChange)="updateAllChecked()">
+                  {{section.value.name}}
+                </mat-checkbox>
+              </div>
+            }
           </div>
         </div>
-        
+
         <div class="export-actions">
           <button mat-raised-button color="primary" (click)="exportProject()">
             <mat-icon>file_download</mat-icon>
@@ -58,7 +60,7 @@
       <div class="card-description">
         Export your trained model with model.json and weights.bin for production deployment or integration with other TensorFlow environments.
       </div>
-      
+
       <div class="export-actions centered">
         <button mat-raised-button color="primary" (click)="exportModel()">
           <mat-icon>cloud_download</mat-icon>

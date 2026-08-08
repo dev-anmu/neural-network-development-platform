@@ -2,17 +2,16 @@
 
 <div class="file-upload">
   <div class="file-info">
-    <ng-container *ngIf="fileName; else noFile">
+    @if (fileName) {
       <span class="file-name">{{ fileName }}</span>
       <span class="action-text">Click to change file</span>
-    </ng-container>
-    <ng-template #noFile>
+    } @else {
       <span class="action-text">Select a file to upload</span>
-    </ng-template>
+    }
   </div>
 
   <button mat-mini-fab color="primary" class="upload-btn"
-          (click)="fileUpload.click()">
+    (click)="fileUpload.click()">
     <mat-icon>{{fileName ? 'edit' : 'attach_file'}}</mat-icon>
   </button>
 </div>

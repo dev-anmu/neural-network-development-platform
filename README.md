@@ -20,7 +20,7 @@ A web-based platform for designing, training, and evaluating neural networks wit
 
 ## Technology Stack
 
-- **Frontend**: Angular 20 with Material UI
+- **Frontend**: Angular 22 with Material UI
 - **Neural Network Framework**: TensorFlow.js 4.22.0
 - **Visualization**: D3.js and TensorFlow.js Vis
 - **Data Processing**: Danfojs, Papa Parse for CSV handling
@@ -47,7 +47,7 @@ Open your browser to `http://localhost:4200`.
 
 Run `task --list` to see all available tasks.
 
-**Requirements:** Node.js 22 LTS (see `.nvmrc`) and npm.
+**Requirements:** Node.js **22.22.3+**, **24.15.0+**, or **26+** (see `.nvmrc`). `task` commands auto-switch via nvm/fnm when needed. Node 23 is not supported by Angular 22.
 
 ### Manual setup (without Task)
 
