@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, ElementRef, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, Component, ElementRef, EventEmitter, Output, ViewChild} from '@angular/core';
 import {ProjectService} from "../../../core/services/project.service";
 import {TrainingRecords} from "../../../core/interfaces/project";
 import {MatSelectionList} from "@angular/material/list";
@@ -18,6 +18,7 @@ import * as dfd from 'danfojs';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class EvaluationComponent {
+  @Output() navigateToTraining = new EventEmitter<void>();
   @ViewChild('lossContainer', {static: false}) lossContainer!: ElementRef;
   @ViewChild('accuracyContainer', {static: false}) accuracyContainer!: ElementRef;
   @ViewChild('trainHistoryList') trainHistoryList: MatSelectionList | undefined;

@@ -6,6 +6,38 @@
   padding: 1rem 0;
 }
 
+.empty-evaluation {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 3rem 2rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+
+  mat-icon {
+    font-size: 3rem;
+    width: 3rem;
+    height: 3rem;
+    color: var(--color-primary);
+    opacity: 0.6;
+    margin-bottom: 1rem;
+  }
+
+  h3 {
+    margin: 0 0 0.75rem;
+    color: #444;
+  }
+
+  p {
+    max-width: 480px;
+    color: #666;
+    line-height: 1.5;
+    margin: 0 0 1.5rem;
+  }
+}
+
 .section-content {
   padding: 1.5rem;
 }

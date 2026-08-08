@@ -1,7 +1,8 @@
-import {ChangeDetectionStrategy, Component, computed, OnDestroy, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
 import {ProjectService} from "../../core/services/project.service";
 import {ModelBuilderService} from "../../core/services/model-builder.service";
+import {MatStepper} from "@angular/material/stepper";
 
 @Component({
     selector: 'app-project',
@@ -11,6 +12,7 @@ import {ModelBuilderService} from "../../core/services/model-builder.service";
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProjectComponent implements OnInit, OnDestroy {
+  @ViewChild('stepper') stepper!: MatStepper;
   projectName = '';
   initialStep: number = 0;
   
@@ -24,10 +26,18 @@ export class ProjectComponent implements OnInit, OnDestroy {
       return 'Please specify at least one target column for the machine learning model.';
     }
     return null;
-  })
+  });
+
   modelError = computed(() => {
-    return this.projectService.model() === null;
-  })
+    const builder = this.projectService.builder();
+    if (!builder.connections || builder.connections.length === 0) {
+      return 'Please add at least one layer in the model builder before proceeding.';
+    }
+    return null;
+  });
+
+  isDatasetReady = computed(() => !this.datasetError());
+  isModelReady = computed(() => !this.modelError());
 
   constructor(private modelBuilderService: ModelBuilderService,
               private projectService: ProjectService,
@@ -54,5 +64,34 @@ export class ProjectComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.projectService.updateProject();
+  }
+
+  goToStep(index: number): void {
+    if (this.stepper) {
+      this.stepper.selectedIndex = index;
+    }
+  }
+
+  nextStep(): void {
+    this.stepper?.next();
+  }
+
+  previousStep(): void {
+    this.stepper?.previous();
+  }
+
+  canAdvanceFromCurrentStep(): boolean {
+    const index = this.stepper?.selectedIndex ?? 0;
+    if (index === 0) {
+      return this.isDatasetReady();
+    }
+    if (index === 1) {
+      return this.isModelReady();
+    }
+    return true;
+  }
+
+  isLastStep(): boolean {
+    return (this.stepper?.selectedIndex ?? 0) >= 4;
   }
 }

@@ -25,6 +25,8 @@ import {MatBadgeModule} from '@angular/material/badge'
 import {MatTableModule} from "@angular/material/table";
 import {MatPaginatorModule} from "@angular/material/paginator";
 import {MatSliderModule} from "@angular/material/slider";
+import {MatSnackBarModule} from "@angular/material/snack-bar";
+import {MatDividerModule} from "@angular/material/divider";
 
 const MaterialComponents =
   [MatButtonModule,
@@ -52,7 +54,9 @@ const MaterialComponents =
     MatBadgeModule,
     MatTableModule,
     MatPaginatorModule,
-    MatSliderModule
+    MatSliderModule,
+    MatSnackBarModule,
+    MatDividerModule
   ]
 
 @NgModule({

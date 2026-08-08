@@ -3,6 +3,82 @@
   padding: 0;
 }
 
+.project-page {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 1rem 2rem;
+}
+
+.project-breadcrumb {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+
+  a {
+    color: var(--color-primary);
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  mat-icon {
+    font-size: 1rem;
+    width: 1rem;
+    height: 1rem;
+    color: #888;
+  }
+
+  .current {
+    color: #555;
+    font-weight: 500;
+  }
+}
+
+.step-hint {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  margin: 0.75rem 0.5rem 0;
+  font-size: 0.9rem;
+
+  mat-icon {
+    font-size: 1.1rem;
+    width: 1.1rem;
+    height: 1.1rem;
+  }
+
+  &--warn {
+    background-color: #fff3e0;
+    color: #e65100;
+    border: 1px solid #ffcc80;
+  }
+}
+
+.step-navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 1rem 0.5rem 0;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+
+  button mat-icon {
+    margin-left: 0.25rem;
+  }
+
+  button:first-child mat-icon {
+    margin-left: 0;
+    margin-right: 0.25rem;
+  }
+}
+
 .step-title {
   font-size: 24px;
   margin-top: 1rem !important;
@@ -10,7 +86,7 @@
 
 .project-header {
   text-align: center;
-  margin: 1.5rem auto 2.5rem;
+  margin: 1rem auto 1.5rem;
   max-width: 800px;
   padding: 0 1rem;
 }

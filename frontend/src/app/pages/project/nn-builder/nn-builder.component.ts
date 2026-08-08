@@ -5,6 +5,9 @@ import {LayerType} from "../../../core/enums";
 import {ProjectService} from "../../../core/services/project.service";
 import {FormControl} from "@angular/forms";
 import {areBuilderEqual} from "../../../shared/utils";
+import {MatDialog} from "@angular/material/dialog";
+import {ConfirmDialogComponent} from "../../../shared/components/confirm-dialog/confirm-dialog.component";
+import {NotificationService} from "../../../core/services/notification.service";
 
 
 @Component({
@@ -24,7 +27,10 @@ export class NnBuilderComponent {
   configuration: any;
   selectedTab = new FormControl(0);
 
-  constructor(private modelBuilderService: ModelBuilderService, private projectService: ProjectService) {
+  constructor(private modelBuilderService: ModelBuilderService,
+              private projectService: ProjectService,
+              private dialog: MatDialog,
+              private notification: NotificationService) {
     this.modelBuilderService.selectedLayerSubject.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((layer) => {
       this.layerForm = layer ? layer.layerForm : null;
       this.configuration = layer ? layer.getConfiguration() : null;
@@ -80,7 +86,22 @@ export class NnBuilderComponent {
   }
 
   async clear(): Promise<void> {
-    await this.modelBuilderService.clearModelBuilder();
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      maxWidth: '480px',
+      data: {
+        title: 'Clear model?',
+        message: 'This will remove all layers and connections from the builder. Your saved project is not affected until you continue editing.',
+        confirmLabel: 'Clear',
+        warn: true,
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(async (confirmed) => {
+      if (confirmed) {
+        await this.modelBuilderService.clearModelBuilder();
+        this.notification.info('Model builder cleared.');
+      }
+    });
   }
 
   async createLayer(type: LayerType): Promise<void> {

@@ -9,6 +9,7 @@ import {FormBuilder, Validators} from "@angular/forms";
 import * as dfd from "danfojs";
 import {Encoder} from "../../../shared/ml_objects/encoder";
 import {EncoderEnum} from "../../../core/enums";
+import {NotificationService} from "../../../core/services/notification.service";
 
 @Component({
     selector: 'app-dataset',
@@ -31,10 +32,12 @@ export class DatasetComponent {
   dataSource: MatTableDataSource<any>;
   selectedTable: string = 'original';
   selectedEncoders: Record<string, EncoderEnum> = {};
+  isImporting = false;
 
   constructor(public projectService: ProjectService,
               private serializationService: SerializationService,
-              private fb: FormBuilder) {
+              private fb: FormBuilder,
+              private notification: NotificationService) {
     this.trainConfig = this.projectService.trainConfig();
     this.splitValue = 100 - (this.trainConfig.validationSplit * 100);
     this.datasetForm = fb.group({
@@ -99,7 +102,10 @@ export class DatasetComponent {
         return acc;
       }, {});
       this.columnNames = dataset.columns.map(column => column.name);
-      this.datasetForm.get('input')?.setValue(this.projectService.dataset().inputColumns);
+      this.datasetForm.patchValue({
+        input: dataset.inputColumns,
+        target: dataset.targetColumns,
+      });
       this.selectedTable = 'original';
       await this.updateDataSource(this.selectedTable);
       this.cdr.markForCheck();
@@ -130,10 +136,20 @@ export class DatasetComponent {
   }
 
   async parseCSV() {
-    if (this.file) {
+    if (!this.file || this.isImporting) {
+      return;
+    }
+
+    this.isImporting = true;
+    this.cdr.markForCheck();
+
+    try {
       const name = this.file.name;
       const dataset = await this.serializationService.parseCSV(this.file);
       const df = new dfd.DataFrame(dataset.data);
+      const cols = df.columns as string[];
+      const inputColumns = cols.length > 1 ? cols.slice(0, -1) : [];
+      const targetColumns = cols.length > 1 ? [cols[cols.length - 1]] : [];
 
       const columns: { name: string, type: string, uniqueValues: number, encoding: EncoderEnum, encoder: EncoderType }[] = [];
       df.columns.forEach((column: string) => {
@@ -146,11 +162,19 @@ export class DatasetComponent {
           fileName: name,
           data: dataset.data,
           columns: columns,
-          inputColumns: df.columns
+          inputColumns: inputColumns,
+          targetColumns: targetColumns,
         };
       });
+      this.datasetForm.patchValue({input: inputColumns, target: targetColumns});
       await this.initTable();
       this.initPaginator();
+      this.notification.success(`Imported ${dataset.data.length} rows from "${name}".`);
+    } catch {
+      this.notification.error('Failed to import the CSV file. Please check the file format.');
+    } finally {
+      this.isImporting = false;
+      this.cdr.markForCheck();
     }
   }
 

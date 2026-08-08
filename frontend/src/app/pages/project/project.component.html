@@ -1,70 +1,110 @@
-<mat-stepper [linear]="false" #stepper [selectedIndex]="initialStep" class="custom-stepper" color="primary">
-  <!--  Dataset  -->
-  <mat-step [completed]="false" #dataset_step>
-    <ng-template matStepLabel>
-      <div class="step-label">
-        <mat-icon>dataset</mat-icon>
-        <span>Dataset</span>
-      </div>
-    </ng-template>
-    <div class="dataset-section">
-      <app-dataset></app-dataset>
-    </div>
-  </mat-step>
-  <!--  Modeling  -->
-  <mat-step [completed]="false" #modeling_step>
-    <ng-template matStepLabel>
-      <div class="step-label">
-        <mat-icon>schema</mat-icon>
-        <span>Modeling</span>
-      </div>
-    </ng-template>
-    <div class="modeling-section">
-      @if (stepper.selected == modeling_step) {
-        <app-nn-builder></app-nn-builder>
+<div class="project-page">
+  <header class="project-header">
+    <nav class="project-breadcrumb" aria-label="Breadcrumb">
+      <a routerLink="/projects">Projects</a>
+      <mat-icon>chevron_right</mat-icon>
+      <span class="current">{{ projectName }}</span>
+    </nav>
+    <h1 class="project-title">{{ projectName }}</h1>
+    <p class="project-subtitle">Build, train, and evaluate your neural network step by step</p>
+  </header>
+
+  <mat-stepper [linear]="true" #stepper [selectedIndex]="initialStep" class="custom-stepper" color="primary">
+    <mat-step [completed]="isDatasetReady()" [editable]="true" #dataset_step>
+      <ng-template matStepLabel>
+        <div class="step-label">
+          <mat-icon>dataset</mat-icon>
+          <span>Dataset</span>
+        </div>
+      </ng-template>
+
+      @if (datasetError()) {
+        <div class="step-hint step-hint--warn" role="alert">
+          <mat-icon>info</mat-icon>
+          <span>{{ datasetError() }}</span>
+        </div>
       }
-    </div>
-  </mat-step>
-  <!--  Training  -->
-  <mat-step [completed]="false" #training_step>
-    <ng-template matStepLabel>
-      <div class="step-label">
-        <mat-icon>psychology</mat-icon>
-        <span>Training</span>
+
+      <div class="dataset-section">
+        <app-dataset></app-dataset>
       </div>
-    </ng-template>
-    <div class="training-section">
-      @if (stepper.selected == training_step) {
-        <app-training></app-training>
+    </mat-step>
+
+    <mat-step [completed]="isModelReady()" [editable]="true" #modeling_step>
+      <ng-template matStepLabel>
+        <div class="step-label">
+          <mat-icon>schema</mat-icon>
+          <span>Modeling</span>
+        </div>
+      </ng-template>
+
+      @if (modelError()) {
+        <div class="step-hint step-hint--warn" role="alert">
+          <mat-icon>info</mat-icon>
+          <span>{{ modelError() }}</span>
+        </div>
       }
-    </div>
-  </mat-step>
-  <!--  Evaluation  -->
-  <mat-step [completed]="false" #evaluation_step>
-    <ng-template matStepLabel>
-      <div class="step-label">
-        <mat-icon>analytics</mat-icon>
-        <span>Evaluation</span>
+
+      <div class="modeling-section">
+        @if (stepper.selected == modeling_step) {
+          <app-nn-builder></app-nn-builder>
+        }
       </div>
-    </ng-template>
-    <div class="evaluation-section">
-      @if (stepper.selected == evaluation_step) {
-        <app-evaluation></app-evaluation>
-      }
-    </div>
-  </mat-step>
-  <!--  Saving/Export  -->
-  <mat-step [completed]="false" #export_step>
-    <ng-template matStepLabel>
-      <div class="step-label">
-        <mat-icon>ios_share</mat-icon>
-        <span>Export</span>
+    </mat-step>
+
+    <mat-step [editable]="true" #training_step>
+      <ng-template matStepLabel>
+        <div class="step-label">
+          <mat-icon>psychology</mat-icon>
+          <span>Training</span>
+        </div>
+      </ng-template>
+      <div class="training-section">
+        @if (stepper.selected == training_step) {
+          <app-training></app-training>
+        }
       </div>
-    </ng-template>
-    <div class="export-section">
-      @if (stepper.selected == export_step) {
-        <app-export></app-export>
-      }
-    </div>
-  </mat-step>
-</mat-stepper>
+    </mat-step>
+
+    <mat-step [editable]="true" #evaluation_step>
+      <ng-template matStepLabel>
+        <div class="step-label">
+          <mat-icon>analytics</mat-icon>
+          <span>Evaluation</span>
+        </div>
+      </ng-template>
+      <div class="evaluation-section">
+        @if (stepper.selected == evaluation_step) {
+          <app-evaluation (navigateToTraining)="goToStep(2)"></app-evaluation>
+        }
+      </div>
+    </mat-step>
+
+    <mat-step [editable]="true" #export_step>
+      <ng-template matStepLabel>
+        <div class="step-label">
+          <mat-icon>ios_share</mat-icon>
+          <span>Export</span>
+        </div>
+      </ng-template>
+      <div class="export-section">
+        @if (stepper.selected == export_step) {
+          <app-export></app-export>
+        }
+      </div>
+    </mat-step>
+  </mat-stepper>
+
+  <footer class="step-navigation">
+    <button mat-stroked-button type="button" (click)="previousStep()" [disabled]="(stepper?.selectedIndex ?? 0) === 0">
+      <mat-icon>arrow_back</mat-icon>
+      Back
+    </button>
+    @if (!isLastStep()) {
+      <button mat-raised-button color="primary" type="button" (click)="nextStep()" [disabled]="!canAdvanceFromCurrentStep()">
+        Next
+        <mat-icon>arrow_forward</mat-icon>
+      </button>
+    }
+  </footer>
+</div>

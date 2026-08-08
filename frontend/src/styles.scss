@@ -84,3 +84,24 @@ h2 {
 ::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
+
+// Snackbar feedback
+.mat-mdc-snack-bar-container {
+  &.snack-success {
+    --mdc-snackbar-container-color: var(--color-success);
+    --mat-snack-bar-button-color: #fff;
+    --mdc-snackbar-supporting-text-color: #fff;
+  }
+
+  &.snack-error {
+    --mdc-snackbar-container-color: var(--color-warn);
+    --mat-snack-bar-button-color: #fff;
+    --mdc-snackbar-supporting-text-color: #fff;
+  }
+
+  &.snack-info {
+    --mdc-snackbar-container-color: var(--color-primary);
+    --mat-snack-bar-button-color: #fff;
+    --mdc-snackbar-supporting-text-color: #fff;
+  }
+}

@@ -8,6 +8,8 @@ import {InputDialogComponent} from "../../shared/components/input-dialog/input-d
 import {v4 as uuidv4} from 'uuid';
 import {KeyValue} from "@angular/common";
 import {MessageDialogComponent} from "../../shared/components/message-dialog/message-dialog.component";
+import {ConfirmDialogComponent} from "../../shared/components/confirm-dialog/confirm-dialog.component";
+import {NotificationService} from "../../core/services/notification.service";
 import {Project} from "../../core/interfaces/project";
 
 @Component({
@@ -24,8 +26,13 @@ export class ProjectsComponent implements OnInit {
   projects = new Map<string, Project>();
   templateProjects: string[] = ['mnist'];
   selectedTemplateProject: string | undefined;
+  isImporting = false;
 
-  constructor(private serializationService: SerializationService, protected projectService: ProjectService, private router: Router, private dialog: MatDialog) {
+  constructor(private serializationService: SerializationService,
+              protected projectService: ProjectService,
+              private router: Router,
+              private dialog: MatDialog,
+              private notification: NotificationService) {
     this.projectService.projectSubject.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
       this.projects = this.projectService.getMyProjects();
       this.cdr.markForCheck();
@@ -84,13 +91,17 @@ export class ProjectsComponent implements OnInit {
   }
 
   async importProject(): Promise<void> {
-    if (!this.file) {
+    if (!this.file || this.isImporting) {
       return;
     }
+
+    this.isImporting = true;
+    this.cdr.markForCheck();
 
     try {
       const project = await this.serializationService.importZip(this.file);
       this.projectService.addProject(project);
+      this.notification.success(`Project "${project.projectInfo.name}" imported successfully.`);
       await this.router.navigate([`/projects/${project.projectInfo.name}`]);
     } catch (error) {
       const message = error instanceof ProjectImportError
@@ -104,6 +115,9 @@ export class ProjectsComponent implements OnInit {
           warning: true
         }
       });
+    } finally {
+      this.isImporting = false;
+      this.cdr.markForCheck();
     }
   }
 
@@ -113,27 +127,29 @@ export class ProjectsComponent implements OnInit {
     if (!project) {
       return;
     }
-    if (this.projectService.deleteProject(name)) {
-      this.dialog.open(MessageDialogComponent, {
-        maxWidth: '600px',
-        data: {
-          title: 'Project deleted',
-          message: `You deleted the Project with the name '${project.projectInfo.name}' and the id '${project.projectInfo.id}' successfully!`,
-          warning: false
-        }
-      });
-      this.projects = this.projectService.getMyProjects();
-      this.cdr.markForCheck();
-    } else {
-      this.dialog.open(MessageDialogComponent, {
-        maxWidth: '600px',
-        data: {
-          title: 'Deleting Project Failed',
-          message: `Deleting the Project with the name '${project.projectInfo.name}' and the id '${project.projectInfo.id}' failed!`,
-          warning: true
-        }
-      });
-    }
 
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      maxWidth: '480px',
+      data: {
+        title: 'Delete project?',
+        message: `This will permanently delete "${project.projectInfo.name}". This action cannot be undone.`,
+        confirmLabel: 'Delete',
+        cancelLabel: 'Cancel',
+        warn: true,
+      }
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed) => {
+      if (!confirmed) {
+        return;
+      }
+      if (this.projectService.deleteProject(name)) {
+        this.notification.success(`Project "${project.projectInfo.name}" deleted.`);
+        this.projects = this.projectService.getMyProjects();
+        this.cdr.markForCheck();
+      } else {
+        this.notification.error(`Could not delete project "${project.projectInfo.name}".`);
+      }
+    });
   }
 }

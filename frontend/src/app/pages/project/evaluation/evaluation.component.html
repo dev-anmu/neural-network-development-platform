@@ -1,11 +1,17 @@
 <div class="page-container">
   @if (!trainingRecords || trainingRecords.length === 0) {
-    <p class="no-training-msg">You have no Trainings done yet or
-      did not save them.
-      If
-      you want to compare different
-      Models and their configurations with each other, please select the Checkbox on the Training Page saying 'Record
-    Training and Results' before starting your Training.</p>
+    <div class="empty-evaluation">
+      <mat-icon>analytics</mat-icon>
+      <h3>No training records yet</h3>
+      <p>
+        Train your model and enable <strong>Record Training</strong> on the Training step
+        to compare runs, inspect metrics, and try predictions here.
+      </p>
+      <button mat-raised-button color="primary" (click)="navigateToTraining.emit()">
+        <mat-icon>psychology</mat-icon>
+        Go to Training
+      </button>
+    </div>
   }
 
   @if (trainingRecords && trainingRecords.length > 0) {
@@ -41,11 +47,11 @@
             </div>
             <div class="section-content">
               <div class="model-info-container">
-                <p><b>#{{selectedRecord?.id}}</b> - <span class="record-date">{{$safeNavigationMigration(selectedRecord?.date) | date:'d. MMM yyyy, H:mm:ss'}}</span> | <span>Dataset:</span> {{selectedRecord?.datasetName}}</p>
+                <p><b>#{{selectedRecord?.id}}</b> - <span class="record-date">{{selectedRecord?.date | date:'d. MMM yyyy, H:mm:ss'}}</span> | <span>Dataset:</span> {{selectedRecord?.datasetName}}</p>
                 <p><b>Trained for</b></p>
                 <p class="value-line"><span>Epochs:</span> {{selectedRecord?.trainStats?.epoch}} | <span>Batch Size:</span> {{selectedRecord?.config?.batchSize}}</p>
                 <p><b>Validation Metrics</b></p>
-                <p class="value-line"><span>Accuracy:</span> {{$safeNavigationMigration(selectedRecord?.trainStats?.accuracy) | number:'1.1-5'}} | <span>Loss:</span> {{$safeNavigationMigration(selectedRecord?.trainStats?.loss) | number:'1.1-5'}}</p>
+                <p class="value-line"><span>Accuracy:</span> {{selectedRecord?.trainStats?.accuracy | number:'1.1-5'}} | <span>Loss:</span> {{selectedRecord?.trainStats?.loss | number:'1.1-5'}}</p>
                 <p><b>Training Parameters</b></p>
                 <p class="value-line"><span>Loss Function:</span> {{selectedRecord?.config?.loss}} | <span>Optimizer:</span> {{selectedRecord?.config?.optimizer}} | <span>Learning Rate:</span> {{selectedRecord?.config?.learningRate}}</p>
               </div>

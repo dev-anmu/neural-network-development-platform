@@ -20,9 +20,16 @@
       }
 
       <app-file-upload (fileEvent)="addFile($event)" [fileType]="'.csv'"></app-file-upload>
-      <button [disabled]="!file" mat-raised-button color="accent" (click)="parseCSV()" class="import-button">
-        <mat-icon>cloud_upload</mat-icon>
-        Import Dataset
+      <button [disabled]="!file || isImporting" mat-raised-button color="accent" (click)="parseCSV()" class="import-button">
+        @if (isImporting) {
+          <mat-spinner diameter="20" class="inline-spinner"></mat-spinner>
+          Importing…
+        } @else {
+          <ng-container>
+            <mat-icon>cloud_upload</mat-icon>
+            Import Dataset
+          </ng-container>
+        }
       </button>
     </div>
   </div>
@@ -62,17 +69,16 @@
                         </div>
                         <mat-divider></mat-divider>
                         <div class="encoder-selector">
-                          <label for="encoder-{{column.name}}">Encoder:</label>
-                          <select id="encoder-{{column.name}}"
-                            [ngModel]="selectedEncoders[column.name]"
-                            (ngModelChange)="onEncoderChange(column.name, $event.valueOf())"
-                            aria-label="Select encoder type"
-                            matTooltip="Choose how to encode this column">
-                            @for (encoder of Encoder | keyvalue; track encoder) {
-                              <option
-                              [value]="encoder.key">{{encoder.value.name}}</option>
-                            }
-                          </select>
+                          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="encoder-field">
+                            <mat-label>Encoder</mat-label>
+                            <mat-select [ngModel]="selectedEncoders[column.name]"
+                              (ngModelChange)="onEncoderChange(column.name, $event)"
+                              matTooltip="Choose how to encode this column">
+                              @for (encoder of Encoder | keyvalue; track encoder) {
+                                <mat-option [value]="encoder.key">{{ encoder.value.name }}</mat-option>
+                              }
+                            </mat-select>
+                          </mat-form-field>
                         </div>
                       </div>
                     </th>
@@ -109,6 +115,7 @@
               </table>
             }
           </div>
+          <mat-paginator [pageSizeOptions]="[10, 25, 50, 100]" showFirstLastButtons aria-label="Dataset pagination"></mat-paginator>
         </div>
       </div>
     </div>

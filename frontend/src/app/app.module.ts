@@ -20,6 +20,7 @@ import { FileUploadComponent } from './shared/components/file-upload/file-upload
 import { DatasetComponent } from './pages/project/dataset/dataset.component';
 import { InputDialogComponent } from './shared/components/input-dialog/input-dialog.component';
 import { MessageDialogComponent } from './shared/components/message-dialog/message-dialog.component';
+import { ConfirmDialogComponent } from './shared/components/confirm-dialog/confirm-dialog.component';
 import { EvaluationComponent } from './pages/project/evaluation/evaluation.component';
 import {NgOptimizedImage} from "@angular/common";
 
@@ -42,7 +43,8 @@ import {NgOptimizedImage} from "@angular/common";
         DatasetComponent,
         InputDialogComponent,
         MessageDialogComponent,
-        EvaluationComponent
+        EvaluationComponent,
+        ConfirmDialogComponent
     ],
     imports: [
         BrowserModule,
