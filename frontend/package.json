@@ -6,7 +6,6 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test",
     "lint": "ng lint"
   },
   "private": true,
@@ -46,17 +45,14 @@
     "@angular/compiler-cli": "^22.1.1",
     "@types/d3": "^7.4.3",
     "@types/file-saver": "^2.0.7",
-    "@types/jasmine": "^5.1.7",
     "angular-eslint": "22.1.0",
     "eslint": "^9.39.1",
-    "istanbul-lib-instrument": "^6.0.3",
-    "jasmine-core": "^5.6.0",
-    "karma": "^6.4.4",
-    "karma-chrome-launcher": "^3.2.0",
-    "karma-coverage": "^2.2.1",
-    "karma-jasmine": "^5.1.0",
-    "karma-jasmine-html-reporter": "^2.1.0",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.66.0"
+  },
+  "overrides": {
+    "@hono/node-server": "^2.0.5",
+    "d3-color": "^3.1.0",
+    "node-fetch": "^2.7.0"
   }
 }

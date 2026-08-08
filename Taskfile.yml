@@ -26,11 +26,17 @@ tasks:
     cmds:
       - '{{.TASKFILE_DIR}}/scripts/node-run.sh npm run lint'
 
-  test:
-    desc: Run frontend unit tests
+  audit:
+    desc: Check npm dependency vulnerabilities
     dir: frontend
     cmds:
-      - '{{.TASKFILE_DIR}}/scripts/node-run.sh npm test'
+      - '{{.TASKFILE_DIR}}/scripts/node-run.sh npm audit'
+
+  audit:fix:
+    desc: Apply safe npm audit fixes
+    dir: frontend
+    cmds:
+      - '{{.TASKFILE_DIR}}/scripts/node-run.sh npm audit fix'
 
   docker:dev:
     desc: Start development environment with Docker (port 4200)

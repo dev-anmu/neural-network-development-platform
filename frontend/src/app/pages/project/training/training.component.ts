@@ -8,7 +8,6 @@ import {TrainStats} from "../../../core/interfaces/interfaces";
 import {MachineLearningService} from "../../../core/services/machine-learning.service";
 import {MatDialog} from "@angular/material/dialog";
 import {TaskDialogComponent} from "../../../shared/components/task-dialog/task-dialog.component";
-import * as tfvis from "@tensorflow/tfjs-vis";
 import {ProjectService} from "../../../core/services/project.service";
 import {MessageDialogComponent} from "../../../shared/components/message-dialog/message-dialog.component";
 
@@ -94,6 +93,7 @@ export class TrainingComponent implements OnInit {
   async showModelSummary(): Promise<void> {
     const model = this.projectService.model();
     if (model) {
+      const tfvis = await import('@tensorflow/tfjs-vis');
       await tfvis.show.modelSummary(this.modelSummaryContainer.nativeElement, model);
       this.modelSummaryContainer.nativeElement.querySelector('table').style.margin = "0";
     }
