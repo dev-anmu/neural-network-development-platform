@@ -1,27 +1,33 @@
-<mat-toolbar color="primary">
-  <mat-toolbar-row>
-    <a [routerLink]="['/home']" class="site-logo">
-      <img ngSrc="assets/imgs/webnet-nav-logo.png" alt="WebNet logo" height="50" width="75">
-    </a>
-    <span class="nav-separator"></span>
-    <div class="nav-links">
-      <a mat-button [routerLink]="['/']" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
-        <mat-icon>home</mat-icon>
-        <span>Home</span>
+<div class="app-shell">
+  <header class="app-header">
+    <div class="header-inner">
+      <a routerLink="/home" class="brand" aria-label="WebNet Builder home">
+        <img ngSrc="assets/imgs/webnet-nav-logo.png" alt="" height="40" width="60" class="brand-logo">
+        <span class="brand-text">
+          <span class="brand-name">WebNet</span>
+          <span class="brand-tag">Builder</span>
+        </span>
       </a>
-      <a mat-button [routerLink]="['/playground']" routerLinkActive="active">
-        <mat-icon>code</mat-icon>
-        <span>Playground</span>
-      </a>
-      <a mat-button [routerLink]="['/projects']" routerLinkActive="active" 
-         [matBadge]="getNumberOfProjects()" matBadgeColor="accent" matBadgePosition="above after">
-        <mat-icon>folder</mat-icon>
-        <span>Projects</span>
-      </a>
-    </div>
-  </mat-toolbar-row>
-</mat-toolbar>
 
-<div class="site-content">
-  <router-outlet></router-outlet>
+      <nav class="main-nav" aria-label="Main navigation">
+        <a class="nav-link" routerLink="/home" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+          <mat-icon>home</mat-icon>
+          <span>Home</span>
+        </a>
+        <a class="nav-link" routerLink="/playground" routerLinkActive="active">
+          <mat-icon>hub</mat-icon>
+          <span>Playground</span>
+        </a>
+        <a class="nav-link" routerLink="/projects" routerLinkActive="active"
+           [matBadge]="getNumberOfProjects() || null" matBadgeColor="accent" matBadgeSize="small">
+          <mat-icon>folder_open</mat-icon>
+          <span>Projects</span>
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="app-main">
+    <router-outlet></router-outlet>
+  </main>
 </div>

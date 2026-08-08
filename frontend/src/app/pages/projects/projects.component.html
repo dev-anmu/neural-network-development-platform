@@ -1,81 +1,92 @@
-<div class="content-container">
-  <mat-card class="projects-card">
-    <mat-card-header>
-      <mat-card-title class="card-colored-title">Projects Overview</mat-card-title>
-      <mat-card-subtitle>List of all Projects you are working on</mat-card-subtitle>
-    </mat-card-header>
-    <mat-card-content>
-      @if (projects && projects.size > 0) {
-        <mat-list role="navigation" class="projects-list">
-          @for (project of projects | keyvalue: lastModifiedOrder; track project) {
-            <mat-list-item role="listitem"
-              [routerLink]="['/projects/' + project.key]">
-              <mat-icon matListItemIcon class="folder-icon">folder</mat-icon>
-              <div matListItemTitle class="project-name">{{ project.value.projectInfo.name }}</div>
-              <div matListItemLine>
-                <span><mat-icon class="inline-icon">update</mat-icon> {{ project.value.projectInfo.lastModified | date: 'd MMM y, H:mm' }}</span>
-                <span class="location-info"><mat-icon class="inline-icon">storage</mat-icon> {{ project.value.projectInfo.storeLocation }}</span>
-              </div>
-              <div matListItemMeta class="project-id">ID: {{ project.value.projectInfo.id }}</div>
-              <div matListItemMeta>
-                <button mat-icon-button (click)="deleteProject($event, project.value.projectInfo.name)"
-                  color="warn" matTooltip="Delete project">
-                  <mat-icon>delete</mat-icon>
-                </button>
-              </div>
-            </mat-list-item>
-          }
-        </mat-list>
-      } @else {
-        <div class="empty-state">
-          <mat-icon class="empty-icon">folder_off</mat-icon>
-          <h3>No projects yet</h3>
-          <p class="info-message">You don't have any projects. Create your first project below!</p>
-        </div>
+<div class="page-shell projects-page">
+  <header class="page-hero">
+    <div>
+      <p class="eyebrow">Workspace</p>
+      <h1>Your projects</h1>
+      <p class="lead">Pick up where you left off or start something new.</p>
+    </div>
+    <button mat-flat-button color="primary" (click)="createNewProject()">
+      <mat-icon>add</mat-icon>
+      New project
+    </button>
+  </header>
+
+  @if (projects && projects.size > 0) {
+    <section class="project-grid" aria-label="Project list">
+      @for (project of projects | keyvalue: lastModifiedOrder; track project) {
+        <article class="project-card surface-card" [routerLink]="['/projects/' + project.key]">
+          <div class="project-card__top">
+            <div class="project-card__icon">
+              <mat-icon>neurology</mat-icon>
+            </div>
+            <button mat-icon-button class="delete-btn"
+              (click)="deleteProject($event, project.value.projectInfo.name)"
+              matTooltip="Delete project" aria-label="Delete project">
+              <mat-icon>delete_outline</mat-icon>
+            </button>
+          </div>
+          <h2 class="project-card__name">{{ project.value.projectInfo.name }}</h2>
+          <p class="project-card__meta">
+            <mat-icon>schedule</mat-icon>
+            {{ project.value.projectInfo.lastModified | date: 'd MMM y, H:mm' }}
+          </p>
+          <p class="project-card__meta">
+            <mat-icon>storage</mat-icon>
+            {{ project.value.projectInfo.storeLocation }}
+          </p>
+          <code class="project-card__id">{{ project.value.projectInfo.id }}</code>
+        </article>
       }
-    </mat-card-content>
-  </mat-card>
+    </section>
+  } @else {
+    <section class="empty-state surface-card">
+      <mat-icon>folder_off</mat-icon>
+      <h3>No projects yet</h3>
+      <p>Create your first project using one of the options below.</p>
+    </section>
+  }
 
-  <mat-card class="projects-card create-options-card">
-    <mat-card-header>
-      <mat-card-title class="card-colored-title">Create New Project</mat-card-title>
-      <mat-card-subtitle>Choose a method to start your project</mat-card-subtitle>
-    </mat-card-header>
+  <section class="create-section">
+    <div class="section-intro">
+      <h2>Get started</h2>
+      <p>Choose how you want to begin your next experiment.</p>
+    </div>
 
-    <mat-card-content class="create-options-container">
-      <div class="create-option">
-        <h3><mat-icon>add_circle</mat-icon> Fresh Project</h3>
-        <p>Start with a blank project and build from scratch</p>
-        <button mat-raised-button color="primary" (click)="createNewProject()">Create Empty Project</button>
-      </div>
+    <div class="create-grid">
+      <article class="create-card surface-card">
+        <div class="create-card__icon"><mat-icon>add_circle</mat-icon></div>
+        <h3>Blank project</h3>
+        <p>Start from scratch with an empty dataset and model canvas.</p>
+        <button mat-stroked-button color="primary" (click)="createNewProject()">Create empty project</button>
+      </article>
 
-      <div class="create-option">
-        <h3><mat-icon>dashboard_customize</mat-icon> From Template</h3>
-        <p>Use a pre-configured project template</p>
+      <article class="create-card surface-card">
+        <div class="create-card__icon"><mat-icon>dashboard_customize</mat-icon></div>
+        <h3>From template</h3>
+        <p>Jump in with a pre-configured MNIST starter project.</p>
         <mat-radio-group class="template-radio-group" [(ngModel)]="selectedTemplateProject">
           @for (project of templateProjects; track project) {
-            <mat-radio-button class="template-radio-button" [value]="project">
-              {{ project | titlecase }}
-            </mat-radio-button>
+            <mat-radio-button [value]="project">{{ project | titlecase }}</mat-radio-button>
           }
         </mat-radio-group>
-        <button mat-raised-button color="primary" (click)="createProjectFromTemplate(selectedTemplateProject!)"
-          [disabled]="!selectedTemplateProject">Use Template</button>
-      </div>
+        <button mat-stroked-button color="primary" (click)="createProjectFromTemplate(selectedTemplateProject!)"
+          [disabled]="!selectedTemplateProject">Use template</button>
+      </article>
 
-    <div class="create-option">
-      <h3><mat-icon>file_upload</mat-icon> Import Project</h3>
-      <p>Import an existing project from a ZIP file</p>
-      <app-file-upload (fileEvent)="addFile($event)" [fileType]="'.zip'"></app-file-upload>
-      <button [disabled]="!file || isImporting" mat-raised-button color="primary" (click)="importProject()">
-        @if (isImporting) {
-          <mat-spinner diameter="20" class="inline-spinner"></mat-spinner>
-          Importing…
-        } @else {
-          Import Project
-        }
-      </button>
+      <article class="create-card surface-card create-card--wide">
+        <div class="create-card__icon"><mat-icon>upload_file</mat-icon></div>
+        <h3>Import ZIP</h3>
+        <p>Restore a previously exported WebNet Builder project archive.</p>
+        <app-file-upload (fileEvent)="addFile($event)" [fileType]="'.zip'"></app-file-upload>
+        <button [disabled]="!file || isImporting" mat-flat-button color="primary" (click)="importProject()">
+          @if (isImporting) {
+            <mat-spinner diameter="20" class="inline-spinner"></mat-spinner>
+            Importing…
+          } @else {
+            Import project
+          }
+        </button>
+      </article>
     </div>
-  </mat-card-content>
-</mat-card>
+  </section>
 </div>

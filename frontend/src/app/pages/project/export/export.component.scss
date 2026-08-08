@@ -7,32 +7,14 @@ ul {
   margin-top: 1rem;
 }
 
-// Dashboard Container
+// Dashboard — uses global tokens
 .dashboard-container {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  padding: 1rem 0;
-  background-color: #f8f9fa;
+  padding: 0.75rem 1rem 1rem;
 }
 
-// Card Styling
-.dashboard-card {
-  background: white;
-  border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-  overflow: hidden;
-  
-  .card-content {
-    padding: 1.5rem;
-  }
-  
-  .card-description {
-    color: #555;
-    font-size: 1rem;
-    margin-bottom: 1.5rem;
-    line-height: 1.5;
-  }
+// Card — inherits global .dashboard-card
+.dashboard-card .card-content {
+  padding: 1.15rem 1.25rem 1.25rem;
 }
 
 // Export Options
@@ -44,10 +26,10 @@ ul {
 
 // Selection Container
 .selection-container {
-  background-color: #f5f7ff;
-  border-radius: 8px;
+  background: var(--color-bg-subtle);
+  border-radius: var(--radius-md);
   padding: 1rem;
-  border-left: 4px solid var(--color-primary);
+  border: 1px solid var(--color-border);
   
   .selection-header {
     margin-bottom: 1rem;

@@ -1,34 +1,82 @@
-<div class="site-content">
-  <section class="hero-section">
-    <div class="hero-content">
-      <h1>Build Neural Networks <span>Visually</span></h1>
-      <p class="tagline">A no-code platform for designing, training, and evaluating neural networks directly in your browser.</p>
-      <div class="cta-buttons">
-        <a mat-raised-button color="primary" [routerLink]="['/projects']">Start a Project</a>
-        <a mat-stroked-button [routerLink]="['/playground']">Try Playground Demo</a>
+<div class="home-page">
+  <section class="hero">
+    <div class="hero-copy">
+      <p class="eyebrow">Browser-native ML studio</p>
+      <h1>Design neural networks <span class="gradient-text">without writing code</span></h1>
+      <p class="hero-lead">
+        Import data, wire layers visually, train with TensorFlow.js, and export production-ready models — all in one workspace.
+      </p>
+      <div class="hero-actions">
+        <a mat-flat-button color="primary" routerLink="/projects">
+          <mat-icon>rocket_launch</mat-icon>
+          Start a project
+        </a>
+        <a mat-stroked-button routerLink="/playground" class="secondary-cta">
+          <mat-icon>hub</mat-icon>
+          Open playground
+        </a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat">
+          <mat-icon>layers</mat-icon>
+          <span>Visual layer builder</span>
+        </div>
+        <div class="stat">
+          <mat-icon>speed</mat-icon>
+          <span>WebGPU acceleration</span>
+        </div>
+        <div class="stat">
+          <mat-icon>archive</mat-icon>
+          <span>ZIP import & export</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-visual" aria-hidden="true">
+      <div class="visual-card visual-card--back"></div>
+      <div class="visual-card visual-card--front">
+        <div class="mini-flow">
+          <span class="node">Input</span>
+          <span class="connector"></span>
+          <span class="node node--accent">Dense</span>
+          <span class="connector"></span>
+          <span class="node">Output</span>
+        </div>
+        <div class="mini-metrics">
+          <div><small>Loss</small><strong>0.042</strong></div>
+          <div><small>Accuracy</small><strong>97.3%</strong></div>
+        </div>
       </div>
     </div>
   </section>
 
-  <section class="features-section">
-    <h3>Why WebNet Builder</h3>
-    <div class="features-grid">
-      <div class="feature-card">
-        <h3>Interactive Network Design</h3>
-        <p>Create neural networks with a drag-and-drop interface supporting various layer types including Dense, Dropout, Convolution, and LSTM.</p>
-      </div>
-      <div class="feature-card">
-        <h3>Advanced Data Handling</h3>
-        <p>Import CSV datasets with preprocessing options including MinMax, Label, OneHot, and Standard encoding for optimal training results.</p>
-      </div>
-      <div class="feature-card">
-        <h3>Browser-Based Training</h3>
-        <p>Train models using TensorFlow.js with WebGPU acceleration - enabling powerful GPU processing directly in your browser, plus additional backend options.</p>
-      </div>
-      <div class="feature-card">
-        <h3>Project Management</h3>
-        <p>Organize your work with built-in project management. Export and import projects as ZIP files for sharing or continued development.</p>
-      </div>
+  <section class="features">
+    <div class="section-intro">
+      <p class="eyebrow">Capabilities</p>
+      <h2>Everything you need to go from data to model</h2>
+    </div>
+
+    <div class="feature-grid">
+      <article class="feature-card">
+        <div class="feature-icon"><mat-icon>account_tree</mat-icon></div>
+        <h3>Interactive network design</h3>
+        <p>Drag, connect, and configure Dense, Conv, LSTM, Dropout, and more with a visual canvas.</p>
+      </article>
+      <article class="feature-card">
+        <div class="feature-icon"><mat-icon>table_chart</mat-icon></div>
+        <h3>Smart data pipeline</h3>
+        <p>Import CSV datasets with encoders for MinMax, Label, One-Hot, and Standard scaling.</p>
+      </article>
+      <article class="feature-card">
+        <div class="feature-icon"><mat-icon>memory</mat-icon></div>
+        <h3>In-browser training</h3>
+        <p>Run training locally with TensorFlow.js backends including WebGPU, WebGL, and WASM.</p>
+      </article>
+      <article class="feature-card">
+        <div class="feature-icon"><mat-icon>folder_special</mat-icon></div>
+        <h3>Project workspace</h3>
+        <p>Organize experiments, compare training runs, and share projects as portable ZIP archives.</p>
+      </article>
     </div>
   </section>
 </div>

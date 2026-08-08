@@ -1,0 +1,21 @@
+@use '@angular/material' as mat;
+
+html {
+  color-scheme: light;
+
+  @include mat.theme((
+    color: (
+      theme-type: light,
+      primary: mat.$violet-palette,
+      tertiary: mat.$cyan-palette,
+    ),
+    typography: (
+      plain-family: Inter,
+      brand-family: Inter,
+      bold-weight: 700,
+      medium-weight: 600,
+      regular-weight: 400,
+    ),
+    density: 0,
+  ));
+}

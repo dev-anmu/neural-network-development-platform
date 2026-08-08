@@ -1,73 +1,89 @@
-<div class="ui-container">
-  <svg id="svg-container" class="box-container">
-    <g id="inner-svg-container"></g>
-  </svg>
+<div class="builder-page">
+  <div class="builder-toolbar">
+    <div class="builder-toolbar__info">
+      <mat-icon>schema</mat-icon>
+      <span>Click layer buttons to add nodes, then drag from output anchors to inputs to connect.</span>
+    </div>
+    <button mat-stroked-button color="warn" (click)="clear()">
+      <mat-icon>delete_sweep</mat-icon>
+      Clear model
+    </button>
+  </div>
 
-  <div class="settings-container">
-    <mat-tab-group [selectedIndex]="selectedTab.value">
-      <mat-tab label="Layer">
-        <div class="layer-components-container box-container">
-          <h2>Layer Components</h2>
-          <span>Add individual layers to your model by simply clicking on the buttons.</span>
-          <div class="layer-components">
-            <h3>Basic</h3>
-            <div class="layer-component-buttons">
-              <button mat-raised-button color="primary" (click)="createLayer(LayerType.Dense)"
-                [matTooltip]="'A fully connected layer takes all of the outputs from the previous layer and connects them to all of the neurons in the next layer. This allows the layer to learn complex relationships between the different features in the data.'" [matTooltipPosition]="'left'">
-                Dense
-              </button>
-              <button mat-raised-button color="primary" (click)="createLayer(LayerType.Dropout)"
-                [matTooltip]="'A dropout layer randomly drops out neurons from the network during training. This helps to prevent the network from overfitting to the training data and improves its generalization performance.'" [matTooltipPosition]="'left'">
-                Dropout
-              </button>
-            </div>
-            <h3>Convolution</h3>
-            <div class="layer-component-buttons">
-              <button mat-raised-button color="primary" (click)="createLayer(LayerType.Convolution)"
-                [matTooltip]="'A convolutional layer takes a small window of the input data and extracts features from it. This is useful for tasks such as image recognition and natural language processing, where patterns in the data can be localized to specific regions'" [matTooltipPosition]="'left'">
-                Convolutional
-              </button>
-              <button mat-raised-button color="primary" (click)="createLayer(LayerType.Flatten)"
-                [matTooltip]="'A flatten layer converts the multidimensional output of a convolutional layer into a one-dimensional vector. This is necessary before feeding the output into a fully connected layer.'" [matTooltipPosition]="'left'">
-                Flatten
-              </button>
-              <button mat-raised-button color="primary" (click)="createLayer(LayerType.Maxpooling)"
-                [matTooltip]="'A maxpooling layer downsamples the input data by taking the maximum value from each small window. This reduces the dimensionality of the data and makes it more computationally efficient to process.'" [matTooltipPosition]="'left'">
-                Maxpooling
-              </button>
-            </div>
-            <h3>Recurrent</h3>
-            <div class="layer-component-buttons">
-              <button mat-raised-button color="primary" (click)="createLayer(LayerType.Lstm)"
-                [matTooltip]="'A long short-term memory (LSTM) layer is a type of recurrent neural network that is able to learn long-term dependencies in the data. This makes it useful for tasks such as machine translation and speech recognition, where the input data is sequential.'" [matTooltipPosition]="'left'">
-                LSTM
-              </button>
+  <div class="ui-container">
+    <div class="canvas-panel surface-card">
+      <svg id="svg-container" class="canvas-svg">
+        <g id="inner-svg-container"></g>
+      </svg>
+    </div>
+
+    <aside class="settings-panel surface-card">
+      <mat-tab-group [selectedIndex]="selectedTab.value" class="builder-tabs">
+        <mat-tab label="Layers">
+          <div class="layer-components-container">
+            <h2>Layer palette</h2>
+            <p class="panel-hint">Add layers to your model, then connect them on the canvas.</p>
+            <div class="layer-components">
+              <div class="layer-category">
+                <h3>Basic</h3>
+                <div class="layer-component-buttons">
+                  <button mat-stroked-button color="primary" (click)="createLayer(LayerType.Dense)"
+                    [matTooltip]="'A fully connected layer takes all of the outputs from the previous layer and connects them to all of the neurons in the next layer.'" matTooltipPosition="left">
+                    Dense
+                  </button>
+                  <button mat-stroked-button color="primary" (click)="createLayer(LayerType.Dropout)"
+                    [matTooltip]="'Randomly drops neurons during training to reduce overfitting.'" matTooltipPosition="left">
+                    Dropout
+                  </button>
+                </div>
+              </div>
+              <div class="layer-category">
+                <h3>Convolution</h3>
+                <div class="layer-component-buttons">
+                  <button mat-stroked-button color="primary" (click)="createLayer(LayerType.Convolution)"
+                    [matTooltip]="'Extracts localized features using convolutional filters.'" matTooltipPosition="left">
+                    Convolutional
+                  </button>
+                  <button mat-stroked-button color="primary" (click)="createLayer(LayerType.Flatten)"
+                    [matTooltip]="'Flattens multidimensional output into a 1D vector.'" matTooltipPosition="left">
+                    Flatten
+                  </button>
+                  <button mat-stroked-button color="primary" (click)="createLayer(LayerType.Maxpooling)"
+                    [matTooltip]="'Downsamples by taking the maximum value in each window.'" matTooltipPosition="left">
+                    Maxpooling
+                  </button>
+                </div>
+              </div>
+              <div class="layer-category">
+                <h3>Recurrent</h3>
+                <div class="layer-component-buttons">
+                  <button mat-stroked-button color="primary" (click)="createLayer(LayerType.Lstm)"
+                    [matTooltip]="'LSTM layer for learning long-term dependencies in sequential data.'" matTooltipPosition="left">
+                    LSTM
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </mat-tab>
-      <mat-tab label="Configuration">
-        <div class="box-container configuration-container">
-          @if (layerForm) {
-            <div>
-              <h2>{{configuration.name }} Configuration</h2>
-              <span>{{configuration.title}}</span>
-              <app-dynamic-layer-form [parameterConfig]="configuration.formConfig"
-              [form]="layerForm"></app-dynamic-layer-form>
-            </div>
-          }
-          @if (!layerForm) {
-            <div>
-              <h2>Layer Configuration</h2>
-              <span>Select a Layer to change its Configuration.</span>
-            </div>
-          }
-
-        </div>
-      </mat-tab>
-    </mat-tab-group>
+        </mat-tab>
+        <mat-tab label="Configuration">
+          <div class="configuration-container">
+            @if (layerForm) {
+              <div>
+                <h2>{{ configuration.name }} configuration</h2>
+                <p class="panel-hint">{{ configuration.title }}</p>
+                <app-dynamic-layer-form [parameterConfig]="configuration.formConfig" [form]="layerForm"></app-dynamic-layer-form>
+              </div>
+            } @else {
+              <div class="empty-config">
+                <mat-icon>touch_app</mat-icon>
+                <h2>No layer selected</h2>
+                <p class="panel-hint">Click a layer on the canvas to edit its parameters.</p>
+              </div>
+            }
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+    </aside>
   </div>
 </div>
-<button mat-raised-button color="secondary" (click)="clear()">
-  Clear Model
-</button>

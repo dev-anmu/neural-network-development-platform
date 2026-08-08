@@ -1,28 +1,33 @@
-.dataset-section, .training-section, .modeling-section, .evaluation-section, .export-section {
-  margin-top: 0;
-  padding: 0;
+.project-page {
+  padding-bottom: 2rem;
 }
 
-.project-page {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 0 1rem 2rem;
+.project-header {
+  margin-bottom: 1.25rem;
+
+  &__main {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
 }
 
 .project-breadcrumb {
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: 0.25rem;
-  font-size: 0.9rem;
-  margin-bottom: 0.5rem;
+  font-size: 0.82rem;
+  margin-bottom: 0.65rem;
 
   a {
-    color: var(--color-primary);
+    color: var(--color-text-secondary);
     text-decoration: none;
+    font-weight: 500;
 
     &:hover {
-      text-decoration: underline;
+      color: var(--color-primary);
     }
   }
 
@@ -30,34 +35,55 @@
     font-size: 1rem;
     width: 1rem;
     height: 1rem;
-    color: #888;
+    color: var(--color-text-muted);
   }
 
   .current {
-    color: #555;
-    font-weight: 500;
+    color: var(--color-text);
+    font-weight: 600;
   }
+}
+
+.project-title {
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  margin-bottom: 0.25rem;
+}
+
+.project-subtitle {
+  color: var(--color-text-secondary);
+  font-size: 0.92rem;
+}
+
+.workflow-panel {
+  overflow: hidden;
+}
+
+.step-content {
+  padding: 0.25rem 0 0;
 }
 
 .step-hint {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.75rem 1rem;
-  border-radius: 8px;
-  margin: 0.75rem 0.5rem 0;
-  font-size: 0.9rem;
+  padding: 0.7rem 1rem;
+  border-radius: var(--radius-md);
+  margin: 0.75rem 1rem 0;
+  font-size: 0.88rem;
 
   mat-icon {
     font-size: 1.1rem;
     width: 1.1rem;
     height: 1.1rem;
+    flex-shrink: 0;
   }
 
   &--warn {
-    background-color: #fff3e0;
-    color: #e65100;
-    border: 1px solid #ffcc80;
+    background: #fff7ed;
+    color: #c2410c;
+    border: 1px solid #fed7aa;
   }
 }
 
@@ -65,9 +91,10 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin: 1rem 0.5rem 0;
-  padding-top: 1rem;
-  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  gap: 0.75rem;
+  padding: 1rem 1.15rem 1.15rem;
+  border-top: 1px solid var(--color-border);
+  background: var(--color-bg-subtle);
 
   button mat-icon {
     margin-left: 0.25rem;
@@ -79,232 +106,122 @@
   }
 }
 
-.step-title {
-  font-size: 24px;
-  margin-top: 1rem !important;
-}
+// Stepper overrides
+::ng-deep .workflow-stepper {
+  background: transparent;
 
-.project-header {
-  text-align: center;
-  margin: 1rem auto 1.5rem;
-  max-width: 800px;
-  padding: 0 1rem;
-}
+  .mat-horizontal-stepper-header-container {
+    padding: 0.75rem 1rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+    border-bottom: 1px solid var(--color-border);
+    background: var(--color-bg-elevated);
 
-.project-title {
-  color: var(--color-primary);
-  font-weight: 500;
-  margin-bottom: 0.5rem;
-  font-size: 1.8rem;
-}
-
-.project-subtitle {
-  color: #555;
-  font-size: 1rem;
-  margin-bottom: 0;
-}
-
-.custom-stepper {
-  margin-bottom: 1.5rem;
-  background-color: transparent;
-}
-
-/* Override Angular Material Stepper styles */
-::ng-deep {
-  /* Base step header styling */
-  .mat-step-header {
-    padding: 8px 20px !important;
-    height: auto !important;
-    transition: all 0.25s ease;
-    border-radius: 4px;
-    margin: 2px 4px;
-    
-    &:hover {
-      background-color: rgba(63, 81, 181, 0.04);
+    &::-webkit-scrollbar {
+      display: none;
     }
   }
-  
-  /* Active step styling - using .mat-selected class which persists */
-  .mat-step-header[aria-selected="true"],
-  .mat-horizontal-stepper-header[aria-selected="true"],
-  .mat-step-header.mat-selected {
-    background-color: rgba(63, 81, 181, 0.12) !important;
-    box-shadow: inset 0 0 0 1px rgba(63, 81, 181, 0.2), 0 2px 4px rgba(0, 0, 0, 0.1);
-    transform: translateY(-1px);
-    
-    .mat-step-icon {
-      transform: scale(1.1);
-      box-shadow: 0 2px 3px rgba(0, 0, 0, 0.2);
+
+  .mat-step-header {
+    padding: 0.5rem 0.85rem !important;
+    height: auto !important;
+    border-radius: var(--radius-pill) !important;
+    margin: 0 0.15rem;
+    transition: background 0.2s ease;
+
+    &:hover {
+      background: var(--color-bg-subtle) !important;
     }
-    
-    .mat-step-label {
+  }
+
+  .mat-step-header[aria-selected="true"],
+  .mat-step-header.mat-selected {
+    background: var(--color-primary-light) !important;
+    box-shadow: none !important;
+    transform: none !important;
+
+    .mat-step-icon {
+      background: var(--color-primary) !important;
+      box-shadow: 0 2px 8px rgba(91, 91, 214, 0.35);
+    }
+
+    .step-label span {
       color: var(--color-primary);
       font-weight: 600;
     }
-    
-    .step-label {
-      mat-icon {
-        color: var(--color-primary);
-      }
-      
-      span {
-        color: var(--color-primary);
-        font-weight: 600;
-      }
+
+    .step-label mat-icon {
+      color: var(--color-primary);
     }
-  }
-  
-  /* Error styling */
-  .mat-step-header.mat-step-header-invalid {
-    .mat-step-icon {
-      background-color: var(--color-warn, #F44336);
-    }
-    
-    .mat-step-label {
-      color: var(--color-warn, #F44336);
-    }
-  }
-  
-  /* Fix for error messages */
-  .mat-step-text-label {
-    display: block;
-    width: 100%;
-  }
-  
-  .mat-step-optional {
-    display: none;
-  }
-  
-  .mat-step-error {
-    font-size: 0.75rem;
-    line-height: 1;
-    position: absolute;
-    bottom: -5px;
-    left: 0;
-    width: 100%;
-    text-align: center;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 100%;
-    color: var(--color-warn, #F44336);
   }
 
-  /* Icon styling */
   .mat-step-header .mat-step-icon {
-    background-color: var(--color-primary);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    height: 22px;
-    width: 22px;
-    font-size: 14px;
+    width: 24px;
+    height: 24px;
+    font-size: 13px;
+    background: var(--color-bg-muted);
+    color: var(--color-text-secondary);
   }
-  
-  /* Label styling */
-  .mat-step-header .mat-step-label {
-    min-width: 80px;
-    white-space: normal;
-  }
-  
-  /* Step container styling */
-  .custom-stepper .mat-horizontal-stepper-header-container {
-    margin-bottom: 0;
-    background-color: white;
-    border-radius: 8px;
-    padding: 4px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  }
-  
-  /* Line styling between steps */
+
   .mat-stepper-horizontal-line {
-    border-top-width: 1px;
-    border-top-color: rgba(0, 0, 0, 0.12);
-    margin: 0 -4px;
+    display: none;
   }
-  
-  /* Custom step label container */
+
+  .mat-horizontal-content-container {
+    padding: 0 !important;
+
+    &::before {
+      display: none;
+    }
+  }
+
+  .mat-horizontal-stepper-content {
+    margin: 0;
+    border-radius: 0;
+  }
+
   .step-label {
     display: flex;
     align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    
+    gap: 0.35rem;
+    flex-direction: row;
+
     mat-icon {
-      font-size: 1.2rem;
-      height: 1.2rem;
-      width: 1.2rem;
-      margin-bottom: 3px;
+      font-size: 1rem;
+      width: 1rem;
+      height: 1rem;
+      margin: 0;
     }
-    
+
     span {
-      text-align: center;
-      font-size: 0.85rem;
-      white-space: normal;
-      line-height: 1.1;
+      font-size: 0.82rem;
+      white-space: nowrap;
     }
-  }
-  
-  /* Remove the extra padding in the content section */
-  .mat-horizontal-content-container {
-    padding: 0 !important;
-    margin-top: 0.5rem;
-    position: relative;
-    
-    &::before {
-      content: '';
-      position: absolute;
-      top: -14px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 40px;
-      height: 4px;
-      background-color: #e0e0e0;
-      border-radius: 4px;
-    }
-  }
-  
-  .mat-horizontal-stepper-content {
-    margin: 0 0.5rem;
-    border-radius: 8px;
-    overflow: hidden;
   }
 }
 
-/* Responsive adjustments */
 @media (max-width: 768px) {
-  ::ng-deep {
-    .mat-step-header {
-      padding: 6px !important;
-    }
-    
-    .step-label {
-      mat-icon {
-        font-size: 1rem;
-        height: 1rem;
-        width: 1rem;
-        margin-bottom: 2px;
-      }
-      
-      span {
-        font-size: 0.75rem;
-      }
-    }
-    
-    .mat-step-error {
-      font-size: 0.7rem;
-      bottom: -4px;
-    }
-    
-    .mat-horizontal-content-container::before {
-      width: 30px;
-      height: 3px;
+  ::ng-deep .workflow-stepper .step-label span {
+    display: none;
+  }
+
+  ::ng-deep .workflow-stepper .mat-step-header {
+    padding: 0.45rem 0.65rem !important;
+  }
+
+  .step-navigation {
+    flex-direction: column-reverse;
+
+    button {
+      width: 100%;
+      justify-content: center;
     }
   }
-  
-  .project-title {
-    font-size: 1.5rem;
-  }
-  
-  .project-subtitle {
-    font-size: 0.9rem;
+}
+
+@media (max-width: 480px) {
+  .project-header__main {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }

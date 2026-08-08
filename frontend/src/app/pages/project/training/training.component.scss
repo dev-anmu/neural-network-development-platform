@@ -149,13 +149,10 @@
   }
 }
 
-// Dashboard Container
+// Dashboard Container — layout only; surfaces use global tokens
 .dashboard-container {
-  display: flex;
-  flex-direction: column;
   gap: 1rem;
-  padding: 1rem 0;
-  background-color: #f8f9fa;
+  padding: 0.75rem 1rem 1rem;
 }
 
 // Main Grid Layout
@@ -170,18 +167,10 @@
     "summary summary";
 }
 
-// Card Styling
+// Card Styling — inherits from global .dashboard-card
 .dashboard-card {
-  background: white;
-  border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  
   .card-content {
-    padding: 1rem;
-    flex: 1;
+    padding: 1rem 1.15rem 1.15rem;
   }
 }
 
@@ -225,8 +214,8 @@
     display: flex;
     justify-content: space-between;
     padding: 0.5rem 0.75rem;
-    border-radius: 6px;
-    background-color: #f5f7ff;
+    border-radius: var(--radius-sm);
+    background: var(--color-bg-subtle);
     margin-bottom: 0.5rem;
     align-items: center;
     
@@ -374,8 +363,9 @@
 
 // Visualization Containers
 .plots-container, .summary-container {
-  background-color: #f5f7ff;
-  border-radius: 8px;
+  background: var(--color-bg-subtle);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
   height: 100%;
   min-height: 300px;
   padding: 0.75rem;
