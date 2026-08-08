@@ -1,4 +1,4 @@
-import {Component, computed} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
 import {ProjectService} from "../../core/services/project.service";
 import {ModelBuilderService} from "../../core/services/model-builder.service";
@@ -7,10 +7,11 @@ import {ModelBuilderService} from "../../core/services/model-builder.service";
     selector: 'app-project',
     templateUrl: './project.component.html',
     styleUrls: ['./project.component.scss'],
-    standalone: false
+    standalone: false,
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectComponent {
-  projectName: string;
+export class ProjectComponent implements OnInit, OnDestroy {
+  projectName = '';
   initialStep: number = 0;
   
   datasetError = computed(() => {
@@ -32,19 +33,22 @@ export class ProjectComponent {
               private projectService: ProjectService,
               public activatedRoute: ActivatedRoute,
               private router: Router) {
-    this.projectName = activatedRoute.snapshot.params['websiteName'];
-    this.projectService.selectProject(this.projectName);
+    this.projectName = activatedRoute.snapshot.params['projectName'];
+  }
+
+  async ngOnInit(): Promise<void> {
+    await this.projectService.selectProject(this.projectName);
     const project = this.projectService.getProjectByName(this.projectName);
     if (!project) {
-      this.router.navigate(['/'])
-    } else {
-      this.modelBuilderService.isInitialized = false;
+      await this.router.navigate(['/']);
+      return;
+    }
 
-      const builder = this.projectService.builder();
+    this.modelBuilderService.isInitialized = false;
 
-      if (builder && builder.connections && builder.connections.length > 0) {
-        this.initialStep = 1;
-      }
+    const builder = this.projectService.builder();
+    if (builder.connections.length > 0) {
+      this.initialStep = 1;
     }
   }
 

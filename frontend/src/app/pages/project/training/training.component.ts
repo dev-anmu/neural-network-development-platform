@@ -1,4 +1,5 @@
-import {Component, ElementRef, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, ElementRef, inject, OnInit, ViewChild} from '@angular/core';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {optimizers} from "../../../shared/ml_objects/optimizers";
 import {losses} from "../../../shared/ml_objects/losses";
 import {tfBackends} from "../../../shared/ml_objects/tfBackends";
@@ -15,9 +16,12 @@ import {MessageDialogComponent} from "../../../shared/components/message-dialog/
     selector: 'app-training',
     templateUrl: './training.component.html',
     styleUrls: ['./training.component.scss'],
-    standalone: false
+    standalone: false,
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class TrainingComponent {
+export class TrainingComponent implements OnInit {
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly cdr = inject(ChangeDetectorRef);
   @ViewChild('modelSummaryContainer', {static: false}) modelSummaryContainer!: ElementRef;
   @ViewChild('plotContainer', {static: false}) plotContainer!: ElementRef;
   trainingForm: FormGroup;
@@ -31,12 +35,14 @@ export class TrainingComponent {
               private projectService: ProjectService,
               public dialog: MatDialog,
               fb: NonNullableFormBuilder) {
-    this.ml.trainingInProgressSubject.subscribe((flag: boolean) => {
+    this.ml.trainingInProgressSubject.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((flag: boolean) => {
       this.trainingInProgress = flag;
       this.updateFormControlState();
+      this.cdr.markForCheck();
     });
-    this.ml.trainingStatsSubject.subscribe((stats: TrainStats) => {
+    this.ml.trainingStatsSubject.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((stats: TrainStats) => {
       this.trainingStats = stats;
+      this.cdr.markForCheck();
     });
     this.trainingForm = fb.group({
       epochs: [10, Validators.required],
@@ -57,7 +63,7 @@ export class TrainingComponent {
 
   ngOnInit() {
     this.trainingForm.patchValue(this.projectService.trainConfig());
-    this.trainingForm.valueChanges.subscribe((formValue) => {
+    this.trainingForm.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((formValue) => {
       this.projectService.trainConfig.set(formValue);
     });
   }
@@ -103,7 +109,7 @@ export class TrainingComponent {
       const backend = this.trainingForm.get('tfBackend')?.value;
       const backendSelected = await this.ml.setTfBackend(backend);
       if (backendSelected) {
-        const df = await this.projectService.dataframe();
+        const df = await this.projectService.getDataframe();
         const [X, Y] = await this.ml.extractFeaturesAndTargets(df);
 
         const reshapedX = this.ml.reshapeTensors(X);
@@ -127,6 +133,7 @@ export class TrainingComponent {
               acc: acc,
               val_acc: val_acc
             });
+            this.cdr.markForCheck();
           }
         } else {
           this.dialog.open(MessageDialogComponent, {
@@ -157,7 +164,11 @@ export class TrainingComponent {
     const controls = this.trainingForm?.controls;
     for (const controlName in controls) {
       const control: AbstractControl = controls[controlName];
-      this.trainingInProgress ? control.disable() : control.enable();
+      if (this.trainingInProgress) {
+        control.disable();
+      } else {
+        control.enable();
+      }
     }
   }
 

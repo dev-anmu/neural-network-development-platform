@@ -1,5 +1,4 @@
-import {AbstractControl, FormControl} from "@angular/forms";
-import {ProjectService} from "./services/project.service";
+import {AbstractControl} from "@angular/forms";
 
 export function validateShapeArray(control: AbstractControl) {
   const shapeArray = control.value;

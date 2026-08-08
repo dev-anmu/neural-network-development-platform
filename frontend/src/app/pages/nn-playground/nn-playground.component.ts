@@ -1,4 +1,4 @@
-import {Component, DestroyRef, HostListener, OnInit, ViewEncapsulation, inject} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, HostListener, OnInit, ViewEncapsulation, inject} from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {LayerType} from "../../core/enums";
 import {FormControl} from "@angular/forms";
@@ -11,9 +11,11 @@ import {Layer} from "../../shared/layer";
     styleUrls: ['./nn-playground.component.scss'],
     encapsulation: ViewEncapsulation.None,
     standalone: false,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NnPlaygroundComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
+  private readonly cdr = inject(ChangeDetectorRef);
   protected readonly LayerType = LayerType;
   layerForm: any;
   configuration: any;
@@ -23,7 +25,12 @@ export class NnPlaygroundComponent implements OnInit {
     this.playgroundBuilderService.selectedLayerSubject.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((layer: Layer | null) => {
       this.layerForm = layer ? layer.layerForm : null;
       this.configuration = layer ? layer.getConfiguration() : null;
-      layer ? this.selectedTab.setValue(1) : this.selectedTab.setValue(0);
+      if (layer) {
+        this.selectedTab.setValue(1);
+      } else {
+        this.selectedTab.setValue(0);
+      }
+      this.cdr.markForCheck();
     });
   }
 

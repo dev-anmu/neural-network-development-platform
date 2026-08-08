@@ -1,4 +1,4 @@
-import {Component, HostListener} from '@angular/core';
+import {ChangeDetectionStrategy, Component, HostListener} from '@angular/core';
 import {ProjectService} from "./core/services/project.service";
 import {registerLocaleData} from "@angular/common";
 import localeDe from '@angular/common/locales/de';
@@ -10,7 +10,8 @@ registerLocaleData(localeDe, 'de-DE', localeDeExtra);
     selector: 'app-root',
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss'],
-    standalone: false
+    standalone: false,
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AppComponent {
   constructor(private projectService: ProjectService) {}

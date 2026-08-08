@@ -33,7 +33,7 @@ export class PlaygroundBuilderService extends ModelBuilderService {
     return super.generateBuilderJSON();
   }
 
-  override async generateModel(reuseWeights: boolean = false): Promise<tf.LayersModel | null> {
+  override async generateModel(_reuseWeights: boolean = false): Promise<tf.LayersModel | null> {
     return super.generateModel(false);
   }
 

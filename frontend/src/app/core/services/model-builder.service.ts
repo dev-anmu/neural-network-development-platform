@@ -18,14 +18,13 @@ import {Builder} from "../interfaces/project";
 import {XY} from "../interfaces/interfaces";
 import {Lstm} from "../../shared/layer/lstm";
 import {Dropout} from "../../shared/layer/dropout";
-import {MatDialog} from "@angular/material/dialog";
 
 
 @Injectable({
   providedIn: 'root'
 })
 export class ModelBuilderService {
-  private layerMap: Map<string, Layer> = new Map();
+  private layerMap = new Map<string, Layer>();
   private nextLayerId = 1;
   inputLayer: Input | null = null;
   outputLayer: Output | null = null;
@@ -231,7 +230,7 @@ export class ModelBuilderService {
         layer = nextLayer;
       }
       return layer !== this.outputLayer ? null : tf.model({inputs: input, outputs: hidden});
-    } catch (error) {
+    } catch {
       console.log("Error: Generating Model");
       return null;
     }

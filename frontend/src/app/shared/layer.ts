@@ -180,8 +180,8 @@ export abstract class Layer {
       .attr("transform", `translate(${circleX}, ${circleY})`);
 
     inputAnchor
-      .on("mouseenter", (event: any) => inputAnchor.classed("hovered", true))
-      .on("mouseleave", (event: any) => this.addConnection());
+      .on("mouseenter", (_event: any) => inputAnchor.classed("hovered", true))
+      .on("mouseleave", (_event: any) => this.addConnection());
   }
 
   protected addOutputAnchor(layerGrp: Selection<any, any, any, any>): void {
@@ -197,11 +197,11 @@ export abstract class Layer {
       .attr("transform", `translate(${circleX}, ${circleY})`);
 
     outputAnchor.call(d3.drag()
-      .on("start", (event: any) => this.createConnection())
+      .on("start", (_event: any) => this.createConnection())
       .on("drag", (event: any) => this.outputConnection?.moveToMouse(event))
       .on("end", (event: any) => this.checkConnection(outputAnchor, event)))
-      .on("mouseenter", (event: any) => outputAnchor.classed("hovered", true))
-      .on("mouseleave", (event: any) => outputAnchor.classed("hovered", false));
+      .on("mouseenter", (_event: any) => outputAnchor.classed("hovered", true))
+      .on("mouseleave", (_event: any) => outputAnchor.classed("hovered", false));
   }
 
   createConnection(): void {
@@ -244,11 +244,11 @@ export abstract class Layer {
     this.inputConnection = connection;
   }
 
-  protected hoverLayer(event: any): void {
+  protected hoverLayer(_event: any): void {
     this.svgElement.classed("hovered", true);
   }
 
-  protected unhoverLayer(event: any): void {
+  protected unhoverLayer(_event: any): void {
     this.svgElement.classed("hovered", false);
   }
 

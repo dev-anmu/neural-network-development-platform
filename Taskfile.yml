@@ -20,6 +20,12 @@ tasks:
     cmds:
       - npm run build
 
+  lint:
+    desc: Run ESLint on the frontend
+    dir: frontend
+    cmds:
+      - npm run lint
+
   test:
     desc: Run frontend unit tests
     dir: frontend

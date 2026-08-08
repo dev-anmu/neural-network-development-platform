@@ -47,6 +47,8 @@ Open your browser to `http://localhost:4200`.
 
 Run `task --list` to see all available tasks.
 
+**Requirements:** Node.js 22 LTS (see `.nvmrc`) and npm.
+
 ### Manual setup (without Task)
 
 1. Clone the repository

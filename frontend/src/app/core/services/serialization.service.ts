@@ -3,9 +3,18 @@ import JSZip from 'jszip';
 import {Papa} from 'ngx-papaparse';
 import {saveAs} from 'file-saver';
 import {ProjectService} from "./project.service";
-import {Project} from "../interfaces/project";
+import {Builder, Dataset, Project, ProjectInfo, TrainingConfig, TrainingRecords} from "../interfaces/project";
 import {MessageDialogComponent} from "../../shared/components/message-dialog/message-dialog.component";
 import {MatDialog} from "@angular/material/dialog";
+
+const MAX_ZIP_BYTES = 50 * 1024 * 1024;
+
+export class ProjectImportError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'ProjectImportError';
+  }
+}
 
 @Injectable({
   providedIn: 'root'
@@ -24,7 +33,6 @@ export class SerializationService {
         dynamicTyping: true,
         skipEmptyLines: true,
         transform: (value) => {
-          // todo: need better solution. fast workaround so i dont get null values after dynamic typing.
           return value === '' ? ' ' : value;
         },
         complete: (result: any) => {
@@ -63,22 +71,50 @@ export class SerializationService {
   }
 
   async importZip(file: Blob): Promise<Project> {
-    const zip = await JSZip.loadAsync(file);
-    const files = zip.files;
+    if (file.size > MAX_ZIP_BYTES) {
+      throw new ProjectImportError(`Project file exceeds the ${MAX_ZIP_BYTES / (1024 * 1024)} MB limit.`);
+    }
 
-    const projectFile = files['project.json'];
-    const datasetFile = files['dataset/dataset.json'];
-    const trainingFile = files['training/configuration.json'];
-    const builderFile = files['builder/model.json'];
-    const recordsFile = files['evaluations/records.json'];
+    let zip: JSZip;
+    try {
+      zip = await JSZip.loadAsync(file);
+    } catch {
+      throw new ProjectImportError('The selected file is not a valid ZIP archive.');
+    }
 
-    const project = projectFile ? JSON.parse(await projectFile.async('string')) : {};
-    const dataset = datasetFile ? JSON.parse(await datasetFile.async('string')) : {};
-    const trainConfig = trainingFile ? JSON.parse(await trainingFile.async('string')) : {};
-    const builder = builderFile ? JSON.parse(await builderFile.async('string')) : {};
-    const records = recordsFile ? JSON.parse(await recordsFile.async('string')) : [];
+    const projectFile = zip.file('project.json');
+    if (!projectFile) {
+      throw new ProjectImportError('The ZIP file is missing project.json.');
+    }
 
-    return {projectInfo: project, dataset: dataset, trainConfig: trainConfig, builder: builder, trainRecords: records};
+    const projectInfo = this.parseJson<ProjectInfo>(
+      await projectFile.async('string'),
+      'project.json'
+    );
+    if (!projectInfo.name || typeof projectInfo.name !== 'string') {
+      throw new ProjectImportError('project.json must include a valid project name.');
+    }
+
+    const dataset = await this.readOptionalJson<Dataset>(zip, 'dataset/dataset.json', {
+      data: [],
+      fileName: '',
+      columns: [],
+      inputColumns: [],
+      targetColumns: []
+    });
+    const trainConfig = await this.readOptionalJson<TrainingConfig>(zip, 'training/configuration.json', this.projectService.trainConfig());
+    const builder = await this.readOptionalJson<Builder>(zip, 'builder/model.json', {
+      layers: [],
+      connections: [],
+      nextLayerId: 0
+    });
+    const trainRecords = await this.readOptionalJson<TrainingRecords[]>(zip, 'evaluations/records.json', []);
+
+    if (!Array.isArray(trainRecords)) {
+      throw new ProjectImportError('evaluations/records.json must contain an array.');
+    }
+
+    return {projectInfo, dataset, trainConfig, builder, trainRecords};
   }
 
   async exportModel() {
@@ -94,6 +130,22 @@ export class SerializationService {
           warning: true
         }
       });
+    }
+  }
+
+  private async readOptionalJson<T>(zip: JSZip, path: string, fallback: T): Promise<T> {
+    const file = zip.file(path);
+    if (!file) {
+      return fallback;
+    }
+    return this.parseJson<T>(await file.async('string'), path);
+  }
+
+  private parseJson<T>(content: string, label: string): T {
+    try {
+      return JSON.parse(content) as T;
+    } catch {
+      throw new ProjectImportError(`Could not parse ${label}. The file may be corrupted.`);
     }
   }
 }

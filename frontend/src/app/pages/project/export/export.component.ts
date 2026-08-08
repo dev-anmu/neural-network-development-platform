@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {SerializationService} from "../../../core/services/serialization.service";
 import {KeyValue} from "@angular/common";
 import {ProjectService} from "../../../core/services/project.service";
@@ -14,7 +14,8 @@ interface ProjectSections {
     selector: 'app-export',
     templateUrl: './export.component.html',
     styleUrls: ['./export.component.scss'],
-    standalone: false
+    standalone: false,
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ExportComponent {
   sections: Record<string, ProjectSections> = {

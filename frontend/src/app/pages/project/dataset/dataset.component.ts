@@ -1,4 +1,5 @@
-import {Component, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, inject, ViewChild} from '@angular/core';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {ProjectService} from "../../../core/services/project.service";
 import {MatPaginator} from "@angular/material/paginator";
 import {MatTableDataSource} from "@angular/material/table";
@@ -13,9 +14,12 @@ import {EncoderEnum} from "../../../core/enums";
     selector: 'app-dataset',
     templateUrl: './dataset.component.html',
     styleUrls: ['./dataset.component.scss'],
-    standalone: false
+    standalone: false,
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DatasetComponent {
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly cdr = inject(ChangeDetectorRef);
   @ViewChild(MatPaginator) paginator: MatPaginator | undefined;
   datasetForm;
   splitValue = 80;
@@ -26,7 +30,7 @@ export class DatasetComponent {
   columnNames: string[] = [];
   dataSource: MatTableDataSource<any>;
   selectedTable: string = 'original';
-  selectedEncoders: { [key: string]: EncoderEnum } = {};
+  selectedEncoders: Record<string, EncoderEnum> = {};
 
   constructor(public projectService: ProjectService,
               private serializationService: SerializationService,
@@ -83,7 +87,7 @@ export class DatasetComponent {
   }
 
   async initTable(): Promise<void> {
-    const df = await this.projectService.dataframe();
+    const df = await this.projectService.getDataframe();
     const dataset = this.projectService.dataset();
     if (df && df.shape[0] !== 0) {
       this.displayedColumns = dataset.columns;
@@ -98,6 +102,7 @@ export class DatasetComponent {
       this.datasetForm.get('input')?.setValue(this.projectService.dataset().inputColumns);
       this.selectedTable = 'original';
       await this.updateDataSource(this.selectedTable);
+      this.cdr.markForCheck();
     }
   }
 
@@ -106,11 +111,12 @@ export class DatasetComponent {
       const dataset = this.projectService.dataset();
       this.dataSource!.data = dataset.data;
     } else if (dataType === 'preprocessed') {
-      const df = await this.projectService.dataframe();
-      const data: { [key: string]: any }[] = dfd.toJSON(df) as { [key: string]: any }[];
+      const df = await this.projectService.getDataframe();
+      const data: Record<string, any>[] = dfd.toJSON(df) as Record<string, any>[];
       this.dataSource!.data = data;
       this.dfColumns = df.columns;
     }
+    this.cdr.markForCheck();
   }
 
   initPaginator() {
@@ -172,7 +178,7 @@ export class DatasetComponent {
 
   ngAfterViewInit() {
     this.initPaginator();
-    this.datasetForm?.get('input')?.valueChanges.subscribe((inputColumns: string[] | null) => {
+    this.datasetForm?.get('input')?.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((inputColumns: string[] | null) => {
       this.projectService.dataset.update((dataset: Dataset) => {
         return {
           ...dataset,
@@ -180,7 +186,7 @@ export class DatasetComponent {
         };
       });
     });
-    this.datasetForm?.get('target')?.valueChanges.subscribe((targetColumns: string[] | null) => {
+    this.datasetForm?.get('target')?.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((targetColumns: string[] | null) => {
       this.projectService.dataset.update((dataset: Dataset) => {
         return {
           ...dataset,

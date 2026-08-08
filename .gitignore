@@ -10,9 +10,19 @@
 /node_modules
 npm-debug.log
 yarn-error.log
+pnpm-debug.log
+
+# ESLint
+.eslintcache
+
+# Environment
+.env
+.env.*
+!.env.example
 
 # IDEs and editors
 .idea/
+.cursor/
 .project
 .classpath
 .c9/
@@ -30,13 +40,16 @@ yarn-error.log
 .history/*
 
 # Miscellaneous
+.angular/
 /.angular/cache
 .sass-cache/
 /connect.lock
 /coverage
+coverage/
 /libpeerconnection.log
 testem.log
 /typings
+*.log
 
 # System files
 .DS_Store

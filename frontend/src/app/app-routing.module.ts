@@ -14,7 +14,7 @@ const routes: Routes = [
     pathMatch: 'full',
     title: 'Playground | WebNet'
   },
-  {path: 'projects/:websiteName', component: ProjectComponent, title: 'Project | WebNet'},
+  {path: 'projects/:projectName', component: ProjectComponent, title: 'Project | WebNet'},
   {
     path: 'projects',
     component: ProjectsComponent,

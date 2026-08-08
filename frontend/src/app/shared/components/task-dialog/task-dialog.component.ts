@@ -1,11 +1,12 @@
-import {Component, Inject} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Inject} from '@angular/core';
 import {MAT_DIALOG_DATA} from "@angular/material/dialog";
 
 @Component({
     selector: 'app-task-dialog',
     templateUrl: './task-dialog.component.html',
     styleUrls: ['./task-dialog.component.scss'],
-    standalone: false
+    standalone: false,
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TaskDialogComponent {
 

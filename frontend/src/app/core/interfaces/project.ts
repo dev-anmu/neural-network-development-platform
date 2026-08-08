@@ -19,7 +19,7 @@ export interface ProjectInfo {
 
 export interface Dataset {
   fileName: string,
-  data: { [key: string]: any }[],
+  data: Record<string, any>[],
   columns: { name: string, type: string, uniqueValues: number, encoding: EncoderEnum, encoder: EncoderType}[],
   inputColumns: string[],
   targetColumns: string[]

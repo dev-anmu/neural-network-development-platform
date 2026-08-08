@@ -90,38 +90,6 @@ export class MachineLearningService {
     }
   }
 
-  evaluate(X: Tensor, Y: Tensor): void {
-    const shape = this.modelBuilderService.getDataInputShape();
-
-    const reshapedX = X.reshape([X.shape[0], ...shape]);
-    const reshapedY = Y;
-
-    try {
-      this.compile();
-      const evaluation: tf.Scalar[] = this.projectService.model()?.evaluate(
-        reshapedX, reshapedY) as tf.Scalar[];
-      const metricsNames = this.projectService.model()?.metricsNames;
-
-      if (evaluation && metricsNames) {
-        for (let i = 0; i < evaluation?.length; i++) {
-          const tensor = evaluation[i];
-          const metricName = metricsNames[i];
-          const value = tensor.dataSync()[0];
-        }
-      }
-
-    } catch (e: any) {
-      this.dialog.open(MessageDialogComponent, {
-        maxWidth: '600px',
-        data: {
-          title: 'Evaluating Failed',
-          message: e.message,
-          warning: true
-        }
-      });
-    }
-  }
-
   updateWeights(): void {
     const model = this.projectService.model();
     if (model) {
@@ -134,7 +102,7 @@ export class MachineLearningService {
     try {
       const shape = this.modelBuilderService.getDataInputShape();
       return tensor.reshape([tensor.shape[0], ...shape]);
-    } catch (e: any) {
+    } catch {
       return false;
     }
   }
@@ -168,12 +136,12 @@ export class MachineLearningService {
     const TOTAL_NUM_BATCHES = EPOCHS * BATCHES_PER_EPOCH;
 
     const fitCallback = new tf.CustomCallback({
-      onTrainBegin: async (logs?: tf.Logs) => {
+      onTrainBegin: async (_logs?: tf.Logs) => {
         this.startTimer();
         this.trainingStatsSubject.next({epoch: 0, accuracy: undefined, loss: undefined, progress: 0, time: 0});
         this.trainingInProgressSubject.next(true);
       },
-      onTrainEnd: async (logs?: tf.Logs) => {
+      onTrainEnd: async (_logs?: tf.Logs) => {
         this.stopTimer();
         this.trainingStats.progress = 100;
         this.trainingStats.time = this.trainingTime;
@@ -252,9 +220,6 @@ export class MachineLearningService {
   }
 
   async showHistory(htmlContainer: HTMLElement, history: any): Promise<void> {
-    // Dynamically import tfjs-vis when needed
-    const tfvis = await import('@tensorflow/tfjs-vis');
-    
     if (history.history['loss'] && history.history['val_loss']) {
       await this.renderPlot(htmlContainer, [this.mapHistoryRecord(history.history['loss']), this.mapHistoryRecord(history.history['val_loss'])], ['Training', 'Validation'], {
         xLabel: 'Epoch',

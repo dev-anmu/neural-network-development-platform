@@ -1,4 +1,4 @@
-import {Component, DestroyRef, HostListener, ViewEncapsulation, inject} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, HostListener, ViewEncapsulation, inject} from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {ModelBuilderService} from "../../../core/services/model-builder.service";
 import {LayerType} from "../../../core/enums";
@@ -12,10 +12,12 @@ import {areBuilderEqual} from "../../../shared/utils";
     templateUrl: './nn-builder.component.html',
     styleUrls: ['./nn-builder.component.scss'],
     encapsulation: ViewEncapsulation.None,
-    standalone: false
+    standalone: false,
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NnBuilderComponent {
   private readonly destroyRef = inject(DestroyRef);
+  private readonly cdr = inject(ChangeDetectorRef);
   protected readonly LayerType = LayerType;
   autoSaveInterval: any;
   layerForm: any;
@@ -26,7 +28,12 @@ export class NnBuilderComponent {
     this.modelBuilderService.selectedLayerSubject.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((layer) => {
       this.layerForm = layer ? layer.layerForm : null;
       this.configuration = layer ? layer.getConfiguration() : null;
-      layer ? this.selectedTab.setValue(1) : this.selectedTab.setValue(0);
+      if (layer) {
+        this.selectedTab.setValue(1);
+      } else {
+        this.selectedTab.setValue(0);
+      }
+      this.cdr.markForCheck();
     })
   }
 

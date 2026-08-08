@@ -23,11 +23,9 @@ import {DataFrame, LabelEncoder, MinMaxScaler, OneHotEncoder, Series, StandardSc
   providedIn: 'root'
 })
 export class ProjectService {
-  private readonly myProjects: Map<string, Project> = new Map();
-  private templateProjects: Map<string, Project> = new Map();
-  // Signals
+  private readonly myProjects = new Map<string, Project>();
+  private templateProjects = new Map<string, Project>();
   projectSubject: BehaviorSubject<Project | null> = new BehaviorSubject<Project | null>(null);
-  // todo: initial value. getter!
   projectInfo = signal<ProjectInfo>({
     id: '',
     name: '',
@@ -35,21 +33,12 @@ export class ProjectService {
     storeLocation: StorageOption.Unknown
   })
   dataset = signal<Dataset>({
-    data: [{'text': 'Das ist ein Test und nur ein Test!'}],
+    data: [{'text': 'Sample placeholder text'}],
     fileName: '',
     columns: [],
     inputColumns: [],
     targetColumns: []
   });
-  dataframe = computed(async () => {
-    const dataset = this.dataset();
-    const df = new dfd.DataFrame(dataset.data);
-    if (df && df.shape[0] !== 0) {
-      await tf.ready();
-      return this.preprocessData(df);
-    }
-    return df;
-  })
   builder = signal<Builder>({
     layers: [],
     connections: [],
@@ -88,18 +77,6 @@ export class ProjectService {
     const mnist = new MnistTemplate();
     const data = mnist.getProject();
     this.templateProjects.set('mnist', data);
-    // effect(() => {
-    //   console.log('CHANGES DONE TO PROJECT: ', this.activeProject());
-    // })
-    // effect(() => {
-    //   console.log('CHANGES DONE TO MODEL: ', this.model());
-    // })
-    // effect(() => {
-    //   console.log('CHANGES DONE TO BUILDER: ', this.builder());
-    // })
-    // effect(() => {
-    //   console.log('CHANGES DONE TO DATASET: ', this.dataset());
-    // })
     this.myProjects = this.localStorageService.getProjectsFromLocalStorage();
     effect(async () => {
       this.builder();
@@ -110,16 +87,26 @@ export class ProjectService {
     });
   }
 
+  async getDataframe(): Promise<DataFrame> {
+    const dataset = this.dataset();
+    const df = new dfd.DataFrame(dataset.data);
+    if (df.shape[0] !== 0) {
+      await tf.ready();
+      return this.preprocessData(df);
+    }
+    return df;
+  }
+
   async selectProject(name: string): Promise<void> {
     this.modelBuilderService.clearLayers();
     const project = this.getProjectByName(name);
     if (project) {
       this.projectInfo.set(project.projectInfo);
-      project.dataset.columns.map(async (column: any) => {
+      for (const column of project.dataset.columns) {
         if (column.encoding !== EncoderEnum.no) {
           column.encoder = await this.createEncoderInstance(column.encoding);
         }
-      })
+      }
       this.dataset.set(project.dataset);
       this.builder.set(project.builder);
       this.trainConfig.set(project.trainConfig);
@@ -163,7 +150,7 @@ export class ProjectService {
     return this.myProjects.size;
   }
 
-  getMyProjects(): Map<string, any> {
+  getMyProjects(): Map<string, Project> {
     return this.myProjects;
   }
 
@@ -213,12 +200,12 @@ export class ProjectService {
     return this.myProjects.delete(name) && this.localStorageService.deleteProjectFromLocalStorage(name);
   }
 
-  getTemplateProjectByName(name: string): any {
+  getTemplateProjectByName(name: string): Project | null {
     const templateProject = this.templateProjects.get(name);
     return templateProject ? templateProject : null;
   }
 
-  getProjectByName(name: string): any {
+  getProjectByName(name: string): Project | null {
     const myProject = this.myProjects.get(name);
     return myProject ? myProject : null;
   }

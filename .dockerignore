@@ -1,9 +1,31 @@
+# Dependencies and build output
 node_modules
 frontend/node_modules
 frontend/dist
 frontend/.angular
+frontend/coverage
+
+# Version control and editor
 .git
 .idea
+.cursor
+
+# CI, tooling, and docs (not needed in the image)
+.github
+Taskfile.yml
+.nvmrc
+.prettierrc
+exercise
+*.md
+
+# Docker orchestration (not copied into the image)
+docker-compose.yml
+docker-compose.override.yml
+docker-compose.prod.yml
+
+# Lint cache
+**/.eslintcache
+
+# Assets not required for the app build
 data
 *.gif
-*.md

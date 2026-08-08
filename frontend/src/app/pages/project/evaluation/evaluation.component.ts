@@ -1,4 +1,4 @@
-import {Component, ElementRef, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, Component, ElementRef, ViewChild} from '@angular/core';
 import {ProjectService} from "../../../core/services/project.service";
 import {TrainingRecords} from "../../../core/interfaces/project";
 import {MatSelectionList} from "@angular/material/list";
@@ -14,7 +14,8 @@ import * as dfd from 'danfojs';
     selector: 'app-evaluation',
     templateUrl: './evaluation.component.html',
     styleUrls: ['./evaluation.component.scss'],
-    standalone: false
+    standalone: false,
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class EvaluationComponent {
   @ViewChild('lossContainer', {static: false}) lossContainer!: ElementRef;
@@ -25,7 +26,7 @@ export class EvaluationComponent {
   isSelectedRecordAlreadyLoaded: boolean = false;
   inputColumns: string[] = [];
   sample: dfd.DataFrame|null = null;
-  tempSample: { [key: string]: any } = {};
+  tempSample: Record<string, any> = {};
   prediction: string = "-";
   target: string = "-";
 
@@ -115,7 +116,7 @@ export class EvaluationComponent {
   async predict() {
     if (this.sample && this.sample.shape[0] !== 0) {
       await tf.ready();
-      await this.projectService.dataframe(); // to trigger computed, before preprocessing!
+      await this.projectService.getDataframe();
       const preprocessData = this.projectService.preprocessData(this.sample, false);
 
       const [X, Y] = await this.ml.extractFeaturesAndTargets(preprocessData);

@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, OnChanges, OnDestroy} from '@angular/core';
 import {FormGroup} from "@angular/forms";
 import {Subscription} from "rxjs";
 
@@ -6,9 +6,10 @@ import {Subscription} from "rxjs";
     selector: 'app-dynamic-layer-form',
     templateUrl: './dynamic-layer-form.component.html',
     styleUrls: ['./dynamic-layer-form.component.scss'],
-    standalone: false
+    standalone: false,
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DynamicLayerFormComponent {
+export class DynamicLayerFormComponent implements OnChanges, OnDestroy {
   @Input() parameterConfig!: Parameter[];
   @Input() form!: FormGroup;
   private subscriptions: Subscription[] = [];
@@ -26,6 +27,10 @@ export class DynamicLayerFormComponent {
         });
         this.subscriptions.push(sub!);
       });
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 }
 
