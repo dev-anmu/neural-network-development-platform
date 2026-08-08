@@ -14,10 +14,10 @@
   <div class="file-info">
     @if (fileName) {
       <span class="file-name">{{ fileName }}</span>
-      <span class="action-text">Ready to import — click to choose a different file</span>
+      <span class="action-text">{{ selectedHint }}</span>
     } @else {
-      <span class="file-name">Choose a CSV file</span>
-      <span class="action-text">Click to browse, or drag and drop when supported</span>
+      <span class="file-name">{{ chooseLabel }}</span>
+      <span class="action-text">{{ emptyHint }}</span>
     }
   </div>
 

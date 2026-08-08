@@ -1,39 +1,47 @@
-# WebNet: No-Code Neural Network Development Platform
+# WebNet Builder
 
-A web-based platform for designing, training, and evaluating neural networks without writing code. Built with Angular and TensorFlow.js, this application provides an intuitive interface for working with neural networks directly in the browser.
+A browser-based studio for designing, training, and evaluating neural networks without writing code. Built with Angular and TensorFlow.js, WebNet Builder keeps the full ML workflow — from CSV import to model export — on the client.
 
-![Neural Network Builder Demo](nn-builder.gif)
+![WebNet Builder — training run](docs/images/training.png)
+
+## Screenshots
+
+| Dataset | Modeling | Training |
+| --- | --- | --- |
+| ![Dataset import and preview](docs/images/dataset.png) | ![Visual model builder](docs/images/modelling.png) | ![Training progress and parameters](docs/images/training.png) |
+
+| Home | Projects |
+| --- | --- |
+| ![Home](docs/images/home.png) | ![Projects](docs/images/projects.png) |
 
 ## Features
 
-- **Interactive Neural Network Builder**: Drag-and-drop interface for creating neural network architectures with support for various layer types (Dense, Dropout, Convolution, LSTM, etc.)
-- **Data Management**: Import custom CSV datasets and preprocess them with various encoding options (MinMax, Label, OneHot, Standard)
-- **In-Browser Training**: Train neural networks using TensorFlow.js with multiple backend options:
-  - WebGPU for hardware acceleration
-  - WebGL for GPU support
-  - WebAssembly for optimized CPU performance
-  - Standard CPU execution
-- **Real-time Training Visualization**: Monitor loss, accuracy, and other metrics during training
-- **Model Evaluation**: Test and evaluate trained models with performance metrics
-- **Project Management**: Create, save, and organize multiple neural network projects
-- **Export Functionality**: Export trained models and projects for sharing or later use
+- **Guided project workflow** — Dataset, Modeling, Training, Evaluation, and Export steps in a single project, with Back/Continue navigation
+- **Visual model builder** — Add Dense, Dropout, Convolution, Flatten, Max pooling, and LSTM layers; drag nodes on the canvas and wire connections between anchors
+- **Dataset import & preview** — Import CSV files, preview rows in a spreadsheet-style table, configure encoders, and choose input/target columns plus a train/validation split
+- **Column encoders** — MinMax, Label, One-Hot, and Standard scaling; switch between raw and processed previews
+- **Playground** — Try the layer builder in a sandbox that does not save to your projects
+- **In-browser training** — TensorFlow.js with WebGPU, WebGL, WASM, or CPU backends; live loss/accuracy charts optional during training
+- **Evaluation** — Compare recorded training runs, inspect metrics, and run predictions
+- **Project portability** — Create blank projects, import/export full projects as ZIP archives, and store copies in browser local storage
 
 ## Technology Stack
 
-- **Frontend**: Angular 22 with Material UI
-- **Neural Network Framework**: TensorFlow.js 4.22.0
-- **Visualization**: D3.js and TensorFlow.js Vis
-- **Data Processing**: Danfojs, Papa Parse for CSV handling
-- **Storage**: LocalStorage and JSZip for file export/import
+- **Frontend:** Angular 22, Angular Material
+- **ML:** TensorFlow.js 4.22
+- **Visualization:** D3.js, TensorFlow.js Vis
+- **Data:** Danfo.js, Papa Parse (CSV)
+- **Storage:** Browser local storage, JSZip for project archives
 
-## Included Datasets
+## Sample Datasets
 
-The project comes with several sample datasets for learning and experimenting:
-- Titanic Survival Data
-- Boston Housing Prices
-- Stock Price Data
+The repository includes CSV datasets under `/data` for the guided exercises:
 
-You can also upload your own custom datasets in CSV format for training and evaluation.
+- Titanic survival classification (`/data/titanic`)
+- Boston housing regression (`/data/boston_housing_prices`)
+- Stock price time series (`/data/stock_prices`)
+
+Import any of these into a **blank project** via the Dataset step (they are not bundled as in-app templates). See `/exercise` for step-by-step walkthroughs.
 
 ## Getting Started
 
@@ -43,72 +51,65 @@ Install [Task](https://taskfile.dev/) (e.g. `brew install go-task` on macOS), th
 task dev
 ```
 
-Open your browser to `http://localhost:4200`.
+Open [http://localhost:4200](http://localhost:4200).
 
-Run `task --list` to see all available tasks.
+Run `task --list` for all available tasks.
 
 **Requirements:** Node.js **22.22.3+**, **24.15.0+**, or **26+** (see `.nvmrc`). `task` commands auto-switch via nvm/fnm when needed. Node 23 is not supported by Angular 22.
 
 ### Manual setup (without Task)
 
 1. Clone the repository
-2. Navigate to the frontend directory
-3. Install dependencies with `npm install`
-4. Start the development server with `npm start`
-5. Open your browser to `http://localhost:4200`
+2. `cd frontend && npm install`
+3. `npm start`
+4. Open [http://localhost:4200](http://localhost:4200)
 
 ## Docker Support
 
-The project includes Docker configuration for both development and production environments.
+Images use `/` as their base href by default. Set `BASE_HREF` when hosting under a URL prefix.
 
-Images use `/` as their base href by default, so a clone works as a standalone
-application. Deployers can set `BASE_HREF` when hosting under a URL prefix.
-
-### Development Environment
+### Development
 
 ```bash
-# Development environment with hot reloading (port 4200)
 task docker:dev
 ```
 
-### Production Environment (local)
+### Production (local)
 
 ```bash
-# Production build at http://localhost:8080/
 task docker:prod
 
 # Example for a deployment under /apps/neural-network/:
 BASE_HREF=/apps/neural-network/ task docker:prod
 ```
 
-`BASE_HREF` must begin and end with `/`. Hosting-specific image names, routes,
-credentials, and deployment workflows belong in the deployer's infrastructure
-repository rather than this application repository.
+`BASE_HREF` must begin and end with `/`.
 
-### Stop Docker Containers
+### Stop containers
 
 ```bash
 task docker:down
 ```
+
 ## Project Structure
 
-- `/frontend`: Angular application
-  - `/src/app/pages`: Main application views (Home, Projects, Project, NN Playground)
-  - `/src/app/core`: Core services, interfaces, and enums
-    - `/services`: TensorFlow, ML, Model Builder services
-  - `/src/app/shared`: Shared components and utilities
-- `/data`: Sample datasets for training and testing
-- `/exercise`: Educational materials
-- `/nginx`: Web server configuration for production
+- `/frontend` — Angular application
+  - `/src/app/pages` — Home, Projects, Project workflow, Playground
+  - `/src/app/core` — Services, interfaces, enums
+  - `/src/app/shared` — Reusable components and ML layer definitions
+- `/data` — Sample CSV datasets for exercises
+- `/docs/images` — Screenshots for this README
+- `/exercise` — Guided learning materials
+- `/nginx` — Production web server configuration
 
 ## Educational Resources
 
-The project includes two guided exercises in the `/exercise` directory:
+Two guided exercises live in `/exercise`:
 
-1. **Exercise 1 - Titanic Survival Classification**: A beginner-friendly classification task to predict passenger survival on the Titanic.
-2. **Exercise 2 - Boston Housing Regression**: A more advanced regression task to predict housing prices in Boston.
+1. **Exercise 1 — Titanic survival classification** — Binary classification with a tabular dataset
+2. **Exercise 2 — Boston housing regression** — Regression to predict housing prices
 
-These step-by-step exercises help users learn neural network concepts while mastering the platform through real-world machine learning problems. Complete Exercise 1 before moving to Exercise 2 for a progressive learning experience.
+Complete Exercise 1 before Exercise 2 for a progressive path through the platform.
 
 ## License
 

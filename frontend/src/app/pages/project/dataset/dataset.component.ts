@@ -1,7 +1,8 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, inject, ViewChild} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, inject, ViewChild} from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {ProjectService} from "../../../core/services/project.service";
 import {MatPaginator} from "@angular/material/paginator";
+import {MatTable} from "@angular/material/table";
 import {MatTableDataSource} from "@angular/material/table";
 import {SerializationService} from "../../../core/services/serialization.service";
 import {Dataset, EncoderType, TrainingConfig} from "../../../core/interfaces/project";
@@ -18,10 +19,19 @@ import {NotificationService} from "../../../core/services/notification.service";
     standalone: false,
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DatasetComponent {
+export class DatasetComponent implements AfterViewInit {
   private readonly destroyRef = inject(DestroyRef);
   private readonly cdr = inject(ChangeDetectorRef);
-  @ViewChild(MatPaginator) paginator: MatPaginator | undefined;
+  private paginatorInstance?: MatPaginator;
+  @ViewChild(MatTable) private spreadsheetTable?: MatTable<Record<string, unknown>>;
+
+  @ViewChild(MatPaginator)
+  set paginator(paginator: MatPaginator | undefined) {
+    this.paginatorInstance = paginator;
+    if (paginator) {
+      this.dataSource.paginator = paginator;
+    }
+  }
   datasetForm;
   splitValue = 80;
   file: File | undefined;
@@ -34,7 +44,6 @@ export class DatasetComponent {
   selectedEncoders: Record<string, EncoderEnum> = {};
   isImporting = false;
   isWideDataset = false;
-  hiddenColumnCount = 0;
   displayedColumnNames: string[] = [];
   isLoadingPreprocessed = false;
 
@@ -109,7 +118,6 @@ export class DatasetComponent {
     this.isWideDataset = dataset.columns.length > 20;
     this.displayedColumns = this.getPreviewColumns(dataset);
     this.displayedColumnNames = this.displayedColumns.map((column) => column.name);
-    this.hiddenColumnCount = dataset.columns.length - this.displayedColumns.length;
 
     this.selectedEncoders = dataset.columns.reduce((acc: Record<string, EncoderEnum>, column) => {
       acc[column.name] = column.encoding;
@@ -167,20 +175,29 @@ export class DatasetComponent {
         const columns = df.columns as string[];
         this.dfColumns = columns.length > 20 ? columns.slice(0, 12) : columns;
         if (columns.length > this.dfColumns.length) {
-          this.hiddenColumnCount = columns.length - this.dfColumns.length;
           this.isWideDataset = true;
         }
       } finally {
         this.isLoadingPreprocessed = false;
       }
     }
-    this.initPaginator();
+    this.refreshSpreadsheetView();
     this.cdr.markForCheck();
   }
 
+  private refreshSpreadsheetView(): void {
+    queueMicrotask(() => {
+      if (this.paginatorInstance) {
+        this.dataSource.paginator = this.paginatorInstance;
+      }
+      this.spreadsheetTable?.renderRows();
+      this.cdr.markForCheck();
+    });
+  }
+
   initPaginator() {
-    if (this.dataSource && this.paginator) {
-      this.dataSource.paginator = this.paginator;
+    if (this.dataSource && this.paginatorInstance) {
+      this.dataSource.paginator = this.paginatorInstance;
     }
   }
 
@@ -254,7 +271,7 @@ export class DatasetComponent {
   }
 
   ngAfterViewInit() {
-    this.initPaginator();
+    this.refreshSpreadsheetView();
     this.datasetForm?.get('input')?.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((inputColumns: string[] | null) => {
       this.projectService.dataset.update((dataset: Dataset) => {
         return {
@@ -273,8 +290,20 @@ export class DatasetComponent {
     });
   }
 
-  checkIfTypeNumber(value: any) {
-    return typeof value === 'number';
+  formatCell(value: unknown): string {
+    if (value === null || value === undefined || value === '') {
+      return '—';
+    }
+    if (typeof value === 'number') {
+      return Number.isInteger(value) ? value.toString() : value.toFixed(4);
+    }
+    return String(value);
+  }
+
+  getRowLabel(index: number): number {
+    const pageIndex = this.paginatorInstance?.pageIndex ?? 0;
+    const pageSize = this.paginatorInstance?.pageSize ?? 25;
+    return pageIndex * pageSize + index + 1;
   }
 
   get previewTableColumns(): string[] {
@@ -283,6 +312,15 @@ export class DatasetComponent {
 
   get preprocessedTableColumns(): string[] {
     return ['__row', ...this.dfColumns];
+  }
+
+  get sidebarColumns(): Dataset['columns'] {
+    const columns = this.projectService.dataset().columns;
+    return columns.length <= 24 ? columns : this.displayedColumns;
+  }
+
+  get sidebarShowsPreviewOnly(): boolean {
+    return this.projectService.dataset().columns.length > 24;
   }
 
   getRowCount(percentage: number): number {

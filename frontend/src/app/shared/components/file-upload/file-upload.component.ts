@@ -10,6 +10,9 @@ import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@
 export class FileUploadComponent {
   @Output() fileEvent = new EventEmitter<File>();
   @Input() fileType: string = '';
+  @Input() chooseLabel = 'Choose a file';
+  @Input() selectedHint = 'Ready to import — click to choose a different file';
+  @Input() emptyHint = 'Click Browse or click anywhere here to choose a file';
   fileName: string = '';
 
   constructor() {

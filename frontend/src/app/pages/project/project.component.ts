@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, computed, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, computed, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
 import {ProjectService} from "../../core/services/project.service";
 import {ModelBuilderService} from "../../core/services/model-builder.service";
@@ -11,10 +11,11 @@ import {MatStepper} from "@angular/material/stepper";
     standalone: false,
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectComponent implements OnInit, OnDestroy {
+export class ProjectComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('stepper') stepper!: MatStepper;
   projectName = '';
-  initialStep: number = 0;
+  /** Applied once after load — do not bind to mat-stepper selectedIndex (resets on every CD cycle). */
+  private pendingStartupStep: number | null = null;
   
   datasetError = computed(() => {
     const dataset = this.projectService.dataset();
@@ -58,8 +59,21 @@ export class ProjectComponent implements OnInit, OnDestroy {
 
     const builder = this.projectService.builder();
     if (builder.connections.length > 0) {
-      this.initialStep = 1;
+      this.pendingStartupStep = 1;
     }
+    this.tryApplyStartupStep();
+  }
+
+  ngAfterViewInit(): void {
+    this.tryApplyStartupStep();
+  }
+
+  private tryApplyStartupStep(): void {
+    if (this.pendingStartupStep === null || !this.stepper) {
+      return;
+    }
+    this.stepper.selectedIndex = this.pendingStartupStep;
+    this.pendingStartupStep = null;
   }
 
   ngOnDestroy(): void {

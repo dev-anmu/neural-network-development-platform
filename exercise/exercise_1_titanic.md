@@ -1,8 +1,8 @@
 # Exercise 1: Titanic Survival Classification
 
-Welcome to this exercise focusing on Neural Networks and Supervised Learning! In this task, we will look at the fundamentals of these fascinating technologies and get to know the WebNet platform that was developed as part of a master's thesis.
+Welcome to this exercise focusing on Neural Networks and Supervised Learning! In this task, we will look at the fundamentals of these fascinating technologies and get to know **WebNet Builder**, developed as part of a master's thesis.
 
-**Note**: To use the WebNet platform, please set up and host the application locally by following the instructions in the README file at the root of this repository.
+**Note**: To use WebNet Builder, set up and host the application locally by following the instructions in the README at the root of this repository.
 
 ## Task – Titanic (Classification):
 
@@ -28,7 +28,7 @@ Before you can perform the following steps, you must first create a new project 
 ### 1. Dataset
 - Import the Titanic dataset (titanic-train.csv).
 - Examine the first rows of the dataset to understand its structure. Not all features are equally important for prediction!
-- Decide if, and if so, which values you want to scale/encode. (Select element in the table header)
+- Decide if, and if so, which values you want to scale/encode. (Use the **Column encoding** panel under **Data preview**.)
 - Decide which columns you want to use as input for the model and which should serve as the prediction value.
 - Determine the ratio between training and validation data.
 

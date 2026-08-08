@@ -8,13 +8,13 @@
     <div class="project-header__main">
       <div>
         <h1 class="project-title">{{ projectName }}</h1>
-        <p class="project-subtitle">Dataset → Model → Train → Evaluate → Export</p>
+        <p class="project-subtitle">Import data → build a model → train → evaluate → export</p>
       </div>
     </div>
   </header>
 
   <div class="workflow-panel surface-card">
-    <mat-stepper [linear]="true" #stepper [selectedIndex]="initialStep" class="workflow-stepper" color="primary">
+    <mat-stepper [linear]="true" #stepper class="workflow-stepper" color="primary">
       <mat-step [completed]="isDatasetReady()" [editable]="true" #dataset_step>
         <ng-template matStepLabel>
           <div class="step-label">
@@ -31,7 +31,9 @@
         }
 
         <div class="step-content dataset-section">
-          <app-dataset></app-dataset>
+          @if (stepper.selected == dataset_step) {
+            <app-dataset></app-dataset>
+          }
         </div>
       </mat-step>
 

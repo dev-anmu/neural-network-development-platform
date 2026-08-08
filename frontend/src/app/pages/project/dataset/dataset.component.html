@@ -5,18 +5,19 @@
       <mat-icon class="section-icon">cloud_upload</mat-icon>
       <div class="section-header__text">
         <h3 class="section-heading">Import dataset</h3>
-        <p class="section-subheading">Upload a CSV file with a header row. Column names become your model inputs and targets.</p>
+        <p class="section-subheading">Upload a CSV with a header row. By default, the last column becomes the target and the rest become inputs — you can change that in Training setup.</p>
       </div>
     </div>
 
     <div class="section-body dataset-import">
       <div class="import-grid">
-        <app-file-upload (fileEvent)="addFile($event)" [fileType]="'.csv'"></app-file-upload>
+        <app-file-upload (fileEvent)="addFile($event)" [fileType]="'.csv'" chooseLabel="Choose a CSV file"></app-file-upload>
 
         <div class="import-actions">
           <button
             mat-flat-button
             color="primary"
+            type="button"
             class="import-button"
             [disabled]="!file || isImporting"
             (click)="parseCSV()">
@@ -30,7 +31,7 @@
               </ng-container>
             }
           </button>
-          <p class="import-hint">First row must contain column names. Values can be numbers or text.</p>
+          <p class="import-hint">Header row required. Numeric and text values are supported.</p>
         </div>
       </div>
 
@@ -48,12 +49,38 @@
 
   <!-- Preview -->
   <section class="section-container">
-    <div class="section-header">
-      <mat-icon class="section-icon">table_chart</mat-icon>
-      <div class="section-header__text">
-        <h3 class="section-heading">Data preview</h3>
-        <p class="section-subheading">Inspect values, set encoders, and confirm your columns look correct.</p>
+    <div class="section-header section-header--split">
+      <div class="section-header__left">
+        <mat-icon class="section-icon">table_chart</mat-icon>
+        <div class="section-header__text">
+          <h3 class="section-heading">Data preview</h3>
+          <p class="section-subheading">Preview your data, set column encoders, and switch between raw and processed views.</p>
+        </div>
       </div>
+
+      @if (hasDataset) {
+        <div class="section-header__actions">
+          <span class="dataset-stats">
+            {{ totalRowCount | number }} rows
+            <span class="dot">·</span>
+            {{ totalColumnCount | number }} cols
+          </span>
+          <mat-button-toggle-group
+            class="view-toggle"
+            [value]="selectedTable"
+            (change)="onViewChange($event.value)"
+            aria-label="Dataset view mode">
+            <mat-button-toggle value="original">
+              <mat-icon>table_view</mat-icon>
+              Raw
+            </mat-button-toggle>
+            <mat-button-toggle value="preprocessed">
+              <mat-icon>auto_fix_high</mat-icon>
+              Processed
+            </mat-button-toggle>
+          </mat-button-toggle-group>
+        </div>
+      }
     </div>
 
     <div class="section-body dataset-view">
@@ -64,86 +91,91 @@
           <p>Import a CSV above to preview rows and configure columns for training.</p>
         </div>
       } @else {
-        <div class="dataset-toolbar">
-          <div class="dataset-metrics">
-            <span class="metric-chip">
-              <mat-icon>table_rows</mat-icon>
-              {{ totalRowCount | number }} rows
-            </span>
-            <span class="metric-chip">
-              <mat-icon>view_column</mat-icon>
-              {{ totalColumnCount | number }} columns
-            </span>
-          </div>
-
-          <mat-button-toggle-group
-            class="view-toggle"
-            [value]="selectedTable"
-            (change)="onViewChange($event.value)"
-            aria-label="Dataset view mode">
-            <mat-button-toggle value="original">Original</mat-button-toggle>
-            <mat-button-toggle value="preprocessed">Preprocessed</mat-button-toggle>
-          </mat-button-toggle-group>
-        </div>
-
-        @if (isWideDataset) {
-          <div class="dataset-preview-hint">
-            <mat-icon>info</mat-icon>
+        @if (isWideDataset || sidebarShowsPreviewOnly) {
+          <div class="preview-notice">
+            <mat-icon>info_outline</mat-icon>
             <span>
               Showing {{ displayedColumnNames.length }} of {{ totalColumnCount }} columns in the table.
-              @if (hiddenColumnCount > 0) {
-                {{ hiddenColumnCount }} hidden here — column selection below still uses the full dataset.
+              @if (selectedTable === 'original') {
+                Column encoding below applies to the listed columns — use Training setup for full input/target selection.
               }
             </span>
           </div>
         }
 
-        @if (selectedTable === 'original' && displayedColumns.length > 0) {
-          <div class="encoder-strip" aria-label="Column encoders">
-            @for (column of displayedColumns; track column.name) {
-              <div class="encoder-card">
-                <div class="encoder-card__head">
-                  <span class="encoder-card__name">{{ column.name }}</span>
-                  <span class="data-type-pill" [ngClass]="getDataTypeClass(column.type)">{{ column.type }}</span>
-                </div>
-                <span class="encoder-card__meta">{{ column.uniqueValues }} unique</span>
-                <mat-form-field appearance="outline" subscriptSizing="dynamic" class="encoder-field">
-                  <mat-label>Encoder</mat-label>
-                  <mat-select
-                    [ngModel]="selectedEncoders[column.name]"
-                    (ngModelChange)="onEncoderChange(column.name, $event)">
-                    @for (encoder of Encoder | keyvalue; track encoder.key) {
-                      <mat-option [value]="encoder.key">{{ encoder.value.name }}</mat-option>
-                    }
-                  </mat-select>
-                </mat-form-field>
-              </div>
-            }
-          </div>
+        @if (selectedTable === 'original') {
+          <details class="encoder-panel" open>
+            <summary class="encoder-panel__summary">
+              <mat-icon>tune</mat-icon>
+              <span>Column encoding</span>
+              <span class="encoder-panel__count">{{ sidebarColumns.length }}</span>
+              @if (sidebarShowsPreviewOnly) {
+                <span class="encoder-panel__hint">preview only</span>
+              }
+            </summary>
+
+            <div class="encoder-table-wrap">
+              <table class="encoder-table">
+                <thead>
+                  <tr>
+                    <th>Column</th>
+                    <th>Type</th>
+                    <th>Unique</th>
+                    <th>Encoder</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (column of sidebarColumns; track column.name) {
+                    <tr>
+                      <td class="encoder-table__name" [title]="column.name">{{ column.name }}</td>
+                      <td>
+                        <span class="type-badge" [ngClass]="getDataTypeClass(column.type)">{{ column.type }}</span>
+                      </td>
+                      <td class="encoder-table__num">{{ column.uniqueValues | number }}</td>
+                      <td>
+                        <mat-select
+                          class="encoder-select"
+                          [ngModel]="selectedEncoders[column.name]"
+                          (ngModelChange)="onEncoderChange(column.name, $event)"
+                          panelClass="encoder-select-panel">
+                          @for (encoder of Encoder | keyvalue; track encoder.key) {
+                            <mat-option [value]="encoder.key">{{ encoder.value.name }}</mat-option>
+                          }
+                        </mat-select>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </details>
         }
 
-        <div class="data-table-card">
+        <div class="spreadsheet-card">
           @if (isLoadingPreprocessed) {
-            <div class="table-loading">
-              <mat-spinner diameter="32"></mat-spinner>
-              <span>Building preprocessed preview…</span>
+            <div class="spreadsheet-loading">
+              <mat-spinner diameter="36"></mat-spinner>
+              <span>Applying encoders and building preview…</span>
             </div>
           } @else {
-            <div class="table-scroll">
+            <div class="spreadsheet-scroll">
               @if (selectedTable === 'original') {
-                <table mat-table [dataSource]="dataSource" class="data-table">
+                <table mat-table [dataSource]="dataSource" class="spreadsheet">
                   <ng-container matColumnDef="__row">
-                    <th mat-header-cell *matHeaderCellDef class="row-index-header">#</th>
-                    <td mat-cell *matCellDef="let row; let i = index" class="row-index-cell">{{ i + 1 }}</td>
+                    <th mat-header-cell *matHeaderCellDef>#</th>
+                    <td mat-cell *matCellDef="let row; let i = index">{{ getRowLabel(i) }}</td>
                   </ng-container>
 
                   @for (column of displayedColumns; track column.name) {
                     <ng-container [matColumnDef]="column.name">
                       <th mat-header-cell *matHeaderCellDef>
-                        <span class="th-label">{{ column.name }}</span>
+                        <span class="col-head">
+                          <span class="col-head__name">{{ column.name }}</span>
+                          <span class="col-head__type">{{ column.type }}</span>
+                        </span>
                       </th>
-                      <td mat-cell *matCellDef="let element">
-                        {{ checkIfTypeNumber(element[column.name]) ? (element[column.name] | number:'1.2-4') : element[column.name] }}
+                      <td mat-cell *matCellDef="let element" [title]="formatCell(element[column.name])">
+                        {{ formatCell(element[column.name]) }}
                       </td>
                     </ng-container>
                   }
@@ -154,19 +186,17 @@
               }
 
               @if (selectedTable === 'preprocessed') {
-                <table mat-table [dataSource]="dataSource" class="data-table">
+                <table mat-table [dataSource]="dataSource" class="spreadsheet">
                   <ng-container matColumnDef="__row">
-                    <th mat-header-cell *matHeaderCellDef class="row-index-header">#</th>
-                    <td mat-cell *matCellDef="let row; let i = index" class="row-index-cell">{{ i + 1 }}</td>
+                    <th mat-header-cell *matHeaderCellDef>#</th>
+                    <td mat-cell *matCellDef="let row; let i = index">{{ getRowLabel(i) }}</td>
                   </ng-container>
 
                   @for (column of dfColumns; track column) {
                     <ng-container [matColumnDef]="column">
-                      <th mat-header-cell *matHeaderCellDef>
-                        <span class="th-label">{{ column }}</span>
-                      </th>
-                      <td mat-cell *matCellDef="let element">
-                        {{ checkIfTypeNumber(element[column]) ? (element[column] | number:'1.2-4') : element[column] }}
+                      <th mat-header-cell *matHeaderCellDef>{{ column }}</th>
+                      <td mat-cell *matCellDef="let element" [title]="formatCell(element[column])">
+                        {{ formatCell(element[column]) }}
                       </td>
                     </ng-container>
                   }
@@ -177,12 +207,14 @@
               }
             </div>
 
-            <mat-paginator
-              [pageSizeOptions]="[10, 25, 50, 100]"
-              [pageSize]="25"
-              showFirstLastButtons
-              aria-label="Dataset pagination">
-            </mat-paginator>
+            <footer class="spreadsheet-footer">
+              <mat-paginator
+                [pageSizeOptions]="[10, 25, 50, 100]"
+                [pageSize]="25"
+                showFirstLastButtons
+                aria-label="Dataset pagination">
+              </mat-paginator>
+            </footer>
           }
         </div>
       }

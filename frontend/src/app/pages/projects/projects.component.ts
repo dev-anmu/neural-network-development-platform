@@ -59,7 +59,7 @@ export class ProjectsComponent implements OnInit {
   async createNewProject(): Promise<void> {
     const dialogRef = this.dialog.open(InputDialogComponent, {
       autoFocus: false,
-      data: {message: 'Create a fresh Project.'}
+      data: {message: 'Give your project a name to get started.'}
     });
     dialogRef.afterClosed().subscribe(async (projectName) => {
       if (projectName) {
