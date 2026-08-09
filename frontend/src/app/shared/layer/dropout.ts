@@ -1,7 +1,6 @@
 import * as tf from "@tensorflow/tfjs";
 import {Layer} from "../layer";
 import {ModelBuilderService} from "../../core/services/model-builder.service";
-import * as d3 from "d3";
 import {Selection} from "d3";
 import {NonNullableFormBuilder, Validators} from "@angular/forms";
 import {Rate} from "../configuration";

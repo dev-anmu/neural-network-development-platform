@@ -304,7 +304,7 @@ export class MachineLearningService {
     }
 
     preparePlotContainer(container);
-    const epochLogs: Array<Record<string, number>> = [];
+    const epochLogs: Record<string, number>[] = [];
     const series = [...PLOT_SERIES_LABELS];
 
     callbacks.push(new tf.CustomCallback({

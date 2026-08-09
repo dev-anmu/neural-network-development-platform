@@ -1,4 +1,3 @@
-import * as d3 from "d3";
 import { Selection } from "d3";
 import {ModelBuilderService} from "../../core/services/model-builder.service";
 import * as tf from "@tensorflow/tfjs";
