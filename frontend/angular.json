@@ -47,7 +47,8 @@
               "danfojs",
               "file-saver",
               "jszip",
-              "@tensorflow/tfjs-vis"
+              "@tensorflow/tfjs-vis",
+              "vega-embed"
             ],
             "browser": "src/main.ts"
           },

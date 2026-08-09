@@ -1,4 +1,17 @@
+import type * as TfjsVis from '@tensorflow/tfjs-vis';
 import {XYPlotOptions} from '@tensorflow/tfjs-vis/dist/types';
+
+type TfjsVisModule = typeof TfjsVis;
+
+/** Normalize dynamic import across dev server and production bundles. */
+export async function loadTfjsVis(): Promise<TfjsVisModule> {
+  const mod = await import('@tensorflow/tfjs-vis');
+  const candidate = (mod as {default?: TfjsVisModule}).default ?? mod;
+  if (!candidate.render || !candidate.show) {
+    throw new Error('Failed to load @tensorflow/tfjs-vis');
+  }
+  return candidate;
+}
 
 /** Brand-aligned colors for chart series (training, validation, …). */
 export const PLOT_SERIES_COLORS = ['#5b5bd6', '#0891b2', '#7c3aed', '#059669'] as const;
@@ -51,9 +64,9 @@ export function preparePlotContainer(container: HTMLElement): void {
   container.classList.add('chart-host');
 }
 
-/** Tweak Vega SVG output to match app typography and hide duplicate legends. */
+/** Tweak Vega SVG output to match app typography and hide in-chart legends. */
 export function polishVegaChart(container: HTMLElement): void {
-  const hideLegend = !!container.closest('.chart-card');
+  const inChartCard = !!container.closest('.chart-card');
 
   container.querySelectorAll('.vega-embed svg').forEach((svg) => {
     svg.querySelectorAll('text').forEach((label) => {
@@ -68,8 +81,9 @@ export function polishVegaChart(container: HTMLElement): void {
       }
     });
 
-    if (hideLegend) {
-      hideVegaLegends(svg);
+    hideVegaLegends(svg);
+
+    if (inChartCard) {
       const svgEl = svg as SVGElement;
       svgEl.style.width = '100%';
       svgEl.style.maxWidth = '100%';
@@ -85,24 +99,38 @@ export function polishVegaChart(container: HTMLElement): void {
   });
 }
 
+function hideSvgElement(element: Element): void {
+  const svgElement = element as SVGElement;
+  svgElement.style.display = 'none';
+  svgElement.style.visibility = 'hidden';
+  svgElement.setAttribute('aria-hidden', 'true');
+}
+
 function hideVegaLegends(svg: Element): void {
   const legendLabels = new Set(['training', 'validation']);
 
-  svg.querySelectorAll('g').forEach((group) => {
+  svg.querySelectorAll('g[aria-label], g[class]').forEach((group) => {
     const ariaLabel = group.getAttribute('aria-label')?.toLowerCase() ?? '';
-    const className = group.getAttribute('class') ?? '';
-    if (ariaLabel.includes('legend') || className.includes('legend') || className.includes('role-legend')) {
-      (group as SVGElement).style.display = 'none';
+    const className = group.getAttribute('class')?.toLowerCase() ?? '';
+    if (
+      ariaLabel.includes('legend') ||
+      className.includes('legend') ||
+      className.includes('role-legend')
+    ) {
+      hideSvgElement(group);
     }
   });
 
-  // Fallback: hide groups that only contain series label text (Vega legend entries).
+  // Fallback: hide legend entry groups that pair a symbol with a series label.
   svg.querySelectorAll('g').forEach((group) => {
-    const texts = Array.from(group.querySelectorAll('text'))
+    const texts = Array.from(group.querySelectorAll(':scope > text, :scope > g > text'))
       .map((node) => node.textContent?.trim().toLowerCase() ?? '')
       .filter(Boolean);
-    if (texts.length > 0 && texts.every((text) => legendLabels.has(text))) {
-      (group as SVGElement).style.display = 'none';
+    const hasLegendLabel = texts.some((text) => legendLabels.has(text));
+    const hasSymbol = group.querySelector('path, rect, line, circle') !== null;
+
+    if (hasLegendLabel && hasSymbol) {
+      hideSvgElement(group);
     }
   });
 }

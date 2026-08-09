@@ -6,7 +6,7 @@ import {tfBackends} from "../../../shared/ml_objects/tfBackends";
 import {AbstractControl, FormGroup, NonNullableFormBuilder, Validators} from "@angular/forms";
 import {TrainStats} from "../../../core/interfaces/interfaces";
 import {MachineLearningService} from "../../../core/services/machine-learning.service";
-import {styleTfvisTable} from "../../../shared/utils/tfvis-theme";
+import {loadTfjsVis, styleTfvisTable} from "../../../shared/utils/tfvis-theme";
 import {MatDialog} from "@angular/material/dialog";
 import {TaskDialogComponent} from "../../../shared/components/task-dialog/task-dialog.component";
 import {ProjectService} from "../../../core/services/project.service";
@@ -94,7 +94,7 @@ export class TrainingComponent implements OnInit {
   async showModelSummary(): Promise<void> {
     const model = this.projectService.model();
     if (model) {
-      const tfvis = await import('@tensorflow/tfjs-vis');
+      const tfvis = await loadTfjsVis();
       this.modelSummaryContainer.nativeElement.innerHTML = '';
       await tfvis.show.modelSummary(this.modelSummaryContainer.nativeElement, model);
       styleTfvisTable(this.modelSummaryContainer.nativeElement);

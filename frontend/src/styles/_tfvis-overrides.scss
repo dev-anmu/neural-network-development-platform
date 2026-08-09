@@ -71,6 +71,20 @@
       max-width: 100%;
       height: auto;
     }
+
+    // Hide built-in Vega legends — custom legend lives in chart-card header
+    svg {
+      g[aria-label='legend'],
+      g[aria-label='Legend'],
+      g[aria-label^='Legend '],
+      g.role-legend,
+      g.role-legend-entry,
+      g[class*='legend'],
+      g[class*='role-legend'] {
+        display: none !important;
+        visibility: hidden !important;
+      }
+    }
   }
 
   // Action menu (export etc.) — hide on inline charts
@@ -95,15 +109,6 @@
     min-height: 260px;
     padding: 0.35rem 0.5rem 0.5rem;
     overflow: hidden;
-  }
-
-  .chart-host .vega-embed svg {
-    g[aria-label='legend'],
-    g[aria-label^='Legend'],
-    g[class*='legend'],
-    g[class*='role-legend'] {
-      display: none !important;
-    }
   }
 
   &__header {

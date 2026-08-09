@@ -16,12 +16,12 @@ import {EncoderEnum} from "../enums";
 import {Tensor} from "@tensorflow/tfjs";
 import {DataFrame} from "danfojs";
 import {
-  buildLineChartOptions,
   plotSeriesColors,
   polishVegaChart,
   preparePlotContainer,
   PLOT_SERIES_LABELS,
 } from "../../shared/utils/tfvis-theme";
+import {renderLineChart} from "../../shared/utils/render-line-chart";
 
 export interface TrainingPlotTargets {
   loss?: HTMLElement | null;
@@ -275,21 +275,14 @@ export class MachineLearningService {
     yLabel: string,
     width?: number
   }): Promise<void> {
-    const tfvis = await import('@tensorflow/tfjs-vis');
-
     preparePlotContainer(htmlContainer);
 
-    const data = {
-      values: values,
-      series: series
-    };
-
-    await tfvis.render.linechart(htmlContainer, data, buildLineChartOptions(htmlContainer, {
+    await renderLineChart(htmlContainer, values, series, {
       width: options.width,
       xLabel: options.xLabel,
       yLabel: options.yLabel,
       seriesColors: plotSeriesColors(values.length),
-    }));
+    });
     polishVegaChart(htmlContainer);
   }
 
