@@ -113,4 +113,4 @@ Complete Exercise 1 before Exercise 2 for a progressive path through the platfor
 
 ## License
 
-This project is part of a master thesis by Andreas Müller.
+MIT — see [LICENSE](LICENSE).

@@ -1,6 +1,6 @@
 # Exercise 1: Titanic Survival Classification
 
-Welcome to this exercise focusing on Neural Networks and Supervised Learning! In this task, we will look at the fundamentals of these fascinating technologies and get to know **WebNet Builder**, developed as part of a master's thesis.
+Welcome to this exercise on neural networks and supervised learning. You will work through a classification task using **WebNet Builder**.
 
 **Note**: To use WebNet Builder, set up and host the application locally by following the instructions in the README at the root of this repository.
 

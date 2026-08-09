@@ -70,7 +70,6 @@ export class TrainingComponent implements OnInit {
   }
 
   async ngAfterViewInit() {
-    // todo: does not always work when changing model in builder and directly switching to training page, due to time constraints
     await this.showModelSummary();
   }
 
